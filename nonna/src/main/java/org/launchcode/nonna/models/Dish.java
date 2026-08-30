@@ -22,7 +22,7 @@ public class Dish {
 
     //@OneToMany(mappedBy = "dish")
 //    @JsonIgnore
-//    private List<DishIngredient> listIngredients = new ArrayList<>();
+//    private List<DishIngredient> dishIngredients = new ArrayList<>();
 
 //    @ManyToOne
 //    @JoinColumn(name = "order_id")
