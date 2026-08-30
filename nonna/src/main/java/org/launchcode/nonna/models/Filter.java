@@ -6,18 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tags")
+@Table(name = "filters")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
+public class Filter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    //    @ManyToOne
-//    @JoinColumn(name = "ingredient_id")
-//    private Ingredient ingredient;
+    private String filterName;
 
+    //    @OneToMany(mappedBy = "filter")
+//    @JsonIgnore
+//    private List<Tag> tags;
 }

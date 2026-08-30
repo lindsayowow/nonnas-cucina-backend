@@ -18,7 +18,6 @@ public class Ingredient {
 
     private String ingredientName;
     private double ingredientCost;
-    private String category;
 
 //    @OneToMany(mappedBy = "ingredient")
 //    @JsonIgnore
