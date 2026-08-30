@@ -20,7 +20,7 @@ public class PastOrder {
     private Timestamp orderTimeStamp;
     private double orderTotal;
 
-    //@OneToMany(mappedBy = "dish")
+    //@OneToMany(mappedBy = "pastOrder")
 //    @JsonIgnore
 //    private List<Dish> dishes = new ArrayList<>();
 

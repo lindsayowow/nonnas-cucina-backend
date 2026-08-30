@@ -20,6 +20,10 @@ public class Dish {
     private double dishCost;
     private boolean isFavorite;
 
+    //@OneToMany(mappedBy = "dish")
+//    @JsonIgnore
+//    private List<DishIngredient> listIngredients = new ArrayList<>();
+
 //    @ManyToOne
 //    @JoinColumn(name = "order_id")
 //    private PastOrder pastOrder;
