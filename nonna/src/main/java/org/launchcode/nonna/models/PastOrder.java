@@ -20,6 +20,10 @@ public class PastOrder {
     private Timestamp orderTimeStamp;
     private double orderTotal;
 
+    //@OneToMany(mappedBy = "dish")
+//    @JsonIgnore
+//    private List<Dish> dishes = new ArrayList<>();
+
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
 //    private User user;
