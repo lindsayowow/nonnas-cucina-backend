@@ -25,7 +25,7 @@ public class Ingredient {
 
     //    @OneToMany(mappedBy = "ingredient")
 //    @JsonIgnore
-//    private List<Tag> tags;
+//    private List<IngredientFilter> tags;
 
 
 }

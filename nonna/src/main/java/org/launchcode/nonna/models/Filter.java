@@ -20,5 +20,5 @@ public class Filter {
 
     //    @OneToMany(mappedBy = "filter")
 //    @JsonIgnore
-//    private List<Tag> tags;
+//    private List<IngredientFilter> ingredientFilters;
 }
