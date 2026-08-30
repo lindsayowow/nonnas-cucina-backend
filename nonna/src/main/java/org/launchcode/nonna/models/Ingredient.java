@@ -24,5 +24,9 @@ public class Ingredient {
 //    @JsonIgnore
 //    private List<DishIngredient> dishIngredients;
 
+    //    @OneToMany(mappedBy = "ingredient")
+//    @JsonIgnore
+//    private List<Tag> tags;
+
 
 }

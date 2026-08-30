@@ -1,0 +1,23 @@
+package org.launchcode.nonna.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "tags")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Tag {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    //    @ManyToOne
+//    @JoinColumn(name = "ingredient_id")
+//    private Ingredient ingredient;
+
+}
