@@ -14,11 +14,11 @@ public class PastOrderService {
         this.pastOrderRepository = pastOrderRepository;
     }
 
-    public List<PastOrder> getPastOrders() {
+    public List<PastOrder> getAllPastOrders() {
         return pastOrderRepository.findAll();
     }
 
-    public PastOrder getPastOrder(int id) {
+    public PastOrder getByPastOrderId(int id) {
         return pastOrderRepository.findById(id).orElse(null);
     }
 

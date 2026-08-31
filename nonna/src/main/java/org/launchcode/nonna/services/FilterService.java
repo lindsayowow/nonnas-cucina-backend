@@ -20,7 +20,7 @@ public class FilterService {
         return filterRepository.findAll();
     }
 
-    private Filter getFilterById(int id)
+    private Filter getByFilterId(int id)
     {
         return filterRepository.findById(id).orElse(null);
     }
