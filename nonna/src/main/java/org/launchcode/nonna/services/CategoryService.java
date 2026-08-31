@@ -13,10 +13,10 @@ public class CategoryService {
     public CategoryService(CategoryRepository categoryRepository)
     {this.categoryRepository=categoryRepository;}
 
-    public List<Category> findAll()
+    public List<Category> getAllCategories()
     {return categoryRepository.findAll();}
 
-    public Category findByCategoryId(int id)
+    public Category getByCategoryId(int id)
     {return categoryRepository.findById(id).orElse(null);}
 
     public Category saveCategory(Category category)
