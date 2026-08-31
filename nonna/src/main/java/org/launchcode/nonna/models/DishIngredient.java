@@ -1,0 +1,32 @@
+package org.launchcode.nonna.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "dish_ingredients")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DishIngredient {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    //@OneToMany(mappedBy = "dishIngredient")
+//    @JsonIgnore
+//    private List<Ingredient> ingredients = new ArrayList<>();
+
+//    @ManyToOne
+//    @JoinColumn(name = "dish_id")
+//    private Dish dish;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "ingredient_id")
+//    private Ingredient ingredient;
+
+
+}
