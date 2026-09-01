@@ -3,6 +3,8 @@ package org.launchcode.nonna.services;
 import org.launchcode.nonna.models.Ingredient;
 import org.launchcode.nonna.repositories.IngredientRepository;
 import org.springframework.stereotype.Service;
+import org.launchcode.nonna.dtos.IngredientDTO;
+
 
 import java.util.List;
 
@@ -15,12 +17,17 @@ public class IngredientService {
         this.ingredientRepository = ingredientRepository;
     }
 
-    public List<Ingredient> getAllIngredients() {
-        return ingredientRepository.findAll();
+    public List<IngredientDTO> getAllIngredientDTOs() {
+        List<Ingredient> ingredients = ingredientRepository.findAll();
+        return ingredients.stream()
+                .map(IngredientDTO::new)
+                .toList();
     }
 
-    public Ingredient getByIngredientId(int id) {
-        return ingredientRepository.findById(id).orElse(null);
+    public IngredientDTO getByIngredientDTOId(int id) {
+        return ingredientRepository.findById(id)
+                .map(IngredientDTO::new)
+                .orElse(null);
     }
 
     public Ingredient saveIngredient(Ingredient ingredient) {
@@ -31,5 +38,8 @@ public class IngredientService {
         ingredientRepository.deleteById(id);
     }
 
+    private IngredientDTO convertToDTO(Ingredient ingredient) {
+        return new IngredientDTO(ingredient);
+    }
 
 }
