@@ -34,8 +34,5 @@ public class IngredientDTO {
         return ingredientCost;
     }
 
-
-
-
 }
 
