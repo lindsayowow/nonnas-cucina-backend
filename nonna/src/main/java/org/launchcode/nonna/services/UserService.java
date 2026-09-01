@@ -1,5 +1,6 @@
 package org.launchcode.nonna.services;
 
+import org.launchcode.nonna.dtos.UserDTO;
 import org.launchcode.nonna.models.User;
 import org.launchcode.nonna.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUserDTOs() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(UserDTO::new)
+                .toList();
     }
 
-    public User getByUserId(int id) {
-        return userRepository.findById(id).orElse(null);
+    public UserDTO getByUserDTOId(int id) {
+        return userRepository.findById(id)
+                .map(UserDTO::new)
+                .orElse(null);
     }
 
     public User saveUser(User user) {
@@ -28,6 +34,10 @@ public class UserService {
 
     public void deleteUser(int id) {
         userRepository.deleteById(id);
+    }
+
+    private UserDTO convertToDTO(User user) {
+        return new UserDTO(user);
     }
 
 }
