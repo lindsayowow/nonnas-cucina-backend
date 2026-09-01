@@ -1,5 +1,6 @@
 package org.launchcode.nonna.services;
 
+import org.launchcode.nonna.dtos.DishDTO;
 import org.launchcode.nonna.models.Dish;
 import org.launchcode.nonna.repositories.DishRepository;
 import org.springframework.stereotype.Service;
@@ -10,17 +11,21 @@ import java.util.List;
 public class DishService {
 
     private final DishRepository dishRepository;
+
     public DishService(DishRepository dishRepository)
     {this.dishRepository = dishRepository;}
 
-    public List<Dish> getAllDishes()
-    {
-        return dishRepository.findAll();
+    public List<DishDTO> getAllDishDTOs() {
+        List<Dish> dishes = dishRepository.findAll();
+        return dishes.stream()
+                .map(DishDTO::new)
+                .toList();
     }
 
-    public Dish getByDishId(int id)
-    {
-        return dishRepository.findById(id).orElse(null);
+    public DishDTO getByDishDTOId(int id) {
+        return dishRepository.findById(id)
+                .map(DishDTO::new)
+                .orElse(null);
     }
 
     public Dish saveDish(Dish dish)
@@ -31,6 +36,10 @@ public class DishService {
     public void deleteDish(int id)
     {
         dishRepository.deleteById(id);
+    }
+
+    private DishDTO convertToDTO(Dish dish) {
+        return new DishDTO(dish);
     }
 
 }
