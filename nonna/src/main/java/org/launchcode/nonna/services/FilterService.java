@@ -1,9 +1,7 @@
 package org.launchcode.nonna.services;
 
 import org.launchcode.nonna.dtos.FilterDTO;
-import org.launchcode.nonna.dtos.IngredientDTO;
 import org.launchcode.nonna.models.Filter;
-import org.launchcode.nonna.models.Ingredient;
 import org.launchcode.nonna.repositories.FilterRepository;
 import org.springframework.stereotype.Service;
 

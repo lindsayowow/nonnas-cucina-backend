@@ -1,5 +1,6 @@
 package org.launchcode.nonna.services;
 
+import org.launchcode.nonna.dtos.PastOrderDTO;
 import org.launchcode.nonna.models.PastOrder;
 import org.launchcode.nonna.repositories.PastOrderRepository;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,17 @@ public class PastOrderService {
         this.pastOrderRepository = pastOrderRepository;
     }
 
-    public List<PastOrder> getAllPastOrders() {
-        return pastOrderRepository.findAll();
+    public List<PastOrderDTO> getAllPastOrderDTOs() {
+        List<PastOrder> pastOrders = pastOrderRepository.findAll();
+        return pastOrders.stream()
+                .map(PastOrderDTO::new)
+                .toList();
     }
 
-    public PastOrder getByPastOrderId(int id) {
-        return pastOrderRepository.findById(id).orElse(null);
+    public PastOrderDTO getByPastOrderDTOId(int id) {
+        return pastOrderRepository.findById(id)
+                .map(PastOrderDTO::new)
+                .orElse(null);
     }
 
     public PastOrder savePastOrder(PastOrder pastOrder) {
@@ -28,5 +34,9 @@ public class PastOrderService {
 
     public void deletePastOrder(int id) {
         pastOrderRepository.deleteById(id);
+    }
+
+    private PastOrderDTO convertToDTO(PastOrder pastOrder) {
+        return new PastOrderDTO(pastOrder);
     }
 }
