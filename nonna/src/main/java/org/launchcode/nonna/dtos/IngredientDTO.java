@@ -1,5 +1,7 @@
 package org.launchcode.nonna.dtos;
 
+import org.launchcode.nonna.models.Ingredient;
+
 public class IngredientDTO {
 
     private int id;
@@ -14,6 +16,12 @@ public class IngredientDTO {
         this.ingredientCost = ingredientCost;
     }
 
+    public IngredientDTO(Ingredient ingredient) {
+        this.id = ingredient.getId();
+        this.ingredientName = ingredient.getIngredientName();
+        this.ingredientCost = ingredient.getIngredientCost();
+    }
+
     public int getId() {
         return id;
     }
@@ -25,5 +33,9 @@ public class IngredientDTO {
     public double getIngredientCost() {
         return ingredientCost;
     }
+
+
+
+
 }
 
