@@ -6,7 +6,6 @@ public class UserDTO {
 
     private int id;
     private String username;
-    private String passwordHash;
     private String email;
     private String firstName;
     private String lastName;
@@ -19,10 +18,9 @@ public class UserDTO {
 
     public UserDTO(){}
 
-    public UserDTO(int id, String username, String passwordHash, String email, String firstName, String lastName, String role, String streetAddress, String city, String state, String zipCode, String phoneNumber) {
+    public UserDTO(int id, String username, String email, String firstName, String lastName, String role, String streetAddress, String city, String state, String zipCode, String phoneNumber) {
         this.id = id;
         this.username = username;
-        this.passwordHash = passwordHash;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -37,7 +35,6 @@ public class UserDTO {
     public UserDTO(User user){
         this.id = user.getId();
         this.username = user.getUsername();
-        this.passwordHash = user.getPasswordHash();
         this.email = user.getEmail();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
@@ -55,10 +52,6 @@ public class UserDTO {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
     }
 
     public String getEmail() {
