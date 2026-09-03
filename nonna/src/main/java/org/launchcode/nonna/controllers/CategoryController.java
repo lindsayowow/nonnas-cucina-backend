@@ -22,7 +22,7 @@ public class CategoryController {
         return categoryService.getAllCategoryDTOs();
     }
 
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     public CategoryDTO getByCategoryId(@PathVariable int id) {
         return categoryService.getByCategoryDTOId(id);
     }
