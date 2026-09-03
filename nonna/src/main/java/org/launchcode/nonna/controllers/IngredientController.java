@@ -32,6 +32,12 @@ public class IngredientController {
         return ingredientService.saveIngredient(ingredient);
     }
 
+    @PostMapping("/bulk")
+    public List<Ingredient> createIngredients(@RequestBody List<Ingredient> ingredients) {
+        return ingredientService.saveAll(ingredients);
+    }
+
+
     @DeleteMapping("/{id}")
     public void deleteIngredient(@PathVariable int id) {
         ingredientService.deleteIngredient(id);

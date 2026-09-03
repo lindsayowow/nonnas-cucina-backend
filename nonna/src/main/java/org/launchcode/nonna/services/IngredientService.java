@@ -34,6 +34,10 @@ public class IngredientService {
         return ingredientRepository.save(ingredient);
     }
 
+    public List<Ingredient> saveAll(List<Ingredient> ingredients) {
+        return ingredientRepository.saveAll(ingredients);
+    }
+
     public void deleteIngredient(int id) {
         ingredientRepository.deleteById(id);
     }
