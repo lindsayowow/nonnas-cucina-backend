@@ -19,7 +19,8 @@ public class Filter {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String filterName;
+    private String filterLabel;
+    private String filterKey;
 
     @OneToMany(mappedBy = "filter")
     @JsonIgnore
