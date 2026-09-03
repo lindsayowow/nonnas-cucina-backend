@@ -37,6 +37,10 @@ public class IngredientController {
         return ingredientService.saveAll(ingredients);
     }
 
+    @PutMapping("/{id}")
+    public Ingredient updateIngredient(@PathVariable Integer id, @RequestBody Ingredient ingredient) {
+        return ingredientService.updateIngredient(id, ingredient);
+    }
 
     @DeleteMapping("/{id}")
     public void deleteIngredient(@PathVariable int id) {

@@ -14,10 +14,11 @@ public class Ingredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Integer id;
 
     private String ingredientName;
     private double ingredientCost;
+    private String emoji;
 
 //    @OneToMany(mappedBy = "ingredient")
 //    @JsonIgnore
