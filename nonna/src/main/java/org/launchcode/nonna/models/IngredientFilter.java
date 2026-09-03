@@ -16,12 +16,12 @@ public class IngredientFilter {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    //    @ManyToOne
-//    @JoinColumn(name = "ingredient_id")
-//    private Ingredient ingredient;
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id")
+    private Ingredient ingredient;
 
-    //    @ManyToOne
-//    @JoinColumn(name = "filter_id")
-//    private Filter filter;
+    @ManyToOne
+    @JoinColumn(name = "filter_id")
+    private Filter filter;
 
 }

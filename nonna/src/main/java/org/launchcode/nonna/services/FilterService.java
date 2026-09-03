@@ -39,7 +39,9 @@ public class FilterService {
         Filter existing = filterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        existing.setFilterName(updatedFilter.getFilterName());
+        existing.setFilterLabel(updatedFilter.getFilterLabel());
+        existing.setFilterKey(updatedFilter.getFilterKey());
+        existing.setFilterLabel(updatedFilter.getFilterLabel());
 
         return filterRepository.save(existing);
     }
