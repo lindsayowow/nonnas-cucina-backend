@@ -16,17 +16,11 @@ public class DishIngredient {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    //@OneToMany(mappedBy = "dishIngredient")
-//    @JsonIgnore
-//    private List<Ingredient> ingredients = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "dish_id")
+    private Dish dish;
 
-//    @ManyToOne
-//    @JoinColumn(name = "dish_id")
-//    private Dish dish;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "ingredient_id")
-//    private Ingredient ingredient;
-
-
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id")
+    private Ingredient ingredient;
 }

@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +31,9 @@ public class User {
     private String zipCode;
     private String phoneNumber;
 
-//    @OneToMany(mappedBy = "user")
-//    @JsonIgnore
-//    private List<PastOrder> pastOrders = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<PastOrder> pastOrders = new ArrayList<>();
 
 
 }
