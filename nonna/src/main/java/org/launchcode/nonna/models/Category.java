@@ -17,6 +17,7 @@ public class Category {
     private Integer id;
 
     private String categoryName;
+    private String categoryMap;
 
     //    @OneToMany(mappedBy = "category")
 //    @JsonIgnore
