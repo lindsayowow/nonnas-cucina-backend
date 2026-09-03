@@ -1,6 +1,7 @@
 package org.launchcode.nonna.services;
 
 import org.launchcode.nonna.dtos.PastOrderDTO;
+import org.launchcode.nonna.models.Filter;
 import org.launchcode.nonna.models.PastOrder;
 import org.launchcode.nonna.repositories.PastOrderRepository;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,16 @@ public class PastOrderService {
 
     public PastOrder savePastOrder(PastOrder pastOrder) {
         return pastOrderRepository.save(pastOrder);
+    }
+
+    public PastOrder updatePastOrder(Integer id, PastOrder updatedPastOrder) {
+        PastOrder existing = pastOrderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        existing.setOrderTimeStamp(updatedPastOrder.getOrderTimeStamp());
+        existing.setOrderTotal(updatedPastOrder.getOrderTotal());
+
+        return pastOrderRepository.save(existing);
     }
 
     public void deletePastOrder(int id) {

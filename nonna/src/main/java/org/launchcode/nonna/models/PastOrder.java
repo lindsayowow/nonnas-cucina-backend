@@ -15,7 +15,7 @@ public class PastOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Integer id;
 
     private Timestamp orderTimeStamp;
     private double orderTotal;
