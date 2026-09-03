@@ -34,6 +34,21 @@ public class IngredientService {
         return ingredientRepository.save(ingredient);
     }
 
+    public List<Ingredient> saveAll(List<Ingredient> ingredients) {
+        return ingredientRepository.saveAll(ingredients);
+    }
+
+    public Ingredient updateIngredient(Integer id, Ingredient updatedIngredient) {
+        Ingredient existing = ingredientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        existing.setIngredientName(updatedIngredient.getIngredientName());
+        existing.setIngredientCost(updatedIngredient.getIngredientCost());
+        existing.setEmoji(updatedIngredient.getEmoji());
+
+        return ingredientRepository.save(existing);
+    }
+
     public void deleteIngredient(int id) {
         ingredientRepository.deleteById(id);
     }

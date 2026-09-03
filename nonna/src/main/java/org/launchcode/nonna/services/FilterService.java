@@ -35,7 +35,16 @@ public class FilterService {
         return filterRepository.save(filter);
     }
 
-    public void  deleteFilterById(int id)
+    public Filter updateFilter(Integer id, Filter updatedFilter) {
+        Filter existing = filterRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        existing.setFilterName(updatedFilter.getFilterName());
+
+        return filterRepository.save(existing);
+    }
+
+    public void deleteFilter(int id)
     {
         filterRepository.deleteById(id);
     }

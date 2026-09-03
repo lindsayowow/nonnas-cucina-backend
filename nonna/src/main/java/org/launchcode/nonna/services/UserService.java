@@ -32,6 +32,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUser(Integer id, User updatedUser) {
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        existing.setUsername(updatedUser.getUsername());
+        existing.setEmail(updatedUser.getEmail());
+        existing.setFirstName(updatedUser.getFirstName());
+        existing.setLastName(updatedUser.getLastName());
+        existing.setRole(updatedUser.getRole());
+        existing.setStreetAddress(updatedUser.getStreetAddress());
+        existing.setCity(updatedUser.getCity());
+        existing.setState(updatedUser.getState());
+        existing.setZipCode(updatedUser.getZipCode());
+        existing.setPhoneNumber(updatedUser.getPhoneNumber());
+
+
+        return userRepository.save(existing);
+    }
+    
+    
     public void deleteUser(int id) {
         userRepository.deleteById(id);
     }

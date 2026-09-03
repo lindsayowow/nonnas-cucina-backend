@@ -33,6 +33,16 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    public Category updateCategory(Integer id, Category updatedCategory) {
+        Category existing = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        existing.setCategoryName(updatedCategory.getCategoryName());
+        existing.setCategoryMap(updatedCategory.getCategoryMap());
+
+        return categoryRepository.save(existing);
+    }
+
     public void deleteCategory(int id) {
         categoryRepository.deleteById(id);
     }
