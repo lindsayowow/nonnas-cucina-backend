@@ -21,6 +21,8 @@ public class Filter {
 
     private String filterLabel;
     private String filterKey;
+    private boolean excludesAllergen;
+
 
     @OneToMany(mappedBy = "filter")
     @JsonIgnore

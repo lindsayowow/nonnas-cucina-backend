@@ -1,7 +1,14 @@
 package org.launchcode.nonna.dtos;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.launchcode.nonna.models.User;
 
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserDTO {
 
     private int id;
@@ -16,22 +23,6 @@ public class UserDTO {
     private String zipCode;
     private String phoneNumber;
 
-    public UserDTO(){}
-
-    public UserDTO(int id, String username, String email, String firstName, String lastName, String role, String streetAddress, String city, String state, String zipCode, String phoneNumber) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.role = role;
-        this.streetAddress = streetAddress;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-        this.phoneNumber = phoneNumber;
-    }
-
     public UserDTO(User user){
         this.id = user.getId();
         this.username = user.getUsername();
@@ -44,50 +35,6 @@ public class UserDTO {
         this.state = user.getState();
         this.zipCode = user.getZipCode();
         this.phoneNumber = user.getPhoneNumber();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public String getStreetAddress() {
-        return streetAddress;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
     }
 
 }
