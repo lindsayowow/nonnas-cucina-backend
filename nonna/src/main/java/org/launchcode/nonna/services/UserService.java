@@ -37,7 +37,6 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         existing.setUsername(updatedUser.getUsername());
-        existing.setPasswordHash(updatedUser.getPasswordHash());
         existing.setEmail(updatedUser.getEmail());
         existing.setFirstName(updatedUser.getFirstName());
         existing.setLastName(updatedUser.getLastName());
