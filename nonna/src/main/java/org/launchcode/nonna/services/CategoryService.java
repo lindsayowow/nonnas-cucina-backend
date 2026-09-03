@@ -43,7 +43,6 @@ public class CategoryService {
         return categoryRepository.save(existing);
     }
 
-
     public void deleteCategory(int id) {
         categoryRepository.deleteById(id);
     }

@@ -31,6 +31,6 @@ public class DishDTO {
 
     public double getDishCost() {return dishCost;}
 
-    public boolean isFavorite() {return isFavorite;}
+    public boolean getIsFavorite() {return isFavorite;}
 
 }

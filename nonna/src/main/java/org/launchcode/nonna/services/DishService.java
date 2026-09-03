@@ -33,6 +33,18 @@ public class DishService {
         return dishRepository.save(dish);
     }
 
+    public Dish updateDish(Integer id, Dish updatedDish) {
+        Dish existing = dishRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dish not found"));
+
+        existing.setDishName(updatedDish.getDishName());
+        existing.setDishCost(updatedDish.getDishCost());
+        existing.setFavorite(updatedDish.isFavorite());
+
+        return dishRepository.save(existing);
+    }
+
+
     public void deleteDish(int id)
     {
         dishRepository.deleteById(id);

@@ -14,7 +14,7 @@ public class Dish {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Integer id;
 
     private String dishName;
     private double dishCost;
