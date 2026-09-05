@@ -40,6 +40,7 @@ public class UserService {
         existing.setEmail(updatedUser.getEmail());
         existing.setFirstName(updatedUser.getFirstName());
         existing.setLastName(updatedUser.getLastName());
+        //        ---------saving for use in future feature ----------
 //        existing.setRole(updatedUser.getRole());
         existing.setStreetAddress(updatedUser.getStreetAddress());
         existing.setCity(updatedUser.getCity());
@@ -59,5 +60,10 @@ public class UserService {
     private UserDTO convertToDTO(User user) {
         return new UserDTO(user);
     }
+
+    public User registerUser(RegisterUserDTO dto) {
+        // implementation will be added step-by-step
+    }
+
 
 }
