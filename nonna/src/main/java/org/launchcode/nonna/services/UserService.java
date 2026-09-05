@@ -4,6 +4,7 @@ import org.launchcode.nonna.dtos.RegisterUserDTO;
 import org.launchcode.nonna.dtos.UserDTO;
 import org.launchcode.nonna.models.User;
 import org.launchcode.nonna.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,16 +12,12 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    private final UserRepository userRepository;
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
     }
 
     public List<UserDTO> getAllUserDTOs() {
@@ -67,7 +64,7 @@ public class UserService {
         return new UserDTO(user);
     }
 
-    public User registerUser(RegisterUserDTO dto) {
+    public UserDTO registerUser(RegisterUserDTO dto) {
 
         if (dto.getUsername() == null || dto.getUsername().isBlank()) {
             throw new IllegalArgumentException("Username is required.");
@@ -190,10 +187,7 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         user.setPasswordHash(hashedPassword);
 
-        return userRepository.save(user);
-
+        User savedUser = userRepository.save(user);
+        return new UserDTO(savedUser);
     }
-
-
-
 }
