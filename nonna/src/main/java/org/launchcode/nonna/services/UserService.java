@@ -11,6 +11,13 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     private final UserRepository userRepository;
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -150,8 +157,43 @@ public class UserService {
             throw new IllegalArgumentException("Password must contain a lower-case letter.");
         }
 
-        return null;
+        if (dto.getState().length() != 2) {
+            throw new IllegalArgumentException("State must be 2 characters.");
+        }
+
+        boolean hasLetter = false;
+        for (char c : dto.getPhoneNumber().toCharArray()) {
+            if (Character.isLetter(c)) {
+                hasLetter = true;
+                break;
+            }
+        }
+        if (dto.getPhoneNumber().length() != 12
+                || dto.getPhoneNumber().charAt(3) != '-'
+                || dto.getPhoneNumber().charAt(7) != '-'
+                || hasLetter
+        ) {
+            throw new IllegalArgumentException("Incorrect phone number format.");
+        }
+
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setStreetAddress(dto.getStreetAddress());
+        user.setCity(dto.getCity());
+        user.setState(dto.getState());
+        user.setZipCode(dto.getZipCode());
+        user.setPhoneNumber(dto.getPhoneNumber());
+
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
+        user.setPasswordHash(hashedPassword);
+
+        return userRepository.save(user);
+
     }
+
 
 
 }
