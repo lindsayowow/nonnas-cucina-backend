@@ -1,8 +1,10 @@
 package org.launchcode.nonna.controllers;
 
+import org.launchcode.nonna.dtos.RegisterUserDTO;
 import org.launchcode.nonna.dtos.UserDTO;
 import org.launchcode.nonna.models.User;
 import org.launchcode.nonna.services.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,5 +44,10 @@ public class UserController {
         userService.deleteUser(id);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<UserDTO> register(@RequestBody RegisterUserDTO dto) {
+        UserDTO savedUser = userService.registerUser(dto);
+        return ResponseEntity.status(201).body(savedUser);
+    }
 
 }

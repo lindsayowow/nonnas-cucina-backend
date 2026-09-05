@@ -106,6 +106,15 @@ public class UserService {
             throw new IllegalArgumentException("Phone Number is required.");
         }
 
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken.");
+        }
+
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Email is already registered.");
+        }
+
+
         if (dto.getPassword().length() < 8) {
             throw new IllegalArgumentException("Password must be at least 8 characters.");
         }
