@@ -24,7 +24,7 @@ public class User {
     private String email;
     private String firstName;
     private String lastName;
-    private String role;
+//    private String role;
     private String streetAddress;
     private String city;
     private String state;

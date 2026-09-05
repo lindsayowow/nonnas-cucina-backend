@@ -40,7 +40,7 @@ public class UserService {
         existing.setEmail(updatedUser.getEmail());
         existing.setFirstName(updatedUser.getFirstName());
         existing.setLastName(updatedUser.getLastName());
-        existing.setRole(updatedUser.getRole());
+//        existing.setRole(updatedUser.getRole());
         existing.setStreetAddress(updatedUser.getStreetAddress());
         existing.setCity(updatedUser.getCity());
         existing.setState(updatedUser.getState());
