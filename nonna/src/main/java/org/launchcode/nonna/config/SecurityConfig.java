@@ -30,10 +30,33 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register").permitAll()
+
+                        //  PUBLIC ENDPOINTS
+                        .requestMatchers(
+                                "/login",
+                                "/users/register",
+                                "/ingredients",
+                                "/filters",
+                                "/categories",
+                                "/dishes"          // GET only
+                        ).permitAll()
+
+                        //  PROTECTED ENDPOINTS
+                        .requestMatchers(
+                                "/dishes/**",      // POST, PUT, DELETE
+                                "/orders/**",
+                                "/pastorders/**",
+                                "/favorites/**",
+                                "/profile/**",
+                                "/users/**"
+                        ).authenticated()
+
+                        //  ANYTHING ELSE → require JWT
                         .anyRequest().authenticated()
                 )
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
