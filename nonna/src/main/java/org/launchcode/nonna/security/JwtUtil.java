@@ -10,19 +10,19 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "supersecretkey123"; // move to env variable later
-    private final long EXPIRATION = 1000 * 60 * 60 * 24; // 24 hours
+    private final String SECRET = "supersecretkey123";   // move to env later
+    private final long EXPIRATION = 1000 * 60 * 60 * 24;  // 24 hours
 
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)   // EMAIL is the username now
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
 
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return getClaims(token).getSubject();
     }
 
