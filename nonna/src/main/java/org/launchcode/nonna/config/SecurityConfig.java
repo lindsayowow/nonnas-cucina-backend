@@ -36,7 +36,7 @@ public class SecurityConfig {
                         //  PUBLIC ENDPOINTS
                         .requestMatchers(
                                 "/login",
-                                "/users/register",
+                                "/users/**",
                                 "/ingredients",
                                 "/filters",
                                 "/categories",
