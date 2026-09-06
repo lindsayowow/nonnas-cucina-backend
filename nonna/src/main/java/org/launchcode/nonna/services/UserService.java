@@ -7,19 +7,17 @@ import org.launchcode.nonna.models.User;
 import org.launchcode.nonna.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class UserService {
 
-//    Connection to Repo
     private final UserRepository userRepository;
 
 //    Connection to password encoder for hashing and verifying passwords
     private final PasswordEncoder passwordEncoder;
 
-//    Constructors
+//    Constructor
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -49,16 +47,9 @@ public class UserService {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        existing.setUsername(updatedUser.getUsername());
         existing.setEmail(updatedUser.getEmail());
         existing.setFirstName(updatedUser.getFirstName());
         existing.setLastName(updatedUser.getLastName());
-        //        ---------saving for use in future feature ----------
-//        existing.setRole(updatedUser.getRole());
-        existing.setStreetAddress(updatedUser.getStreetAddress());
-        existing.setCity(updatedUser.getCity());
-        existing.setState(updatedUser.getState());
-        existing.setZipCode(updatedUser.getZipCode());
         existing.setPhoneNumber(updatedUser.getPhoneNumber());
 
         return userRepository.save(existing);
@@ -68,23 +59,15 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-//    UserDTO methods
-    private UserDTO convertToDTO(User user) {
-        return new UserDTO(user);
-    }
-
     public UserDTO registerUser(RegisterUserDTO dto) {
+
 //Validation checks - important on back end b/c front end can be bypassed
-        if (dto.getUsername() == null || dto.getUsername().isBlank()) {
-            throw new IllegalArgumentException("Username is required.");
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email Address is required.");
         }
 
         if (dto.getPassword() == null || dto.getPassword().isBlank()) {
             throw new IllegalArgumentException("Password is required.");
-        }
-
-        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
-            throw new IllegalArgumentException("Email is required.");
         }
 
         if (dto.getFirstName() == null || dto.getFirstName().isBlank()) {
@@ -95,32 +78,12 @@ public class UserService {
             throw new IllegalArgumentException("Last Name is required.");
         }
 
-        if (dto.getStreetAddress() == null || dto.getStreetAddress().isBlank()) {
-            throw new IllegalArgumentException("Street Address is required.");
-        }
-
-        if (dto.getCity() == null || dto.getCity().isBlank()) {
-            throw new IllegalArgumentException("City is required.");
-        }
-
-        if (dto.getState() == null || dto.getState().isBlank()) {
-            throw new IllegalArgumentException("State is required.");
-        }
-
-        if (dto.getZipCode() == null || dto.getZipCode().isBlank()) {
-            throw new IllegalArgumentException("Zip Code is required.");
-        }
-
         if (dto.getPhoneNumber() == null || dto.getPhoneNumber().isBlank()) {
             throw new IllegalArgumentException("Phone Number is required.");
         }
 //Prevents dup entries
-        if (userRepository.existsByUsername(dto.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken.");
-        }
-
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Email is already registered.");
+            throw new IllegalArgumentException("There is already an account registered with this email address.");
         }
 
 //Password requirements
@@ -171,11 +134,8 @@ public class UserService {
         if (!hasLowerCase) {
             throw new IllegalArgumentException("Password must contain a lower-case letter.");
         }
-//State requirement
-        if (dto.getState().length() != 2) {
-            throw new IllegalArgumentException("State must be 2 characters.");
-        }
-//Phone number requirement
+
+        //Phone number requirement
         boolean hasLetter = false;
         for (char c : dto.getPhoneNumber().toCharArray()) {
             if (Character.isLetter(c)) {
@@ -190,16 +150,11 @@ public class UserService {
         ) {
             throw new IllegalArgumentException("Incorrect phone number format.");
         }
-//DTO get/set
-        User user = new User();
-        user.setUsername(dto.getUsername());
+//DTO setters
+  User user = new User();
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-        user.setStreetAddress(dto.getStreetAddress());
-        user.setCity(dto.getCity());
-        user.setState(dto.getState());
-        user.setZipCode(dto.getZipCode());
         user.setPhoneNumber(dto.getPhoneNumber());
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
@@ -210,11 +165,11 @@ public class UserService {
         return new UserDTO(savedUser);
     }
 
-//    username and password requirements
+//    EMAIL and password requirements
     public UserDTO loginUser(LoginDTO dto) {
 
-        if (dto.getUsername() == null || dto.getUsername().isBlank()) {
-            throw new IllegalArgumentException("Username is required.");
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email address is required.");
         }
 
         if (dto.getPassword() == null || dto.getPassword().isBlank()) {
@@ -222,13 +177,13 @@ public class UserService {
         }
 
 //        Search method for user login, checks if username exists and verifies password
-        User user = userRepository.findByUsername(dto.getUsername())
+        User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password."));
 
         boolean passwordMatches = passwordEncoder.matches(dto.getPassword(), user.getPasswordHash());
 
         if (!passwordMatches) {
-            throw new IllegalArgumentException("Invalid username or password.");
+            throw new IllegalArgumentException("Invalid email address or password.");
         }
 
         return new UserDTO(user);
