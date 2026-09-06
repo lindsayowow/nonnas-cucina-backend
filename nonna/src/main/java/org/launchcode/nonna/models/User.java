@@ -19,17 +19,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String username;
-    private String passwordHash;
     private String email;
+    private String passwordHash;
     private String firstName;
     private String lastName;
-    //        ---------saving for use in future feature ----------
-//    private String role;
-    private String streetAddress;
-    private String city;
-    private String state;
-    private String zipCode;
     private String phoneNumber;
 
     @OneToMany(mappedBy = "user")

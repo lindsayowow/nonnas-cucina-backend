@@ -12,8 +12,9 @@ public class DishService {
 
     private final DishRepository dishRepository;
 
-    public DishService(DishRepository dishRepository)
-    {this.dishRepository = dishRepository;}
+    public DishService(DishRepository dishRepository) {
+        this.dishRepository = dishRepository;
+    }
 
     public List<DishDTO> getAllDishDTOs() {
         List<Dish> dishes = dishRepository.findAll();
@@ -28,8 +29,7 @@ public class DishService {
                 .orElse(null);
     }
 
-    public Dish saveDish(Dish dish)
-    {
+    public Dish saveDish(Dish dish) {
         return dishRepository.save(dish);
     }
 
@@ -37,21 +37,17 @@ public class DishService {
         Dish existing = dishRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dish not found"));
 
-        existing.setDishName(updatedDish.getDishName());
-        existing.setDishCost(updatedDish.getDishCost());
+        // ⭐ Only allow updating the favorite flag
         existing.setFavorite(updatedDish.isFavorite());
 
         return dishRepository.save(existing);
     }
 
-
-    public void deleteDish(int id)
-    {
+    public void deleteDish(int id) {
         dishRepository.deleteById(id);
     }
 
     private DishDTO convertToDTO(Dish dish) {
         return new DishDTO(dish);
     }
-
 }
