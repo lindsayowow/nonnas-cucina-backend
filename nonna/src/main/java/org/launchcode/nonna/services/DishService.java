@@ -37,7 +37,7 @@ public class DishService {
         Dish existing = dishRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dish not found"));
 
-        // ⭐ Only allow updating the favorite flag
+        //  Only allow updating the favorite flag
         existing.setFavorite(updatedDish.isFavorite());
 
         return dishRepository.save(existing);
@@ -59,4 +59,5 @@ public class DishService {
     private DishDTO convertToDTO(Dish dish) {
         return new DishDTO(dish);
     }
+
 }
