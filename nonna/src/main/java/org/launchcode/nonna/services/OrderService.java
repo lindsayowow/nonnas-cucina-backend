@@ -46,6 +46,7 @@ public class OrderService {
         double total = 0;
         for (Dish dish : dishes) {
             dish.setPastOrder(savedOrder);
+            savedOrder.getDishes().add(dish);
             dishRepository.save(dish);
             total += dish.getDishCost();
         }
