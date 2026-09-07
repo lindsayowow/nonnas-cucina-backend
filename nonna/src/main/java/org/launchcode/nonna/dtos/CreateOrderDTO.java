@@ -11,7 +11,15 @@ public class CreateOrderDTO {
         return userId;
     }
 
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
     public List<Integer> getDishIds() {
         return dishIds;
+    }
+
+    public void setDishIds(List<Integer> dishIds) {
+        this.dishIds = dishIds;
     }
 }

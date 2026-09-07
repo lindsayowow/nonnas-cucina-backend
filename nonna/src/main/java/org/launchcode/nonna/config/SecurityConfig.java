@@ -36,6 +36,8 @@ public class SecurityConfig {
                 .authenticationProvider(jwtProvider)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login", "/users/register").permitAll()
+                        .requestMatchers("/orders/**").authenticated()   //  REQUIRED
+                        .requestMatchers("/dishes/**").authenticated()   // optional but recommended
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

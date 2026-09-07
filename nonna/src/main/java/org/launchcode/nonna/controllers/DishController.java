@@ -6,6 +6,7 @@ import org.launchcode.nonna.services.DishService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/dishes")
@@ -37,10 +38,14 @@ public class DishController {
         return dishService.updateDish(id, dish);
     }
 
+    @PutMapping("/{id}/favorite")
+    public Dish updateFavorite(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
+        Boolean isFavorite = body.get("isFavorite");
+        return dishService.updateFavorite(id, isFavorite);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteDish(@PathVariable Integer id) {
         dishService.deleteDish(id);
     }
 }
-
-
