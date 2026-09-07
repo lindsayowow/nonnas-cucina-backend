@@ -25,7 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    // ⭐ Only these endpoints should skip JWT
+    // ⭐ ONLY THESE ENDPOINTS SHOULD SKIP JWT
     private static final List<String> EXCLUDED_PATHS = List.of(
             "/login",
             "/users/register"
