@@ -33,27 +33,27 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        //  PUBLIC ENDPOINTS
+                        // ⭐ PUBLIC ENDPOINTS
                         .requestMatchers(
                                 "/login",
-                                "/users/**",
+                                "/users/register",
                                 "/ingredients",
                                 "/filters",
                                 "/categories",
-                                "/dishes"          // GET only
+                                "/dishes"      // GET only
                         ).permitAll()
 
-                        //  PROTECTED ENDPOINTS
+                        // ⭐ PROTECTED ENDPOINTS
                         .requestMatchers(
-                                "/dishes/**",      // POST, PUT, DELETE
+                                "/users/**",   // everything except /users/register
+                                "/dishes/**",  // POST, PUT, DELETE
                                 "/orders/**",
                                 "/pastorders/**",
                                 "/favorites/**",
-                                "/profile/**",
-                                "/users/**"
+                                "/profile/**"
                         ).authenticated()
 
-                        //  ANYTHING ELSE → require JWT
+                        // ⭐ ANYTHING ELSE → require JWT
                         .anyRequest().authenticated()
                 )
 
