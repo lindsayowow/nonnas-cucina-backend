@@ -1,33 +1,28 @@
 package org.launchcode.nonna.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "users")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false, unique = true)
     private String email;
-    private String passwordHash;
+
+    @Column(nullable = false)
+    private String password;
+
     private String firstName;
     private String lastName;
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore
-    private List<PastOrder> pastOrders = new ArrayList<>();
-
-
+    private String role = "USER";
 }

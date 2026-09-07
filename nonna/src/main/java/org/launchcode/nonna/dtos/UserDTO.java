@@ -11,7 +11,7 @@ import org.launchcode.nonna.models.User;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserDTO {
 
-    private int id;
+    private Integer id;
     private String email;
     private String firstName;
     private String lastName;
@@ -24,5 +24,4 @@ public class UserDTO {
         this.lastName = user.getLastName();
         this.phoneNumber = user.getPhoneNumber();
     }
-
 }

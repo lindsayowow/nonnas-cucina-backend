@@ -10,32 +10,26 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "supersecretkey123";   // move to env later
-    private final long EXPIRATION = 1000 * 60 * 60 * 24;  // 24 hours
+    private final String SECRET = "supersecretkey";
 
     public String generateToken(String email) {
         return Jwts.builder()
-                .setSubject(email)   // EMAIL is the username now
+                .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
 
     public String extractEmail(String token) {
-        return getClaims(token).getSubject();
+        return extractAllClaims(token).getSubject();
     }
 
     public boolean isTokenValid(String token) {
-        try {
-            Claims claims = getClaims(token);
-            return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
-        }
+        return !extractAllClaims(token).getExpiration().before(new Date());
     }
 
-    private Claims getClaims(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token)
