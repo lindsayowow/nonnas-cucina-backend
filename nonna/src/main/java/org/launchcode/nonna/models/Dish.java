@@ -22,7 +22,7 @@ public class Dish {
 
     private String dishName;
     private double dishCost;
-    private boolean isFavorite;
+    private boolean isFavorite = false;
 
     @OneToMany(mappedBy = "dish")
     @JsonIgnore
