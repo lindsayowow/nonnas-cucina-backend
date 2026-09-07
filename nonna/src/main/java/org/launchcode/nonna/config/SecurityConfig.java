@@ -1,7 +1,7 @@
 package org.launchcode.nonna.config;
 
-import org.launchcode.nonna.security.JwtFilter;
-import org.launchcode.nonna.security.CustomUserDetailsService;
+import org.launchcode.nonna.security.JwtAuthenticationFilter;
+import org.launchcode.nonna.security.JwtAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,47 +16,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
-    private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtFilter;
+    private final JwtAuthenticationProvider jwtProvider;
 
-    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter,
+                          JwtAuthenticationProvider jwtProvider) {
         this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        System.out.println("DEBUG SECURITY CONFIG → SecurityFilterChain LOADED");
+
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .authenticationProvider(jwtProvider)
                 .authorizeHttpRequests(auth -> auth
-
-                        // ⭐ PUBLIC ENDPOINTS
-                        .requestMatchers(
-                                "/login",
-                                "/users/register",
-                                "/ingredients",
-                                "/filters",
-                                "/categories",
-                                "/dishes"      // GET only
-                        ).permitAll()
-
-                        // ⭐ PROTECTED ENDPOINTS
-                        .requestMatchers(
-                                "/users/**",   // everything except /users/register
-                                "/dishes/**",  // POST, PUT, DELETE
-                                "/orders/**",
-                                "/pastorders/**",
-                                "/favorites/**",
-                                "/profile/**"
-                        ).authenticated()
-
-                        // ⭐ ANYTHING ELSE → require JWT
+                        .requestMatchers("/auth/login", "/users/register").permitAll()
                         .anyRequest().authenticated()
                 )
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

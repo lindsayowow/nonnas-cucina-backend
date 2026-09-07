@@ -5,36 +5,35 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    // ⭐ ONLY THESE ENDPOINTS SHOULD SKIP JWT
-    private static final List<String> EXCLUDED_PATHS = List.of(
-            "/login",
-            "/users/register"
-    );
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   UserDetailsService userDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+        System.out.println("DEBUG → JwtAuthenticationFilter constructor CALLED");
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return EXCLUDED_PATHS.contains(path);   // ⭐ exact match only
+        boolean skip = path.equals("/auth/login") || path.equals("/users/register");
+        System.out.println("DEBUG JWT FILTER → path=" + path + " skip=" + skip);
+        return skip;
     }
 
     @Override
@@ -45,15 +44,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        String jwt = null;
+        String username = null;
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+            username = jwtUtil.extractEmail(jwt);
+        }
 
-            String token = authHeader.substring(7);
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (jwtUtil.isTokenValid(token)) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                String email = jwtUtil.extractEmail(token);
-
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            if (jwtUtil.isTokenValid(jwt)) {
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
@@ -62,7 +65,9 @@ public class JwtFilter extends OncePerRequestFilter {
                                 userDetails.getAuthorities()
                         );
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

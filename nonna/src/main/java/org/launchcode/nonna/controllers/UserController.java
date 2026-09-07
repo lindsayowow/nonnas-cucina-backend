@@ -25,13 +25,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDTO getByUserDTOId(@PathVariable int id) {
+    public UserDTO getByUserDTOId(@PathVariable Integer id) {
         return userService.getByUserDTOId(id);
-    }
-
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.saveUser(user);
     }
 
     @PutMapping("/{id}")
@@ -40,7 +35,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable int id) {
+    public void deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
     }
 
@@ -49,5 +44,4 @@ public class UserController {
         UserDTO savedUser = userService.registerUser(dto);
         return ResponseEntity.status(201).body(savedUser);
     }
-
 }
