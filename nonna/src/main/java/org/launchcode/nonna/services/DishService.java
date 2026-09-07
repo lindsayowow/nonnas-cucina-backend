@@ -23,7 +23,7 @@ public class DishService {
                 .toList();
     }
 
-    public DishDTO getByDishDTOId(int id) {
+    public DishDTO getByDishDTOId(Integer id) {
         return dishRepository.findById(id)
                 .map(DishDTO::new)
                 .orElse(null);
@@ -43,7 +43,7 @@ public class DishService {
         return dishRepository.save(existing);
     }
 
-    public void deleteDish(int id) {
+    public void deleteDish(Integer id) {
         dishRepository.deleteById(id);
     }
 
