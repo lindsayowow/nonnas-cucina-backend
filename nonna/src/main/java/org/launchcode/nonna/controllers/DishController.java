@@ -23,7 +23,7 @@ public class DishController {
     }
 
     @GetMapping("/{id}")
-    public DishDTO getByDishDTOId(@PathVariable int id) {
+    public DishDTO getByDishDTOId(@PathVariable Integer id) {
         return dishService.getByDishDTOId(id);
     }
 
@@ -38,7 +38,7 @@ public class DishController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteDish(@PathVariable int id) {
+    public void deleteDish(@PathVariable Integer id) {
         dishService.deleteDish(id);
     }
 }

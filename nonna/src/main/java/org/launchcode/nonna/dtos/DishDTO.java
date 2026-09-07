@@ -11,7 +11,7 @@ import org.launchcode.nonna.models.Dish;
 @AllArgsConstructor
 public class DishDTO {
 
-    private int id;
+    private Integer id;
     private String dishName;
     private double dishCost;
     private boolean isFavorite;
