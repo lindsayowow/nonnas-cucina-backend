@@ -37,9 +37,7 @@ public class DishService {
         Dish existing = dishRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dish not found"));
 
-        // ⭐ Only allow updating the favorite flag
-        existing.setFavorite(updatedDish.isFavorite());
-
+        existing.setIsFavorite(updatedDish.getIsFavorite());
         return dishRepository.save(existing);
     }
 
@@ -47,7 +45,11 @@ public class DishService {
         dishRepository.deleteById(id);
     }
 
-    private DishDTO convertToDTO(Dish dish) {
-        return new DishDTO(dish);
+    public Dish updateFavorite(Integer dishId, Boolean isFavorite) {
+        Dish dish = dishRepository.findById(dishId)
+                .orElseThrow(() -> new RuntimeException("Dish not found: " + dishId));
+
+        dish.setIsFavorite(isFavorite);
+        return dishRepository.save(dish);
     }
 }

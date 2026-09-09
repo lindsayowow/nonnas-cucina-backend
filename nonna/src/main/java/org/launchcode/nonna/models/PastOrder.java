@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,5 +31,4 @@ public class PastOrder {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 }

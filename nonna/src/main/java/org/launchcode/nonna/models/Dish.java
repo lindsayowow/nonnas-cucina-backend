@@ -22,7 +22,7 @@ public class Dish {
 
     private String dishName;
     private double dishCost;
-    private boolean isFavorite;
+    private Boolean isFavorite = false;
 
     @OneToMany(mappedBy = "dish")
     @JsonIgnore
@@ -31,5 +31,4 @@ public class Dish {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private PastOrder pastOrder;
-
 }

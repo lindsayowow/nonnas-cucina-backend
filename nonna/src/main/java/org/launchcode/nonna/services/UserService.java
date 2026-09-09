@@ -1,5 +1,6 @@
 package org.launchcode.nonna.services;
 
+import org.launchcode.nonna.dtos.ProfileDTO;
 import org.launchcode.nonna.dtos.RegisterUserDTO;
 import org.launchcode.nonna.dtos.UserDTO;
 import org.launchcode.nonna.models.User;
@@ -81,4 +82,41 @@ public class UserService {
 
         return user;
     }
+
+    public ProfileDTO getByProfileDTOId(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        ProfileDTO dto = new ProfileDTO();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+
+        return dto;
+    }
+
+    public ProfileDTO updateProfileDTO(Integer id, ProfileDTO profileDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFirstName(profileDTO.getFirstName());
+        user.setLastName(profileDTO.getLastName());
+        user.setEmail(profileDTO.getEmail());
+        user.setPhoneNumber(profileDTO.getPhoneNumber());
+
+        userRepository.save(user);
+
+        ProfileDTO updated = new ProfileDTO();
+        updated.setId(user.getId());
+        updated.setFirstName(user.getFirstName());
+        updated.setLastName(user.getLastName());
+        updated.setEmail(user.getEmail());
+        updated.setPhoneNumber(user.getPhoneNumber());
+
+        return updated;
+    }
+
+
 }
