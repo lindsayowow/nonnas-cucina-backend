@@ -1,5 +1,6 @@
 package org.launchcode.nonna.controllers;
 
+import org.launchcode.nonna.dtos.ProfileDTO;
 import org.launchcode.nonna.dtos.RegisterUserDTO;
 import org.launchcode.nonna.dtos.UserDTO;
 import org.launchcode.nonna.models.User;
@@ -29,9 +30,19 @@ public class UserController {
         return userService.getByUserDTOId(id);
     }
 
+    @GetMapping("/profile/{id}")
+    public ProfileDTO getProfileDTOId(@PathVariable Integer id) {
+        return userService.getByProfileDTOId(id);
+    }
+
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Integer id, @RequestBody User user) {
         return userService.updateUser(id, user);
+    }
+
+    @PutMapping("/profile/{id}")
+    public ProfileDTO updateProfileDTO(@PathVariable Integer id, @RequestBody ProfileDTO profileDTO) {
+        return userService.updateProfileDTO(id, profileDTO);
     }
 
     @DeleteMapping("/{id}")
