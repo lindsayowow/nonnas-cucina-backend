@@ -27,6 +27,11 @@ public class PastOrderController {
         return pastOrderService.getByPastOrderDTOId(id);
     }
 
+    @GetMapping("/user/{userId}")
+    public List<PastOrderDTO> getOrdersByUser(@PathVariable Integer userId) {
+        return pastOrderService.getOrdersByUserId(userId);
+    }
+
     @PostMapping
     public PastOrder createPastOrder(@RequestBody PastOrder pastOrder) {
         return pastOrderService.savePastOrder(pastOrder);
@@ -41,5 +46,6 @@ public class PastOrderController {
     public void deletePastOrder(@PathVariable int id) {
         pastOrderService.deletePastOrder(id);
     }
+
 
 }

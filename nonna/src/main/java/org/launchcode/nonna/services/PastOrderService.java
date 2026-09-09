@@ -50,4 +50,14 @@ public class PastOrderService {
     private PastOrderDTO convertToDTO(PastOrder pastOrder) {
         return new PastOrderDTO(pastOrder);
     }
+
+    public List<PastOrderDTO> getOrdersByUserId(Integer userId) {
+        List<PastOrder> orders = pastOrderRepository.findByUserId(userId);
+
+        return orders.stream()
+                .map(PastOrderDTO::new)
+                .toList();
+    }
+
+
 }
