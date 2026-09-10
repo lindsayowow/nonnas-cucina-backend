@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Parisienne&family=Cormorant+Garamond:wght@400;500;600&display=swap');
+
+:root {
+  --brand-maroon: #7A1E1E;
+  --brand-maroon-dark: #5C1616;
+  --brand-maroon-light: #A33A3A;
+  --olive-dark: #40513B;
+  --olive-mid: #8A8635;
+  --olive-light: #C7C58A;
+  --sage-light: #E8F1DD;
+  --sage-lighter: #F4F8EE;
+  --sage-dark: #AFC9A1;
+  --surface-yellow: #FEFFD3;
+  --surface-cream: #FFFDF4;
+  --surface-white: #FFFFFF;
+  --neutral-900: #1A1A1A;
+  --neutral-700: #3D3D3D;
+  --neutral-500: #7A7A7A;
+  --neutral-300: #D9D9D9;
+  --neutral-100: #F3F3F3;
+
+  --color-header-bg: var(--brand-maroon);
+  --color-footer-bg: var(--olive-dark);
+  --color-body-bg: var(--surface-yellow);
+
+  --color-button-bg: var(--olive-dark);
+  --color-button-hover: var(--olive-mid);
+  --color-button-text: var(--surface-white);
+
+  --color-card-bg: var(--sage-light);
+  --color-card-border: var(--olive-dark);
+
+  --color-text-primary: var(--neutral-900);
+  --color-text-secondary: var(--neutral-700);
+  --color-text-inverse: var(--surface-white);
+
+  --fs-body: clamp(1rem, 2.5vw, 1.25rem);
+  --fs-h2: clamp(1.25rem, 3vw, 1.75rem);
+
+  --space-s: clamp(0.5rem, 1vw, 1rem);
+  --space-m: clamp(1rem, 2vw, 2rem);
+  --space-l: clamp(1.5rem, 3vw, 3rem);
+
+  --container-width: clamp(300px, 90vw, 700px);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--color-body-bg);
+  font-family: "Cormorant Garamond", Garamond, "Apple Garamond", "Palatino Linotype", Palatino, serif;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: var(--fs-body);
+}
+
+.nonna-font {
+  font-family: "Parisienne", "Brush Script MT", cursive;
+  letter-spacing: 1px;
+}
+
+h1 {
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-size: var(--fs-h2);
+}
+
+h2,
+h4 {
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-readable {
+  font-size: 1.15rem;
+  line-height: 1.4;
+  color: var(--neutral-900);
+}
+
+.btn {
+  background-color: var(--color-button-bg);
+  color: var(--color-button-text);
+  border: 1px solid var(--olive-dark);
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover {
+  background-color: var(--color-button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn:disabled {
+  color: white;
+}
+
+.card {
+  background-color: var(--color-card-bg);
+  border: 5px solid var(--color-card-border);
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.about-section {
+  width: 80%;
+  margin: 2rem auto;
+}
+
+input,
+textarea,
+select {
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--neutral-500);
+  opacity: 1;
+}
+
+label {
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: 1.1rem;
+  color: var(--neutral-900);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.error-message {
+  font-size: 0.95rem;
+  color: var(--brand-maroon-dark);
+  font-weight: 600;
+}

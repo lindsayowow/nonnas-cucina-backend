@@ -1,0 +1,90 @@
+/* grid layout, mobile */ 
+.foursquare-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-m);
+  margin: 20px auto 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
+}
+
+/* tablet: 2 columns */
+@media (min-width: 600px) {
+  .foursquare-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* desktop: 4 columns */
+@media (min-width: 1100px) {
+  .foursquare-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* card styling */
+.square {
+  padding: 8px 10px 10px 10px;
+  border: 5px solid var(--olive-dark);
+  border-radius: 8px;
+  text-align: center;
+  background-color: var(--color-card-bg);
+  box-sizing: border-box;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* icon */
+.icon {
+  font-size: 3.4rem;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+/* readable font: headings */
+.foursquare-grid.readable-font .square h4 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+/* readable font: text */
+.foursquare-grid.readable-font .square p:not(.icon) {
+  font-size: 1.05rem;
+  line-height: 1.45;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+/* tablet adjustments: 600–1099px */
+@media (min-width: 600px) and (max-width: 1099px) {
+  .foursquare-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 10px;
+  }
+
+  .square {
+    padding: 6px 8px 10px 8px;
+    border-width: 4px;
+    border-radius: 6px;
+    width: 90%;
+    margin: 0 auto;
+    word-wrap: break-word;
+  }
+
+  .icon {
+    font-size: 2.8rem;
+    margin-top: 0;
+    margin-bottom: 4px;
+  }
+
+  .foursquare-grid.readable-font .square h4 {
+    font-size: 1.15rem;
+  }
+
+  .foursquare-grid.readable-font .square p:not(.icon) {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+}

@@ -1,0 +1,51 @@
+/* filter container */
+.filterClass {
+  padding: 4px;
+  min-width: 0;
+}
+
+.filterClass h2 {
+  margin-bottom: 0.5rem;
+  padding: 6px 0;
+  text-align: center;
+}
+
+/* filter button group */
+.filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem 1rem;
+  padding: 0;
+}
+
+/* active filter button */
+.FilterButton.active {
+  background-color: black;
+  color: var(--color-text-inverse);
+  font-weight: bolder;
+  outline: 2px solid rgba(220, 120, 120, 0.70);
+}
+
+/* clear button wrapper */
+.clearButtons {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* clear button */
+.clearButton {
+  background-color: var(--color-button-hover);
+  border: var(--color-button-hover);
+  padding: 10px;
+  text-align: center;
+}
+
+/* clear button disabled */
+.clearButton:disabled {
+  background-color: var(--olive-light);
+  border: var(--olive-light);
+  color: white;
+  cursor: not-allowed;
+}

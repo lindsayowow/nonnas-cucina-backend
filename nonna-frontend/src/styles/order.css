@@ -1,0 +1,134 @@
+/* order page layout */
+.order-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* order card */
+.order {
+  width: 70vw;
+  height: 70vh;
+  min-width: 350px;
+  min-height: 350px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  font-size: x-large;
+  overflow-y: auto;
+}
+
+.order h2 {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+/* empty state */
+.emptyOrder {
+  text-align: center;
+}
+
+.clipboardEmoji {
+  font-size: 3rem;
+}
+
+/* active order list */
+.activeOrder {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.activeOrder li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+/* dish info block */
+.dishInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dishLine {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 1.15rem;
+}
+
+/* remove dish button */
+.removeDishButton {
+  all: unset;
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+  opacity: 0.55;
+  padding: 4px;
+  border-radius: 4px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.removeDishButton:hover {
+  opacity: 0.9;
+  transform: scale(1.15);
+}
+
+.removeDishButton:focus {
+  outline: 2px solid var(--olive-dark);
+  outline-offset: 2px;
+}
+
+.costSummary {
+  font-weight: bold;
+  text-align: center;
+}
+
+/* UPDATED FOR COLOR-BLIND ACCESSIBILITY + FULL BORDER + ROUNDED CORNERS + PINK BRAND COLOR */
+.kitchen-confirmation {
+  margin-top: 1rem;
+  padding: 0.75rem;
+
+  /* warm cream background for high contrast */
+  background-color: #FFFBEA;
+
+  /* high-contrast text */
+  color: var(--neutral-900);
+
+  /* NEW: full border using Nonna’s pink outline color */
+  border: 4px solid #f3d1b0;
+
+  /* rounded corners */
+  border-radius: 6px;
+
+  font-weight: 600;
+  text-align: center;
+}
+
+.order button {
+  display: block;
+  margin: 0.75rem auto 0 auto;
+}
+
+/* mobile layout */
+@media (max-width: 600px) {
+  .order {
+    width: 90vw;
+    height: auto;
+    min-height: 350px;
+  }
+}
+
+.btn.OrderButton:disabled {
+  color: white;
+}
