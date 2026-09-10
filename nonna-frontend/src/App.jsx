@@ -6,10 +6,10 @@ import BuildADish from "./pages/BuildADish";
 import Order from "./pages/Order";
 import About from "./pages/About";
 import Favorites from "./pages/Favorites";
-import Profile from "./pages/Profile";
+import Auth from "./pages/Auth";
 
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "./components/template/Header";
+import Footer from "./components/template/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 
 import { DishBuilderProvider } from "./context/DishBuilderContext";
@@ -30,7 +30,7 @@ export default function App() {
             <Route path="/cart" element={<Order />} />
             <Route path="/about" element={<About />} />
             <Route path="/favorites" element={<Favorites />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/auth" element={<Auth />} />
           </Routes>
         </main>
 

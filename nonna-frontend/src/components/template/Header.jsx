@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../styles/header.css';
 import nonnasLogo from '../assets/Nonnas_Logo.png';
-import { useDishBuilderContext } from "../context/DishBuilderContext";
+import { useDishBuilderContext } from "../../context/DishBuilderContext";
 
 export default function Header() {
   const { yourOrder } = useDishBuilderContext();
@@ -45,7 +45,8 @@ export default function Header() {
         <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
         <NavLink to="/buildadish" onClick={() => setOpen(false)}>Build a Dish</NavLink>
         <NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink>
-        <NavLink to="/profile" onClick={() => setOpen(false)}>👤︎</NavLink>
+        {/* <NavLink to="/profile" onClick={() => setOpen(false)}>👤︎</NavLink> */}
+        <NavLink to="/auth" onClick={() => setOpen(false)}>👤︎</NavLink>
         <NavLink to="/favorites" onClick={() => setOpen(false)}>♡</NavLink>
         
         <NavLink
