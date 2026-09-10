@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import BuildADish from "./pages/BuildADish";
 import Order from "./pages/Order";
 import About from "./pages/About";
+import Favorites from "./pages/Favorites";
+import Profile from "./pages/Profile";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -27,10 +29,13 @@ export default function App() {
             <Route path="/buildadish" element={<BuildADish />} />
             <Route path="/cart" element={<Order />} />
             <Route path="/about" element={<About />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
 
         <Footer />
+
       </DishBuilderProvider>
     </div>
   );
