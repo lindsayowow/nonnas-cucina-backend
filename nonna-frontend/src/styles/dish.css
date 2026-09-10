@@ -1,0 +1,161 @@
+/* tablet + desktop min-height */
+@media (min-width: 700px) {
+  .card.dish {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* dish container */
+.dish {
+  min-width: 225px;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+}
+
+/* dish content layout */
+.dish-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 0.5rem;
+}
+
+/* empty state */
+.empty {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* dish emoji */
+.dishEmoji {
+  font-size: 3rem;
+}
+
+/* selected ingredients list */
+.activeIngredientsSelected {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.activeIngredientsSelected li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+  gap: 0.5rem;
+}
+
+/* ingredient text + emoji */
+.ingredientText {
+  flex: 1;
+  text-align: left;
+  padding-right: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ingredientEmoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ingredient list spacing */
+.dish ul {
+  margin-left: 0;
+  padding-left: 0.1rem;
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .dish ul {
+    padding-left: 0.2rem;
+  }
+}
+
+/* ingredient list typography */
+.dish ul,
+.dish li {
+  font-family: var(--readable-font);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+/* dish total section */
+.dishTotal {
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--olive-dark);
+}
+
+/* dish action button */
+.dish button {
+  display: block;
+  margin: 0.75rem auto 0 auto;
+}
+
+/* remove ingredient button */
+.removeIngredientButton {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0.55;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.removeIngredientButton:hover {
+  transform: scale(1.15);
+  opacity: 0.9;
+}
+
+/* dish button states */
+.card.dish .btn:not(:disabled) {
+  background-color: var(--olive-dark) !important;
+  color: white !important;
+  border: 2px solid var(--olive-dark) !important;
+}
+
+.card.dish .btn:disabled {
+  background-color: var(--olive-light) !important;
+  color: white !important;
+  border: 2px solid var(--olive-light) !important;
+  cursor: not-allowed;
+  opacity: 0.95;
+}
+
+.card.dish .btn:disabled:hover {
+  background-color: var(--olive-light) !important;
+  color: white !important;
+  border-color: var(--olive-light) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* mobile styling */
+@media (max-width: 699px) {
+  .card.dish {
+    min-height: 0 !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  .dish-content {
+    flex: none !important;
+    display: block !important;
+    padding-top: 0.25rem;
+  }
+
+  .empty {
+    margin-top: 0.25rem !important;
+  }
+}

@@ -1,0 +1,131 @@
+.ingredientClass {
+  min-width: 0;
+  margin-bottom: 1.5rem;
+}
+
+.ingredientClass h2 {
+  margin-bottom: 0.5rem;
+  padding: 6px 0;
+}
+
+button.IngredientButton {
+  transition: all 0.2s ease-in-out;
+}
+
+button.IngredientButton.selected {
+  background-color: black !important;
+  color: var(--color-text-inverse) !important;
+  font-weight: bolder;
+  outline: 2px solid rgba(220, 120, 120, 0.70);
+}
+
+button.IngredientButton.is-disabled {
+  background-color: var(--sage-lighter);
+  color: var(--neutral-300) !important;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+button.IngredientButton.is-disabled .emoji {
+  opacity: 0.5;
+}
+
+/* ingredient action row */
+.ingredient-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* build action button */
+button.build-action-button {
+  background-color: var(--color-button-hover);
+  border: 2px solid var(--color-button-hover);
+  padding: 10px;
+  margin-top: 1rem;
+  color: var(--color-button-text);
+}
+
+/* build action hover */
+button.build-action-button:hover {
+  background-color: var(--color-button-hover);
+  border-color: var(--color-button-hover);
+  transform: none;
+  box-shadow: none;
+}
+
+/* build action disabled */
+button.build-action-button:disabled {
+  background-color: var(--olive-light);
+  border: 2px solid var(--neutral-900);
+  padding: 10px;
+  margin-top: 1rem;
+  color: var(--neutral-300) !important;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+button.build-action-button:disabled:hover {
+  background-color: var(--olive-light);
+  border-color: var(--olive-light);
+  color: var(--neutral-500) !important;
+  box-shadow: none;
+  transform: none;
+}
+
+/* confirmation message */
+.confirmation-message {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: var(--olive-mid);
+  color: var(--neutral-900);
+  border-left: 4px solid var(--olive-dark);
+  font-weight: 600;
+  text-align: center;
+  border-radius: 4px;
+  opacity: 1;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.confirmation-message.fade-out {
+  opacity: 0;
+}
+
+/* ingredient button grid */
+.ingredientButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+/* enabled button text color */
+button.ClearIngredientsButton:not(:disabled),
+button.DishButton:not(:disabled),
+button.build-action-button:not(:disabled) {
+  color: black !important;
+}
+
+/* disabled button shared state */
+button.ClearIngredientsButton:disabled,
+button.DishButton:disabled,
+button.build-action-button:disabled {
+  background-color: var(--olive-light) !important;
+  color: white !important;
+  border-color: var(--olive-light) !important;
+  cursor: not-allowed;
+  opacity: 0.95;
+}
+
+button.ClearIngredientsButton:disabled:hover,
+button.DishButton:disabled:hover,
+button.build-action-button:disabled:hover {
+  background-color: var(--olive-light) !important;
+  color: white !important;
+  border-color: var(--olive-light) !important;
+  transform: none;
+  box-shadow: none;
+}

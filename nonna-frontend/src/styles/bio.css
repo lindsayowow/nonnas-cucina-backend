@@ -1,0 +1,37 @@
+
+/* BIO CONTAINER                          */
+.bio {
+  margin: 2rem 0;
+  width: 100%;
+}
+
+/* Inner wrapper to match form width */
+.bio-inner {
+  width: 90%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* BIO HEADER                             */
+.bio h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* PROFILE IMAGE                          */
+.proPic {
+  display: block;
+  margin: 0 auto 1.25rem auto;
+  border-radius: 12%;
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+}
+
+/* BUTTON ROW                             */
+.bioButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}

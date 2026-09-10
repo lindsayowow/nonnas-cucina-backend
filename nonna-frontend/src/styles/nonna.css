@@ -1,0 +1,115 @@
+/* nonna layout (desktop/tablet) */
+@media (min-width: 700px) {
+  .card.nonna {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+/* nonna image */
+.nonna-image {
+  display: block;
+  margin: 0 auto;
+  border-radius: 12%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.nonna-image--shake {
+  animation: nonna-shake 1s ease;
+}
+
+/* shake animation */
+@keyframes nonna-shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+/* image wrapper */
+.nonna-image-wrapper {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* speech bubble wrapper */
+.nonna-speech-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  margin-bottom: 1rem;
+}
+
+/* speech bubble */
+.nonna-speech-bubble {
+  position: relative;
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px 20px;
+  max-width: 220px;
+  min-height: 90px;
+
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: #333;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 3px solid #f3d1b0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* speech bubble tail */
+.nonna-speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 18px solid #fff;
+  filter: drop-shadow(0 -2px 0 #f3d1b0);
+}
+
+/* warning background */
+.card.nonna.nonna--warning {
+  background-color: #ffe4ec;
+  transition: background-color 0.5s ease;
+}
+
+/* cart message */
+.nonna-cart-message {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--neutral-900);
+  background-color: var(--olive-light);
+  padding: 0.5rem 0.75rem;
+  border: 4px solid var(--olive-dark);
+  border-radius: 6px;
+}
+
+.nonna-cart-link {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.nonna-cart-link:hover {
+  text-decoration-thickness: 2px;
+}
