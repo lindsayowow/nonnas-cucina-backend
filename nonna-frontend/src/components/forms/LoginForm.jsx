@@ -7,7 +7,6 @@ export default function LoginForm({ setToken, switchToRegister }) {
 
     async function handleLogin(e) {
         e.preventDefault();
-        console.log("LOGIN SUBMITTED");
         const payload = {
             email,
             password
@@ -59,7 +58,6 @@ export default function LoginForm({ setToken, switchToRegister }) {
                     required
                     onChange={e => setPassword(e.target.value)}
                 />
-                <p>DEBUG isIncomplete: {isIncomplete ? "true" : "false"}</p>
 
                 <AuthButton
                     type="submit"
