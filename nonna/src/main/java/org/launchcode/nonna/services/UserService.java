@@ -44,8 +44,8 @@ public class UserService {
         existing.setLastName(updatedUser.getLastName());
         existing.setPhoneNumber(updatedUser.getPhoneNumber());
 
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-            existing.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        if (updatedUser.getPasswordHash() != null && !updatedUser.getPasswordHash().isBlank()) {
+            existing.setPasswordHash(passwordEncoder.encode(updatedUser.getPasswordHash()));
         }
 
         return userRepository.save(existing);
@@ -66,7 +66,7 @@ public class UserService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
 
         User saved = userRepository.save(user);
         return new UserDTO(saved);
@@ -76,7 +76,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new RuntimeException("Invalid email or password");
         }
 
