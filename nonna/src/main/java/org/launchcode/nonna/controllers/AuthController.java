@@ -25,10 +25,9 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
         try {
             User user = userService.validateLogin(dto.getEmail(), dto.getPassword());
-            String token = jwtUtil.generateToken(user.getEmail());
+            String token = jwtUtil.generateToken(user.getId(), user.getEmail());
             return ResponseEntity.ok(Map.of("token", token));
         } catch (RuntimeException e) {
-            // Return JSON error instead of plain text
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }

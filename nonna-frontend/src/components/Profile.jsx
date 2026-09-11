@@ -5,11 +5,10 @@ export default function Profile({ token, setToken }) {
   const [user, setUser] = useState(null);
   const [editing, setEditing] = useState(false);
 
-  // Decode JWT to extract user ID
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.userId || payload.id || payload.sub; 
+      return payload.sub;   // <-- now the numeric userId
     } catch (err) {
       console.error("Invalid token", err);
       return null;
@@ -18,7 +17,6 @@ export default function Profile({ token, setToken }) {
 
   const userId = getUserIdFromToken(token);
 
-  // Fetch user info from backend
   useEffect(() => {
     async function fetchUser() {
       try {
