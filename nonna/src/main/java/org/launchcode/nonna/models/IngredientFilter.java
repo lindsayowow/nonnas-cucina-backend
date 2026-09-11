@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "ingredientFilters")
+@Table(name = "ingredient_filters")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,12 +16,11 @@ public class IngredientFilter {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ingredient_id")
     private Ingredient ingredient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "filter_id")
     private Filter filter;
-
 }

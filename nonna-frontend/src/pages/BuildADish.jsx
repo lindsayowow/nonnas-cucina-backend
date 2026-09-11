@@ -6,8 +6,9 @@ import Filters from '../components/Filters.jsx';
 import Ingredients from '../components/Ingredients.jsx';
 import Dish from '../components/Dish.jsx';
 
-import { DietaryFilters, Categories } from '../utils/constants.js';
+import { DietaryFilters } from '../utils/constants.js';
 import { useDishBuilderContext } from "../context/DishBuilderContext";
+import useCategories from "../hooks/useCategories";
 
 export default function BuildADish() {
   const {
@@ -26,7 +27,12 @@ export default function BuildADish() {
     addDishAndReset
   } = useDishBuilderContext();
 
+  const { categories, loading: categoriesLoading } = useCategories();
   const filtersRef = useRef(null);
+
+  if (categoriesLoading) {
+    return <p>Loading categories...</p>;
+  }
 
   return (
     // main landmark for the Build a Dish page
@@ -53,7 +59,7 @@ export default function BuildADish() {
         <Ingredients
           selectedFilters={selectedFilters}
           selectedIngredients={selectedIngredients}
-          Categories={Categories}
+          Categories={categories}
           onSelectedCategory={setSelectedCategory}
           onToggleIngredient={toggleIngredient}
           clearIngredients={clearIngredients}
