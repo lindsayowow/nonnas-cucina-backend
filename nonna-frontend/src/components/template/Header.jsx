@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import '../styles/header.css';
-import nonnasLogo from '../assets/Nonnas_Logo.png';
+import '../../styles/header.css';
+import nonnasLogo from '../../assets/Nonnas_Logo.png';
 import { useDishBuilderContext } from "../../context/DishBuilderContext";
 
 export default function Header() {

@@ -28,16 +28,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        System.out.println("DEBUG SECURITY CONFIG → SecurityFilterChain LOADED");
-
-        http
+               http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(jwtProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/users/register").permitAll()
+                        .requestMatchers("/auth/login", "/users/register",
+                                "/ingredients/**",
+                                "/filters/**",
+                                "/categories/**",
+                                "/dishes/**").permitAll()
                         .requestMatchers("/orders/**").authenticated()   //  REQUIRED
-                        .requestMatchers("/dishes/**").authenticated()   // optional but recommended
+//                        .requestMatchers("/dishes/**").authenticated()   // will update later once working.
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

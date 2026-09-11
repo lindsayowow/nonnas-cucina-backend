@@ -10,7 +10,7 @@ import Auth from "./pages/Auth";
 
 import Header from "./components/template/Header";
 import Footer from "./components/template/Footer";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/template/ScrollToTop";
 
 import { DishBuilderProvider } from "./context/DishBuilderContext";
 

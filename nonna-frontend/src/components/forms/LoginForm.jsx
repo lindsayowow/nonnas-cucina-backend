@@ -7,9 +7,9 @@ export default function LoginForm({ setToken, switchToRegister }) {
 
     async function handleLogin(e) {
         e.preventDefault();
-
+        console.log("LOGIN SUBMITTED");
         const payload = {
-            username: email, // backend expects "username"
+            email,
             password
         };
 
@@ -19,13 +19,21 @@ export default function LoginForm({ setToken, switchToRegister }) {
             body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            const text = await response.text();
+            alert(text);
+            return;
+        }
 
-        if (data.token) {
+        if (response.ok && data.token) {
             setToken(data.token);
         } else {
-            alert("Invalid login.");
+            alert(data.error || "Invalid login.");
         }
+
     }
 
     const isIncomplete =
@@ -51,6 +59,7 @@ export default function LoginForm({ setToken, switchToRegister }) {
                     required
                     onChange={e => setPassword(e.target.value)}
                 />
+                <p>DEBUG isIncomplete: {isIncomplete ? "true" : "false"}</p>
 
                 <AuthButton
                     type="submit"

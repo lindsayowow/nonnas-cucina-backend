@@ -1,6 +1,6 @@
 import React from "react";
 import Bio from "../components/Bio";
-import Form from "../components/Form";
+import Form from "../components/forms/Form";
 import "../styles/about.css";
 
 export default function About() {

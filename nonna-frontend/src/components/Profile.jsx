@@ -1,19 +1,88 @@
-import React from "react";
+import { useState, useEffect } from "react";
+import AuthButton from "./buttons/AuthButton";
 
 export default function Profile({ token, setToken }) {
+  const [user, setUser] = useState(null);
+  const [editing, setEditing] = useState(false);
+
+  // Decode JWT to extract user ID
+  function getUserIdFromToken(token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.userId || payload.id || payload.sub; 
+    } catch (err) {
+      console.error("Invalid token", err);
+      return null;
+    }
+  }
+
+  const userId = getUserIdFromToken(token);
+
+  // Fetch user info from backend
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          console.error("Failed to fetch user");
+        }
+      } catch (err) {
+        console.error("Error fetching user", err);
+      }
+    }
+
+    if (userId) {
+      fetchUser();
+    }
+  }, [userId, token]);
 
   function logout() {
     localStorage.removeItem("token");
     setToken(null);
   }
 
+  if (!user) {
+    return <p>Loading profile...</p>;
+  }
+
   return (
     <div className="profile-view">
       <h2>My Profile</h2>
 
-      <p>You are logged in.</p>
+      {!editing && (
+        <>
+          <p><strong>First Name:</strong> {user.firstName}</p>
+          <p><strong>Last Name:</strong> {user.lastName}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Phone Number:</strong> {user.phoneNumber}</p>
 
-      <button onClick={logout}>Logout</button>
+          <AuthButton onClick={() => setEditing(true)}>
+            Edit Profile
+          </AuthButton>
+
+          <AuthButton onClick={logout}>
+            Logout
+          </AuthButton>
+        </>
+      )}
+
+      {editing && (
+        <>
+          <p>Edit mode coming soon…</p>
+
+          <AuthButton onClick={() => setEditing(false)}>
+            Cancel
+          </AuthButton>
+        </>
+      )}
     </div>
   );
 }

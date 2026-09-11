@@ -7,6 +7,8 @@ import org.launchcode.nonna.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -21,11 +23,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
-
-        User user = userService.validateLogin(dto.getEmail(), dto.getPassword());
-
-        String token = jwtUtil.generateToken(user.getEmail());
-
-        return ResponseEntity.ok(token);
+        try {
+            User user = userService.validateLogin(dto.getEmail(), dto.getPassword());
+            String token = jwtUtil.generateToken(user.getEmail());
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (RuntimeException e) {
+            // Return JSON error instead of plain text
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

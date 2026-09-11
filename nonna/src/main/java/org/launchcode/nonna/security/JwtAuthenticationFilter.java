@@ -25,14 +25,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                    UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
-        System.out.println("DEBUG → JwtAuthenticationFilter constructor CALLED");
-    }
+        }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         boolean skip = path.equals("/auth/login") || path.equals("/users/register");
-        System.out.println("DEBUG JWT FILTER → path=" + path + " skip=" + skip);
         return skip;
     }
 

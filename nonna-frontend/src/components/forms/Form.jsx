@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/form.css';
+import '../../styles/form.css';
 
 export default function Form() {
   const [formData, setFormData] = useState({
@@ -21,7 +21,7 @@ export default function Form() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
-    setFormData({ name: "", email: "" });
+    setFormData({ name: "", email: "", feedback: "" });
   };
 
   const email = formData.email.trim();
@@ -30,7 +30,8 @@ export default function Form() {
   // Validation script to submit form
   const isIncomplete =
     formData.name.trim().length < 3 ||
-    !validEmail;
+    !validEmail ||
+    formData.feedback.trim().length < 50;
 
   const nameHasError =
     formData.name.trim().length > 0 &&
@@ -39,6 +40,10 @@ export default function Form() {
   const emailHasError =
     formData.email.trim().length > 0 &&
     !validEmail;
+
+  const feedbackHasError =
+    formData.feedback.trim().length > 0 &&
+    formData.feedback.trim().length < 50;
 
   return (
     <section
@@ -89,7 +94,27 @@ export default function Form() {
             Please enter a valid email.
           </p>
         )}
-        
+
+        {/* MESSAGE */}
+        <label htmlFor="feedback">Message:*</label>
+        <textarea
+          id="feedback"
+          name="feedback"
+          maxLength="200"
+          placeholder="What's on your mind?"
+          value={formData.feedback}
+          onChange={handleChange}
+          required
+          aria-required="true"
+          aria-invalid={feedbackHasError}
+          aria-describedby={feedbackHasError ? "feedback-error" : undefined}
+        />
+        {feedbackHasError && (
+          <p id="feedback-error" className="inputError">
+            Minimum characters: {formData.feedback.length}/50
+          </p>
+        )}
+
         <button
           type="submit"
           className="btn"
