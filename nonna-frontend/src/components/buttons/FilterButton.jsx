@@ -8,17 +8,17 @@ export default function FilterButton({
   return (
     <div className="filterButtons">
       {DietaryFilters.map((filter) => {
-        const isActive = selectedFilters.includes(filter);
+        // filter.id is the unique identifier
+        const isActive = selectedFilters.includes(filter.id);
 
         return (
           <button
-            key={filter}
-            // Example of event handler
-            onClick={() => onToggleFilter(filter)}
+            key={filter.id}
+            onClick={() => onToggleFilter(filter.id)}   // toggle by ID
             className={`btn FilterButton ${isActive ? "active" : ""}`}
             aria-pressed={isActive}
           >
-            {filter}
+            {filter.filterLabel}   {/* show readable label */}
           </button>
         );
       })}
