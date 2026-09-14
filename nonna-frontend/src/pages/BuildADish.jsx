@@ -8,6 +8,7 @@ import Dish from '../components/Dish.jsx';
 
 import { DietaryFilters } from '../utils/constants.js';
 import { useDishBuilderContext } from "../context/DishBuilderContext";
+import useFilters from "../hooks/useFilters";
 import useCategories from "../hooks/useCategories";
 
 export default function BuildADish() {
@@ -28,6 +29,7 @@ export default function BuildADish() {
   } = useDishBuilderContext();
 
   const { categories, loading: categoriesLoading } = useCategories();
+  const { filters, loading: filtersLoading } = useFilters();
   const filtersRef = useRef(null);
 
   if (categoriesLoading) {
@@ -49,7 +51,7 @@ export default function BuildADish() {
       <div className="section-1" role="region" aria-label="Filters and ingredients">
         <div ref={filtersRef}>
           <Filters
-            DietaryFilters={DietaryFilters}
+            DietaryFilters={filters}
             selectedFilters={selectedFilters}
             onToggleFilter={toggleFilter}
             clearFilter={clearFilter}

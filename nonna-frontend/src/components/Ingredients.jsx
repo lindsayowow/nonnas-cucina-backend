@@ -5,11 +5,11 @@ import IngredientButton from './buttons/IngredientButton.jsx';
 import ClearIngredientsButton from './buttons/ClearIngredientsButton.jsx';
 import DishButton from "./buttons/DishButton.jsx";
 
-import { inversionList, filterMap } from '../utils/constants.js';
+import useFilters from "../hooks/useFilters";
 import useIngredients from "../hooks/useIngredients";
 
 export default function Ingredients({
-  Categories,               // now backend categories
+  Categories,
   selectedFilters,
   selectedIngredients,
   onToggleIngredient,
@@ -22,6 +22,7 @@ export default function Ingredients({
 }) {
 
   const { ingredients, loading } = useIngredients();
+  const { filters } = useFilters();
 
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [fadeOut, setFadeOut] = useState(false);
@@ -81,13 +82,18 @@ export default function Ingredients({
                 ingredient.categoryIds.includes(Category.id)
               )
               .map((ingredient) => {
-                const disabled = selectedFilters.some((filter) => {
-                  const property = filterMap[filter];
-                  const isInverted = inversionList.includes(filter);
-                  return isInverted
-                    ? ingredient[property] === true
-                    : ingredient[property] === false;
+
+                const disabled = selectedFilters.some((filterId) => {
+                  const filterObj = filters.find(f => f.id === filterId);
+                  if (!filterObj) return false;
+
+                  const isAllergenExclusion = filterObj.excludesAllergen === 1;
+
+                  return isAllergenExclusion
+                    ? ingredient.filterIds.includes(filterObj.id)      // ingredient HAS allergen → disable
+                    : !ingredient.filterIds.includes(filterObj.id);    // ingredient LACKS property → disable
                 });
+
 
                 const isSelected = selectedIngredients.some(
                   (item) => item.name === ingredient.ingredientName
