@@ -13,18 +13,17 @@ import java.util.List;
 @Table(name = "dishes")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Dish {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String dishName;
     private double dishCost;
     private Boolean isFavorite = false;
 
-    @OneToMany(mappedBy = "dish")
+    // Cascade and orphan ensure full line is deleted when a dish is deleted, including the join table entries
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<DishIngredient> dishIngredients = new ArrayList<>();
 
