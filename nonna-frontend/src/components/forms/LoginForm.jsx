@@ -7,10 +7,8 @@ export default function LoginForm({ setToken, switchToRegister }) {
 
     async function handleLogin(e) {
         e.preventDefault();
-        const payload = {
-            email,
-            password
-        };
+
+        const payload = { email, password };
 
         const response = await fetch("http://localhost:8080/auth/login", {
             method: "POST",
@@ -28,11 +26,10 @@ export default function LoginForm({ setToken, switchToRegister }) {
         }
 
         if (response.ok && data.token) {
-            setToken(data.token);
+            setToken(data.token);   //  sends token to Auth.jsx → App.jsx
         } else {
             alert(data.error || "Invalid login.");
         }
-
     }
 
     const isIncomplete =
