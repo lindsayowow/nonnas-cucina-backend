@@ -1,38 +1,69 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Profile from "../components/Profile";
 import LoginForm from "../components/forms/LoginForm";
-import RegisterForm from "../components/forms/RegisterForm";        
-// import "../styles/auth.css";
+import RegisterForm from "../components/forms/RegisterForm";
 
-export default function Auth() {
-  const [authMode, setAuthMode] = useState("login"); 
-  const [token, setToken] = useState(localStorage.getItem("token"));
+export default function Auth({ setToken }) {
+  const [authMode, setAuthMode] = useState("login");
+  const [localToken, setLocalToken] = useState(localStorage.getItem("token"));
 
-  // When token changes, update localStorage
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
+  // Decode token safely
+  function decodeToken(token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload;
+    } catch (err) {
+      console.error("Invalid token", err);
+      return null;
     }
-  }, [token]);
+  }
 
-  // If logged in, always show profile
-  if (token) {
-    return <Profile token={token} setToken={setToken} />;
+  // Check expiration on first load
+  useEffect(() => {
+    if (!localToken) return;
+
+    const decoded = decodeToken(localToken);
+    if (!decoded || !decoded.exp) {
+      localStorage.removeItem("token");
+      setLocalToken(null);
+      setToken(null);
+      return;
+    }
+
+    const isExpired = decoded.exp * 1000 < Date.now();
+    if (isExpired) {
+      console.log("Token expired — logging out");
+      localStorage.removeItem("token");
+      setLocalToken(null);
+      setToken(null);
+    }
+  }, []);
+
+  // When token changes, update localStorage + send to App.jsx
+  useEffect(() => {
+    if (localToken) {
+      localStorage.setItem("token", localToken);
+      setToken(localToken);   // send token to App.jsx
+    }
+  }, [localToken]);
+
+  // If logged in, show profile
+  if (localToken) {
+    return <Profile token={localToken} setToken={setLocalToken} />;
   }
 
   // If not logged in, show login or register
   return (
     <section className="auth-container">
       {authMode === "login" && (
-        <LoginForm 
-          setToken={setToken}
+        <LoginForm
+          setToken={setLocalToken}   // ⭐ LoginForm sets localToken → bubbles to App.jsx
           switchToRegister={() => setAuthMode("register")}
         />
       )}
 
       {authMode === "register" && (
-        <RegisterForm 
+        <RegisterForm
           switchToLogin={() => setAuthMode("login")}
         />
       )}

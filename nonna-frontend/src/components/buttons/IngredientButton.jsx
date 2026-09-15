@@ -13,6 +13,7 @@ export default function IngredientButton({
       return;
     }
 
+    // Pass the full ingredient object including id
     onToggleIngredient(ingredient);
   };
 
@@ -21,12 +22,12 @@ export default function IngredientButton({
       className={`btn IngredientButton 
         ${disabled ? "is-disabled" : ""} 
         ${isSelected ? "selected" : ""}`}
-        // Example of user interaction causing update to state - selectedIngredients updates
       onClick={handleClick}
-      aria-pressed={isSelected} /*accessibility feature for screen readers*/
+      aria-pressed={isSelected}
       aria-disabled={disabled}
     >
-      <span className="emoji" aria-hidden="true">{ingredient.emoji}</span> {ingredient.name}
+      <span className="emoji" aria-hidden="true">{ingredient.emoji}</span>
+      {ingredient.name}
     </button>
   );
 }

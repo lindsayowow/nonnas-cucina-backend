@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../../styles/header.css';
 import nonnasLogo from '../../assets/Nonnas_Logo.png';
-import useDishBuilderContext from "../hooks/useDishBuilderContext";
+import useDishBuilderContext from "../../hooks/useDishBuilderContext";
+import { DishBuilderContext } from "../../context/DishBuilderContextObject";
+
 
 export default function Header() {
   const { yourOrder } = useDishBuilderContext();

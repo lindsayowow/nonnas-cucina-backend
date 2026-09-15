@@ -7,6 +7,7 @@ import Ingredients from '../components/Ingredients.jsx';
 import Dish from '../components/Dish.jsx';
 
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
+import { DishBuilderContext } from "../context/DishBuilderContextObject";
 import useFilters from "../hooks/useFilters";
 import useCategories from "../hooks/useCategories";
 

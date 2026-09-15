@@ -90,10 +90,9 @@ export default function Ingredients({
                   const isAllergenExclusion = filterObj.excludesAllergen === 1;
 
                   return isAllergenExclusion
-                    ? ingredient.filterIds.includes(filterObj.id)      // ingredient HAS allergen → disable
-                    : !ingredient.filterIds.includes(filterObj.id);    // ingredient LACKS property → disable
+                    ? ingredient.filterIds.includes(filterObj.id)
+                    : !ingredient.filterIds.includes(filterObj.id);
                 });
-
 
                 const isSelected = selectedIngredients.some(
                   (item) => item.name === ingredient.ingredientName
@@ -103,6 +102,7 @@ export default function Ingredients({
                   <IngredientButton
                     key={ingredient.id}
                     ingredient={{
+                      id: ingredient.id,                // ⭐ FIXED: include ID
                       name: ingredient.ingredientName,
                       price: ingredient.ingredientCost,
                       emoji: ingredient.emoji

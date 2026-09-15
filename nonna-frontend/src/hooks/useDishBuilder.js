@@ -1,15 +1,24 @@
 import { useState } from "react";
 
 export default function useDishBuilder() {
-  // Example of use of hooks
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [yourOrder, setYourOrder] = useState([]);
   const [showNonnaWarning, setShowNonnaWarning] = useState(false);
-  // const [nonnaWarning, setNonnaWarning] = useState(false); // future use
 
-  // Adds or removes filter from array
+  // Decode JWT and extract userId (sub)
+  function getUserIdFromToken(token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.sub;  // numeric userId
+    } catch (err) {
+      console.error("Invalid token", err);
+      return null;
+    }
+  }
+
+  // Toggle ingredient filters
   function toggleFilter(filter) {
     setSelectedFilters(prev =>
       prev.includes(filter)
@@ -18,7 +27,7 @@ export default function useDishBuilder() {
     );
   }
 
-  // Adds or removes ingredient from array
+  // Toggle ingredient selection
   function toggleIngredient(ingredient) {
     setSelectedIngredients(prev =>
       prev.some(item => item.name === ingredient.name)
@@ -27,27 +36,18 @@ export default function useDishBuilder() {
     );
   }
 
-  // adds the total cost of one dish
+  // Calculate dish price
   const totalPrice = selectedIngredients.reduce(
     (sum, ingredient) => sum + (ingredient.price || 0),
     0
   );
 
-// Removing as no longer needed, dish id assigned by back end 
-  // gives the dish name a number for the order page
-  // function getNextDishId() {
-  //   if (yourOrder.length === 0) return 1;
-  //   return yourOrder[yourOrder.length - 1].id + 1;
-  // }
-
-  // creates the dish object to display in order screen and pass props
+  // Add dish to order
   function updateOrder() {
     const newDish = {
-      // id: getNextDishId(), - now comes from back end
       ingredients: selectedIngredients,
       totalCost: totalPrice
     };
-
 
     setYourOrder(prev => [...prev, newDish]);
     setSelectedIngredients([]);
@@ -55,78 +55,81 @@ export default function useDishBuilder() {
     return newDish;
   }
 
-  // adds total cost of the order - all the dishes
+  // Calculate total order cost
   const total = yourOrder.reduce((sum, item) => {
     return sum + (item.totalCost || 0);
   }, 0);
 
-  // currency formatting
   const grandTotal = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD"
   }).format(total);
 
-  // replaced with backend version.
-  // when order is sent to kitchen all arrays reset
-  // function sendToKitchen() {
-  //   setYourOrder([]);
-  //   setSelectedIngredients([]);
-  //   setSelectedFilters([]);
-  // }
+  // Send order to backend
+  async function sendToKitchen(token) {
+    const userId = getUserIdFromToken(token);
+console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
 
-  async function sendToKitchen() {
-  const orderDTO = {
-    userId: 7, // replace with logged-in user ID
-    dishes: yourOrder.map(dish => ({
-      dishCost: dish.totalCost,
-      ingredients: dish.ingredients.map(i => i.id)
-    }))
-  };
+    if (!userId) {
+      console.error("No valid userId found in token");
+      return;
+    }
 
-  await fetch("http://localhost:8080/orders", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(orderDTO)
-  });
+    console.log("yourOrder:", yourOrder);
+    console.log("TOKEN:", token);
+    // above line is temporary for testing. 
 
-  // Clear UI after successful submission
-  setYourOrder([]);
-  setSelectedIngredients([]);
-  setSelectedFilters([]);
-}
+    const orderDTO = {
+      userId: userId,
+      dishes: yourOrder.map(dish => ({
+        dishCost: dish.totalCost,
+        ingredients: dish.ingredients.map(i => i.id)
+      }))
+    };
 
+    const response = await fetch("http://localhost:8080/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(orderDTO)
+    });
 
-  // resets only filters
+    if (!response.ok) {
+      console.error("Order failed:", response.status);
+      return;
+    }
+
+    // Clear UI only after successful submission
+    setYourOrder([]);
+    setSelectedIngredients([]);
+    setSelectedFilters([]);
+  }
+
+  // Clear filters
   function clearFilter() {
     setSelectedFilters([]);
   }
 
-  // resets only ingredients
+  // Clear ingredients
   function clearIngredients() {
     setSelectedIngredients([]);
   }
 
-  // removes one ingredient from the array
+  // Remove ingredient
   function removeIngredient(ingredient) {
     setSelectedIngredients(prev =>
       prev.filter(item => item.name !== ingredient.name)
     );
   }
 
-  // updated with code referencing the back end
-  // removes one dish from the array
-  // function removeDish(dish) {
-  //   setYourOrder(prev =>
-  //     prev.filter(item => item.id !== dish.id)
-  //   );
-  // }
-
+  // Remove dish
   function removeDish(dish) {
-  setYourOrder(prev => prev.filter(item => item !== dish));
-}
+    setYourOrder(prev => prev.filter(item => item !== dish));
+  }
 
-
-  // when a dish is added to Order, it updates the order array and clears ingredients and filter
+  // Add dish and reset selections
   function addDishAndReset() {
     const newDish = updateOrder();
     clearIngredients();
@@ -134,7 +137,7 @@ export default function useDishBuilder() {
     return newDish;
   }
 
-  // timeout on nonna warning message
+  // Nonna warning animation
   function triggerNonnaWarning() {
     setShowNonnaWarning(true);
     setTimeout(() => {
@@ -150,21 +153,23 @@ export default function useDishBuilder() {
     yourOrder,
     grandTotal,
     showNonnaWarning,
-    // nonnaWarning, // future use
+
     toggleFilter,
     toggleIngredient,
     setSelectedCategory,
     setSelectedIngredients,
     setSelectedFilters,
     setYourOrder,
+
     updateOrder,
     sendToKitchen,
     clearFilter,
     clearIngredients,
     removeIngredient,
     removeDish,
-    triggerNonnaWarning,  
+    triggerNonnaWarning,
     setShowNonnaWarning,
-    addDishAndReset
+    addDishAndReset,
+    getUserIdFromToken
   };
 }

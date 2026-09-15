@@ -1,7 +1,6 @@
-import {React, createContext} from "react";
-import useDishBuilder from "../hooks/useDishBuilder";
+import { DishBuilderContext } from "./DishBuilderContextObject";
 
-const DishBuilderContext = createContext(null);
+import useDishBuilder from "../hooks/useDishBuilder";
 
 export function DishBuilderProvider({ children }) {
   const value = useDishBuilder();

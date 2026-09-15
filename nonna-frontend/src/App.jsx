@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -17,6 +17,9 @@ import { DishBuilderProvider } from "./context/DishBuilderContext";
 import "./App.css";
 
 export default function App() {
+
+  const [token, setToken] = useState(null);
+
   return (
     <div className="app-shell">
       <DishBuilderProvider>
@@ -27,15 +30,14 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/buildadish" element={<BuildADish />} />
-            <Route path="/cart" element={<Order />} />
+            <Route path="/cart" element={<Order token={token} />} />
             <Route path="/about" element={<About />} />
             <Route path="/favorites" element={<Favorites />} />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth" element={<Auth setToken={setToken} />} />
           </Routes>
         </main>
 
         <Footer />
-
       </DishBuilderProvider>
     </div>
   );

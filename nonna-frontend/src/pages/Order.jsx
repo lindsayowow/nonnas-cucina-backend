@@ -8,7 +8,7 @@ import DishButton from '../components/buttons/DishButton.jsx';
 
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
 
-export default function Order() {
+export default function Order({ token }) {
   const {
     sendToKitchen,
     removeDish,
@@ -19,7 +19,7 @@ export default function Order() {
   const [kitchenMessage, setKitchenMessage] = React.useState("");
 
   const handleSendToKitchen = () => {
-    sendToKitchen();
+    sendToKitchen(token);
     setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
   };
 
@@ -33,10 +33,7 @@ export default function Order() {
         <h2 id="order-title" className="text-center">Your Order</h2>
 
         {kitchenMessage && (
-          <div
-            className="kitchen-confirmation"
-            aria-live="polite"
-          >
+          <div className="kitchen-confirmation" aria-live="polite">
             {kitchenMessage}
           </div>
         )}
@@ -48,7 +45,6 @@ export default function Order() {
           </div>
         ) : (
           <div>
-            {/* Use of lists */}
             <ul
               className="activeOrder"
               role="region"
@@ -68,7 +64,6 @@ export default function Order() {
                         <strong>Dish {index + 1}</strong>
                       </div>
 
-                      {/* Decorative emojis hidden from screen readers */}
                       <div className="dishLine" aria-hidden="true">
                         {emojis}
                       </div>
@@ -85,9 +80,7 @@ export default function Order() {
                       </div>
                     </div>
 
-                    <RemoveDishButton
-                      onRemoveDish={() => removeDish(dish)}
-                    />
+                    <RemoveDishButton onRemoveDish={() => removeDish(dish)} />
                   </li>
                 );
               })}
