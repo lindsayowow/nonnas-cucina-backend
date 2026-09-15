@@ -33,16 +33,17 @@ export default function useDishBuilder() {
     0
   );
 
+// Removing as no longer needed, dish id assigned by back end 
   // gives the dish name a number for the order page
-  function getNextDishId() {
-    if (yourOrder.length === 0) return 1;
-    return yourOrder[yourOrder.length - 1].id + 1;
-  }
+  // function getNextDishId() {
+  //   if (yourOrder.length === 0) return 1;
+  //   return yourOrder[yourOrder.length - 1].id + 1;
+  // }
 
   // creates the dish object to display in order screen and pass props
   function updateOrder() {
     const newDish = {
-      id: getNextDishId(),
+      // id: getNextDishId(), - now comes from back end
       ingredients: selectedIngredients,
       totalCost: totalPrice
     };
@@ -65,12 +66,35 @@ export default function useDishBuilder() {
     currency: "USD"
   }).format(total);
 
+  // replaced with backend version.
   // when order is sent to kitchen all arrays reset
-  function sendToKitchen() {
-    setYourOrder([]);
-    setSelectedIngredients([]);
-    setSelectedFilters([]);
-  }
+  // function sendToKitchen() {
+  //   setYourOrder([]);
+  //   setSelectedIngredients([]);
+  //   setSelectedFilters([]);
+  // }
+
+  async function sendToKitchen() {
+  const orderDTO = {
+    userId: 7, // replace with logged-in user ID
+    dishes: yourOrder.map(dish => ({
+      dishCost: dish.totalCost,
+      ingredients: dish.ingredients.map(i => i.id)
+    }))
+  };
+
+  await fetch("http://localhost:8080/orders", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderDTO)
+  });
+
+  // Clear UI after successful submission
+  setYourOrder([]);
+  setSelectedIngredients([]);
+  setSelectedFilters([]);
+}
+
 
   // resets only filters
   function clearFilter() {
@@ -89,12 +113,18 @@ export default function useDishBuilder() {
     );
   }
 
+  // updated with code referencing the back end
   // removes one dish from the array
+  // function removeDish(dish) {
+  //   setYourOrder(prev =>
+  //     prev.filter(item => item.id !== dish.id)
+  //   );
+  // }
+
   function removeDish(dish) {
-    setYourOrder(prev =>
-      prev.filter(item => item.id !== dish.id)
-    );
-  }
+  setYourOrder(prev => prev.filter(item => item !== dish));
+}
+
 
   // when a dish is added to Order, it updates the order array and clears ingredients and filter
   function addDishAndReset() {

@@ -6,8 +6,7 @@ import Filters from '../components/Filters.jsx';
 import Ingredients from '../components/Ingredients.jsx';
 import Dish from '../components/Dish.jsx';
 
-import { DietaryFilters } from '../utils/constants.js';
-import { useDishBuilderContext } from "../context/DishBuilderContext";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
 import useFilters from "../hooks/useFilters";
 import useCategories from "../hooks/useCategories";
 
@@ -35,6 +34,10 @@ export default function BuildADish() {
   if (categoriesLoading) {
     return <p>Loading categories...</p>;
   }
+
+  if (filtersLoading) {
+  return <p>Loading filters...</p>;
+}
 
   return (
     // main landmark for the Build a Dish page

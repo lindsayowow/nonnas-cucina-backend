@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import {React, createContext} from "react";
 import useDishBuilder from "../hooks/useDishBuilder";
 
 const DishBuilderContext = createContext(null);
@@ -11,14 +11,4 @@ export function DishBuilderProvider({ children }) {
       {children}
     </DishBuilderContext.Provider>
   );
-}
-
-export function useDishBuilderContext() {
-  const context = useContext(DishBuilderContext);
-
-  if (!context) {
-    throw new Error("useDishBuilderContext must be used within DishBuilderProvider");
-  }
-
-  return context;
 }

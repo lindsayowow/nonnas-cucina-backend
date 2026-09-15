@@ -1,25 +1,15 @@
 package org.launchcode.nonna.dtos;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class CreateOrderDTO {
 
     private Integer userId;
-    private List<Integer> dishIds;
+    private List<CreateDishDTO> dishes;
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public List<Integer> getDishIds() {
-        return dishIds;
-    }
-
-    public void setDishIds(List<Integer> dishIds) {
-        this.dishIds = dishIds;
-    }
 }

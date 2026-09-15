@@ -6,7 +6,7 @@ import OrderButton from '../components/buttons/OrderButton.jsx';
 import RemoveDishButton from '../components/buttons/RemoveDishButton.jsx';
 import DishButton from '../components/buttons/DishButton.jsx';
 
-import { useDishBuilderContext } from "../context/DishBuilderContext";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
 
 export default function Order() {
   const {
@@ -54,18 +54,18 @@ export default function Order() {
               role="region"
               aria-label="Current order"
             >
-              {yourOrder.map(dish => {
+              {yourOrder.map((dish, index) => {
                 const emojis = dish.ingredients.map(ing => ing.emoji).join(" ");
                 const names = dish.ingredients.map(ing => ing.name).join(", ");
 
                 return (
                   <li
-                    key={dish.id}
-                    aria-label={`Dish ${dish.id}: ${names}`}
+                    key={index}
+                    aria-label={`Dish ${index + 1}: ${names}`}
                   >
                     <div className="dishInfo">
                       <div className="dishLine">
-                        <strong>Dish {dish.id}</strong>
+                        <strong>Dish {index + 1}</strong>
                       </div>
 
                       {/* Decorative emojis hidden from screen readers */}
