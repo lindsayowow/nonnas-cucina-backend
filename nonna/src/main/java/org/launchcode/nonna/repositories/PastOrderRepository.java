@@ -10,7 +10,10 @@ import java.util.List;
 @Repository
 public interface PastOrderRepository extends JpaRepository<PastOrder, Integer> {
 
-    @EntityGraph(attributePaths = {"dishes", "dishes.dishIngredients", "dishes.dishIngredients.ingredient"})
-    List<PastOrder> findByUserId(Integer userId);
+    @EntityGraph(attributePaths = {
+            "dishes",
+            "dishes.dishIngredients",
+            "dishes.dishIngredients.ingredient"
+    })
+    List<PastOrder> findByUser_Id(Integer userId);
 }
-

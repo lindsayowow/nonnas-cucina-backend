@@ -48,7 +48,7 @@ public class PastOrderService {
     }
 
     public List<PastOrderDTO> getOrdersByUserId(Integer userId) {
-        return pastOrderRepository.findByUserId(userId)
+        return pastOrderRepository.findByUser_Id(userId)
                 .stream()
                 .map(PastOrderDTO::new)
                 .toList();
