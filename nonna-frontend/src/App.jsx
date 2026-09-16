@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import Home from "./pages/Home";
 import BuildADish from "./pages/BuildADish";
@@ -16,6 +16,13 @@ import { DishBuilderProvider } from "./context/DishBuilderContext";
 
 import "./App.css";
 
+// ⭐ RouteDebugger MUST be defined OUTSIDE the App component
+function RouteDebugger() {
+  const location = useLocation();
+  console.log("ROUTER SEES PATH:", location.pathname);
+  return null;
+}
+
 export default function App() {
 
   const [token, setToken] = useState(null);
@@ -25,6 +32,9 @@ export default function App() {
       <DishBuilderProvider>
         <Header />
         <ScrollToTop />
+
+        {/* ⭐ Now you can safely render it here */}
+        <RouteDebugger />
 
         <main className="App">
           <Routes>

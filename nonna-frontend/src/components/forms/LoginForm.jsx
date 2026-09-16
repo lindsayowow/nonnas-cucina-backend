@@ -26,7 +26,7 @@ export default function LoginForm({ setToken, switchToRegister }) {
         }
 
         if (response.ok && data.token) {
-            setToken(data.token);   //  sends token to Auth.jsx → App.jsx
+            setToken(data.token);   // sends token → Auth.jsx → App.jsx
         } else {
             alert(data.error || "Invalid login.");
         }

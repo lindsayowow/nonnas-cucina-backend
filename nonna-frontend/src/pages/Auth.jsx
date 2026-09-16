@@ -7,7 +7,6 @@ export default function Auth({ setToken }) {
   const [authMode, setAuthMode] = useState("login");
   const [localToken, setLocalToken] = useState(localStorage.getItem("token"));
 
-  // Decode token safely
   function decodeToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -18,11 +17,15 @@ export default function Auth({ setToken }) {
     }
   }
 
-  // Check expiration on first load
+  // Validate token on load + whenever localToken changes
   useEffect(() => {
-    if (!localToken) return;
+    if (!localToken) {
+      setToken(null);
+      return;
+    }
 
     const decoded = decodeToken(localToken);
+
     if (!decoded || !decoded.exp) {
       localStorage.removeItem("token");
       setLocalToken(null);
@@ -37,27 +40,27 @@ export default function Auth({ setToken }) {
       setLocalToken(null);
       setToken(null);
     }
-  }, []);
+  }, [localToken, setToken]);
 
-  // When token changes, update localStorage + send to App.jsx
+  // Sync localToken → App.jsx token + localStorage
   useEffect(() => {
     if (localToken) {
       localStorage.setItem("token", localToken);
-      setToken(localToken);   // send token to App.jsx
+      setToken(localToken);
     }
-  }, [localToken]);
+  }, [localToken, setToken]);
 
-  // If logged in, show profile
+  // Logged in → show profile
   if (localToken) {
     return <Profile token={localToken} setToken={setLocalToken} />;
   }
 
-  // If not logged in, show login or register
+  // Not logged in → show login/register
   return (
     <section className="auth-container">
       {authMode === "login" && (
         <LoginForm
-          setToken={setLocalToken}   // ⭐ LoginForm sets localToken → bubbles to App.jsx
+          setToken={setLocalToken}
           switchToRegister={() => setAuthMode("register")}
         />
       )}

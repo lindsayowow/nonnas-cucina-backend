@@ -23,6 +23,9 @@ export default function Order({ token }) {
     setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
   };
 
+  console.log("TOKEN IN ORDER PAGE:", token);
+// dont forget to remove console logs before production deployment
+
   return (
     <div className="order-page">
       <div

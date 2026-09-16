@@ -8,7 +8,7 @@ export default function Profile({ token, setToken }) {
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.sub;   // numeric userId
+      return payload.sub;
     } catch (err) {
       console.error("Invalid token", err);
       return null;
@@ -44,7 +44,7 @@ export default function Profile({ token, setToken }) {
 
   function logout() {
     localStorage.removeItem("token");
-    setToken(null);   // ⭐ logs out globally (App.jsx)
+    setToken(null);
   }
 
   if (!user) {
