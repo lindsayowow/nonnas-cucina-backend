@@ -56,8 +56,10 @@ public class SecurityConfig {
                                 "/dishes/**").permitAll()
                         .requestMatchers("/favorites/**").authenticated()
                         .requestMatchers("/orders/**").authenticated()
+                        .requestMatchers("/pastorders/**").authenticated()
                         .anyRequest().authenticated()
                 );
+
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

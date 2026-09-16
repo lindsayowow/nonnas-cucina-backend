@@ -15,7 +15,6 @@ import org.launchcode.nonna.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Service
 public class OrderService {
@@ -40,7 +39,6 @@ public class OrderService {
 
     public PastOrder createOrder(CreateOrderDTO dto) {
 
-        //  Validate user
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -52,16 +50,14 @@ public class OrderService {
 
         double total = 0;
 
-
         for (CreateDishDTO dishDTO : dto.getDishes()) {
-            Dish dish = new Dish();
 
+            Dish dish = new Dish();
             dish.setDishCost(dishDTO.getDishCost());
             dish.setPastOrder(savedOrder);
 
             Dish savedDish = dishRepository.save(dish);
 
-            // Create DishIngredient rows
             for (Integer ingredientId : dishDTO.getIngredients()) {
                 Ingredient ingredient = ingredientRepository.findById(ingredientId)
                         .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -74,7 +70,6 @@ public class OrderService {
             }
 
             savedOrder.getDishes().add(savedDish);
-
             total += dishDTO.getDishCost();
         }
 

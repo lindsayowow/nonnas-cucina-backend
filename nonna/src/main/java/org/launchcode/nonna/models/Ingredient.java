@@ -1,6 +1,7 @@
 package org.launchcode.nonna.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"dishIngredients", "ingredientFilters", "ingredientCategories"})
 public class Ingredient {
 
     @Id
@@ -34,6 +36,4 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient")
     @JsonIgnore
     private List<IngredientCategory> ingredientCategories;
-
-
 }

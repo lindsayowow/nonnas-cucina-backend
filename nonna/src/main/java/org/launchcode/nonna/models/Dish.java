@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "dishes")
@@ -24,11 +24,10 @@ public class Dish {
     private Boolean isFavorite = false;
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<DishIngredient> dishIngredients = new ArrayList<>();
+    private Set<DishIngredient> dishIngredients = new HashSet<>();
 
-    @ManyToOne
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "past_order_id")
+    @JsonIgnore
     private PastOrder pastOrder;
 }
