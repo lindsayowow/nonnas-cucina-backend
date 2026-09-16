@@ -15,5 +15,5 @@ public interface PastOrderRepository extends JpaRepository<PastOrder, Integer> {
             "dishes.dishIngredients",
             "dishes.dishIngredients.ingredient"
     })
-    List<PastOrder> findByUser_Id(Integer userId);
+    List<PastOrder> findByUserId(Integer userId);
 }
