@@ -28,9 +28,4 @@ public class OrderController {
         PastOrder order = orderService.createOrder(dto);
         return ResponseEntity.ok(new PastOrderDTO(order));
     }
-
-    @GetMapping("/user/{userId}")
-    public List<PastOrderDTO> getOrdersByUser(@PathVariable Integer userId) {
-        return pastOrderService.getOrdersByUserId(userId);
-    }
 }

@@ -26,7 +26,7 @@ export default function PastOrders({ token }) {
     async function fetchOrders() {
       try {
         const response = await fetch(
-          `http://localhost:8080/orders/user/${userId}`,
+          `http://localhost:8080/pastorders/user/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -34,7 +34,7 @@ export default function PastOrders({ token }) {
 
         if (response.ok) {
           const data = await response.json();
-          setOrders(data || []);
+          setOrders(data ?? []);
         } else {
           console.error("Failed to fetch past orders");
           setOrders([]);
@@ -118,7 +118,7 @@ export default function PastOrders({ token }) {
 
           <h3>Dishes</h3>
           <ul className="order-dishes">
-            {(order.dishes || []).map(dish => (
+            {(order.dishes ?? []).map(dish => (
               <li key={dish.id} className="dish-item">
                 <div className="dish-header">
                   <span className="dish-cost">
@@ -138,7 +138,7 @@ export default function PastOrders({ token }) {
                 </div>
 
                 <ul className="ingredient-list">
-                  {(dish.ingredients || []).map(ing => (
+                  {(dish.ingredients ?? []).map(ing => (
                     <li key={ing.id} className="ingredient-item">
                       <span className="ingredient-emoji">{ing.emoji}</span>
                       <span className="ingredient-name">{ing.ingredientName}</span>
