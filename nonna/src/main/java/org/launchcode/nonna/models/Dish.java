@@ -23,11 +23,15 @@ public class Dish {
     private double dishCost;
     private Boolean isFavorite = false;
 
-    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "dish",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Set<DishIngredient> dishIngredients = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "past_order_id")
+    @JoinColumn(name = "past_order_id", nullable = false)
     @JsonIgnore
     private PastOrder pastOrder;
 }

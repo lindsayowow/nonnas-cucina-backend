@@ -20,7 +20,9 @@ public class DishDTO {
         this.dishCost = dish.getDishCost();
         this.isFavorite = dish.getIsFavorite();
 
-        this.ingredients = dish.getDishIngredients().stream()
+        this.ingredients = dish.getDishIngredients() == null
+                ? List.of()
+                : dish.getDishIngredients().stream()
                 .map(di -> new IngredientDTO(di.getIngredient()))
                 .toList();
     }

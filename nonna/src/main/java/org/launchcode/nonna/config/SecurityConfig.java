@@ -43,29 +43,29 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(jwtProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/users/register",
-                                "/ingredients/**",
-                                "/filters/**",
-                                "/categories/**",
-                                "/dishes/**").permitAll()
+                        // Public endpoints
+                        .requestMatchers("/auth/login", "/users/register").permitAll()
+                        .requestMatchers("/ingredients/**", "/filters/**", "/categories/**").permitAll()
+
+                        // Protected endpoints
                         .requestMatchers("/favorites/**").authenticated()
-                        .requestMatchers("/orders/**").authenticated()
                         .requestMatchers("/pastorders/**").authenticated()
+
+                        // Everything else requires auth
                         .anyRequest().authenticated()
                 );
-
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

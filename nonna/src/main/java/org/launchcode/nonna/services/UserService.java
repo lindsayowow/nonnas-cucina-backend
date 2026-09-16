@@ -22,6 +22,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // GET ALL USERS
     public List<UserDTO> getAllUserDTOs() {
         return userRepository.findAll()
                 .stream()
@@ -29,12 +30,14 @@ public class UserService {
                 .toList();
     }
 
+    // GET USER BY ID
     public UserDTO getByUserDTOId(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return new UserDTO(user);
     }
 
+    // UPDATE USER (admin-level update)
     public User updateUser(Integer id, User updatedUser) {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -51,10 +54,12 @@ public class UserService {
         return userRepository.save(existing);
     }
 
+    // DELETE USER
     public void deleteUser(Integer id) {
         userRepository.deleteById(id);
     }
 
+    // REGISTER USER
     public UserDTO registerUser(RegisterUserDTO dto) {
 
         if (userRepository.existsByEmail(dto.getEmail())) {
@@ -72,6 +77,7 @@ public class UserService {
         return new UserDTO(saved);
     }
 
+    // LOGIN VALIDATION
     public User validateLogin(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
@@ -83,20 +89,21 @@ public class UserService {
         return user;
     }
 
+    // GET PROFILE
     public ProfileDTO getByProfileDTOId(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ProfileDTO dto = new ProfileDTO();
-        dto.setId(user.getId());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setEmail(user.getEmail());
-        dto.setPhoneNumber(user.getPhoneNumber());
-
-        return dto;
+        return new ProfileDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhoneNumber()
+        );
     }
 
+    // UPDATE PROFILE
     public ProfileDTO updateProfileDTO(Integer id, ProfileDTO profileDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -108,15 +115,12 @@ public class UserService {
 
         userRepository.save(user);
 
-        ProfileDTO updated = new ProfileDTO();
-        updated.setId(user.getId());
-        updated.setFirstName(user.getFirstName());
-        updated.setLastName(user.getLastName());
-        updated.setEmail(user.getEmail());
-        updated.setPhoneNumber(user.getPhoneNumber());
-
-        return updated;
+        return new ProfileDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhoneNumber()
+        );
     }
-
-
 }

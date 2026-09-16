@@ -23,22 +23,19 @@ public class PastOrderDTO {
 
     public PastOrderDTO(PastOrder pastOrder) {
 
-        // Basic fields
         this.id = pastOrder.getId();
         this.orderTimeStamp = pastOrder.getOrderTimeStamp();
         this.orderTotal = pastOrder.getOrderTotal();
 
-        // Null‑safe user
         this.userId = pastOrder.getUser() != null
                 ? pastOrder.getUser().getId()
                 : null;
 
-        // Null‑safe dishes
         List<Dish> dishList = pastOrder.getDishes();
-        this.dishes = (dishList == null
+        this.dishes = (dishList == null)
                 ? List.of()
                 : dishList.stream()
                 .map(DishDTO::new)
-                .toList());
+                .toList();
     }
 }

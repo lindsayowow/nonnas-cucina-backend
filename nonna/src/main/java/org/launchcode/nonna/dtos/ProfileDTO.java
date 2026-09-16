@@ -8,10 +8,22 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ProfileDTO {
-            private Integer id;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String phoneNumber;
-}
 
+    private Integer id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
+
+    public ProfileDTO(Integer id,
+                      String firstName,
+                      String lastName,
+                      String email,
+                      String phoneNumber) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+}

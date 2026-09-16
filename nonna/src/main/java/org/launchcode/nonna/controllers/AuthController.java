@@ -1,6 +1,7 @@
 package org.launchcode.nonna.controllers;
 
 import org.launchcode.nonna.dtos.LoginDTO;
+import org.launchcode.nonna.dtos.UserDTO;
 import org.launchcode.nonna.models.User;
 import org.launchcode.nonna.security.JwtUtil;
 import org.launchcode.nonna.services.UserService;
@@ -26,9 +27,17 @@ public class AuthController {
         try {
             User user = userService.validateLogin(dto.getEmail(), dto.getPassword());
             String token = jwtUtil.generateToken(user.getId(), user.getEmail());
-            return ResponseEntity.ok(Map.of("token", token));
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "token", token,
+                            "user", new UserDTO(user)
+                    )
+            );
+
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 }

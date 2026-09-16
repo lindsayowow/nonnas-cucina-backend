@@ -11,14 +11,15 @@ public class WebConfig {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
+
             @Override
             public void addCorsMappings(CorsRegistry registry) {
 
-                registry.addMapping("/**")
+                // Only apply MVC CORS to NON‑API routes (e.g., Gemini proxy endpoints)
+                registry.addMapping("/gemini/**")
                         .allowedOrigins("http://localhost:5173")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("Authorization", "Content-Type")
-                        .exposedHeaders("Authorization")
+                        .allowedMethods("GET", "POST")
+                        .allowedHeaders("*")
                         .allowCredentials(true);
             }
         };

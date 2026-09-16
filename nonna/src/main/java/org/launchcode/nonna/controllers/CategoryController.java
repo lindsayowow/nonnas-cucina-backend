@@ -28,13 +28,15 @@ public class CategoryController {
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return  categoryService.saveCategory(category);
+    public CategoryDTO createCategory(@RequestBody Category category) {
+        Category saved = categoryService.saveCategory(category);
+        return new CategoryDTO(saved);
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
-        return categoryService.updateCategory(id, category);
+    public CategoryDTO updateCategory(@PathVariable Integer id, @RequestBody Category category) {
+        Category updated = categoryService.updateCategory(id, category);
+        return new CategoryDTO(updated);
     }
 
     @DeleteMapping("/{id}")

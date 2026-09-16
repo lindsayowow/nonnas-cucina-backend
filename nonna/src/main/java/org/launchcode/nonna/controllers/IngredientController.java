@@ -28,8 +28,9 @@ public class IngredientController {
     }
 
     @PostMapping
-    public Ingredient createIngredient(@RequestBody Ingredient ingredient) {
-        return ingredientService.saveIngredient(ingredient);
+    public IngredientDTO createIngredient(@RequestBody Ingredient ingredient) {
+        Ingredient saved = ingredientService.saveIngredient(ingredient);
+        return new IngredientDTO(saved);
     }
 
     @PostMapping("/bulk")
@@ -38,8 +39,9 @@ public class IngredientController {
     }
 
     @PutMapping("/{id}")
-    public Ingredient updateIngredient(@PathVariable Integer id, @RequestBody Ingredient ingredient) {
-        return ingredientService.updateIngredient(id, ingredient);
+    public IngredientDTO updateIngredient(@PathVariable Integer id, @RequestBody Ingredient ingredient) {
+        Ingredient updated = ingredientService.updateIngredient(id, ingredient);
+        return new IngredientDTO(updated);
     }
 
     @DeleteMapping("/{id}")

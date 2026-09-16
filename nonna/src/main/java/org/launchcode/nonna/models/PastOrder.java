@@ -24,7 +24,11 @@ public class PastOrder {
     private Timestamp orderTimeStamp;
     private double orderTotal;
 
-    @OneToMany(mappedBy = "pastOrder")
+    @OneToMany(
+            mappedBy = "pastOrder",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Dish> dishes = new ArrayList<>();
 
     @ManyToOne

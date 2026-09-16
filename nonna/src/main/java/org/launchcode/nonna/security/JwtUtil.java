@@ -11,15 +11,16 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // MUST be stable across restarts
+    // MUST remain stable across restarts
     private final String SECRET = "supersecretkeysupersecretkeysupersecretkey";
+    private final long EXPIRATION = 1000 * 60 * 60 * 24; // 24 hours
 
     public String generateToken(Integer userId, String email) {
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))      // <-- userId is now the subject
-                .claim("email", email)                   // <-- optional but useful
+                .setSubject(String.valueOf(userId))
+                .claim("email", email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -33,7 +34,12 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token) {
-        return !extractAllClaims(token).getExpiration().before(new Date());
+        try {
+            Claims claims = extractAllClaims(token);
+            return claims.getExpiration().after(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Claims extractAllClaims(String token) {

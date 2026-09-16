@@ -16,11 +16,11 @@ public class IngredientFilter {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ingredient_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "filter_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "filter_id", nullable = false)
     private Filter filter;
 }
