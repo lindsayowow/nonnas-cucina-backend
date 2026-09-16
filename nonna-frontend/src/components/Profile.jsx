@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import AuthButton from "./buttons/AuthButton";
 
 export default function Profile({ token, setToken }) {
@@ -61,6 +62,14 @@ export default function Profile({ token, setToken }) {
           <p><strong>Last Name:</strong> {user.lastName}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Phone Number:</strong> {user.phoneNumber}</p>
+
+          <Link to="/favorites">
+            <AuthButton>View Favorites ❤️</AuthButton>
+          </Link>
+
+          <Link to="/orders">
+            <AuthButton>View Past Orders 📜</AuthButton>
+          </Link>
 
           <AuthButton onClick={() => setEditing(true)}>
             Edit Profile

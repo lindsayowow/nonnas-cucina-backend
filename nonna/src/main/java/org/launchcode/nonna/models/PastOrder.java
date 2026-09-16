@@ -25,10 +25,10 @@ public class PastOrder {
     private double orderTotal;
 
     @OneToMany(mappedBy = "pastOrder")
-    @JsonIgnore
     private List<Dish> dishes = new ArrayList<>();
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 }

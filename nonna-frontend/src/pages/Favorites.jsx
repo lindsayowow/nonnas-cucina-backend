@@ -1,27 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/favorites.css";
+import { getFavoriteDishes } from "../services/api";
+import { Link } from "react-router-dom";
 
-import {useEffect, useState} from "react";
-import {getFavoriteDishes} from "../services/api";
-
-export default function Favorites() {
+export default function Favorites({ token }) {
   const [favorites, setFavorites] = useState([]);
 
+  function getUserIdFromToken(token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.sub;
+    } catch {
+      return null;
+    }
+  }
+
+  const userId = getUserIdFromToken(token);
+
   useEffect(() => {
-    getFavoriteDishes().then(setFavorites);
-  }, []);
+    if (!userId) return;
+
+    getFavoriteDishes().then(allFavs => {
+      const userFavs = allFavs.filter(f => f.user_id === userId);
+      setFavorites(userFavs);
+    });
+  }, [userId]);
+
+  if (!token) {
+    return (
+      <section className="favorites-container">
+        <h1>My Favorite Dishes</h1>
+        <p>Please log in to see your favorites.</p>
+        <Link to="/auth" className="login-button">Log In</Link>
+      </section>
+    );
+  }
 
   return (
-    <section
-      className="favorites-container"
-      role="region"
-      aria-labelledby="favorite-title">
+    <section className="favorites-container">
+      <h1>My Favorite Dishes</h1>
 
-      <h1 id="favorites-title" >
-      My Favorite Dishes
-      </h1>
-
-{favorites.length === 0 && <p>You have no favorites yet.</p>}
+      {favorites.length === 0 && <p>You have no favorites yet.</p>}
 
       <ul>
         {favorites.map(dish => (
@@ -30,7 +49,6 @@ export default function Favorites() {
           </li>
         ))}
       </ul>
-
     </section>
   );
 }

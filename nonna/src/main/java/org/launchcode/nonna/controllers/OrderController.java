@@ -15,10 +15,12 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final PastOrderService pastOrderService;
 
-
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService,
+                           PastOrderService pastOrderService) {
         this.orderService = orderService;
+        this.pastOrderService = pastOrderService;
     }
 
     @PostMapping
@@ -27,5 +29,8 @@ public class OrderController {
         return ResponseEntity.ok(new PastOrderDTO(order));
     }
 
+    @GetMapping("/user/{userId}")
+    public List<PastOrderDTO> getOrdersByUser(@PathVariable Integer userId) {
+        return pastOrderService.getOrdersByUserId(userId);
+    }
 }
-

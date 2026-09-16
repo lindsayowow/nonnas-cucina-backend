@@ -6,6 +6,7 @@ import BuildADish from "./pages/BuildADish";
 import Order from "./pages/Order";
 import About from "./pages/About";
 import Favorites from "./pages/Favorites";
+import PastOrders from "./pages/PastOrders";   
 import Auth from "./pages/Auth";
 
 import Header from "./components/template/Header";
@@ -16,7 +17,6 @@ import { DishBuilderProvider } from "./context/DishBuilderContext";
 
 import "./App.css";
 
-// ⭐ RouteDebugger MUST be defined OUTSIDE the App component
 function RouteDebugger() {
   const location = useLocation();
   console.log("ROUTER SEES PATH:", location.pathname);
@@ -32,8 +32,6 @@ export default function App() {
       <DishBuilderProvider>
         <Header />
         <ScrollToTop />
-
-        {/* ⭐ Now you can safely render it here */}
         <RouteDebugger />
 
         <main className="App">
@@ -42,7 +40,8 @@ export default function App() {
             <Route path="/buildadish" element={<BuildADish />} />
             <Route path="/cart" element={<Order token={token} />} />
             <Route path="/about" element={<About />} />
-            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/favorites" element={<Favorites token={token} />} />
+            <Route path="/orders" element={<PastOrders token={token} />} />
             <Route path="/auth" element={<Auth setToken={setToken} />} />
           </Routes>
         </main>

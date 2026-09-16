@@ -40,11 +40,10 @@ public class OrderService {
 
     public PastOrder createOrder(CreateOrderDTO dto) {
 
-        // 1. Validate user
+        //  Validate user
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 2. Create PastOrder
         PastOrder order = new PastOrder();
         order.setUser(user);
         order.setOrderTimeStamp(new Timestamp(System.currentTimeMillis()));
@@ -53,11 +52,10 @@ public class OrderService {
 
         double total = 0;
 
-        // 3. Loop through each dish in the DTO
-        for (CreateDishDTO dishDTO : dto.getDishes()) {
 
-            // Create Dish
+        for (CreateDishDTO dishDTO : dto.getDishes()) {
             Dish dish = new Dish();
+
             dish.setDishCost(dishDTO.getDishCost());
             dish.setPastOrder(savedOrder);
 
@@ -75,14 +73,11 @@ public class OrderService {
                 dishIngredientRepository.save(di);
             }
 
-            // Add dish to order
             savedOrder.getDishes().add(savedDish);
 
-            // Add to total
             total += dishDTO.getDishCost();
         }
 
-        // 4. Set total and save order
         savedOrder.setOrderTotal(total);
         return pastOrderRepository.save(savedOrder);
     }

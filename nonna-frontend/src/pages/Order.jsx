@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/order.css';
 
 import OrderButton from '../components/buttons/OrderButton.jsx';
@@ -9,6 +9,8 @@ import DishButton from '../components/buttons/DishButton.jsx';
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
 
 export default function Order({ token }) {
+  const navigate = useNavigate();
+
   const {
     sendToKitchen,
     removeDish,
@@ -16,15 +18,20 @@ export default function Order({ token }) {
     grandTotal
   } = useDishBuilderContext();
 
-  const [kitchenMessage, setKitchenMessage] = React.useState("");
+  const [kitchenMessage, setKitchenMessage] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleSendToKitchen = () => {
+    if (!token) {
+      setShowLoginModal(true);
+      return;
+    }
+
     sendToKitchen(token);
     setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
   };
 
   console.log("TOKEN IN ORDER PAGE:", token);
-// dont forget to remove console logs before production deployment
 
   return (
     <div className="order-page">
@@ -106,6 +113,30 @@ export default function Order({ token }) {
           disabled={yourOrder.length === 0}
         />
       </div>
+
+      {/* ⭐ Guest Checkout Modal */}
+      {showLoginModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>Please log in</h3>
+            <p>You need to be logged in to place your order.</p>
+
+            <button
+              className="modal-btn"
+              onClick={() => navigate("/auth")}
+            >
+              Go to Login
+            </button>
+
+            <button
+              className="modal-btn cancel"
+              onClick={() => setShowLoginModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

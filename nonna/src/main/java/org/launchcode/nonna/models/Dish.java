@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name = "dishes")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Dish {
 
     @Id
@@ -28,6 +29,7 @@ public class Dish {
     private List<DishIngredient> dishIngredients = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JsonIgnore
+    @JoinColumn(name = "past_order_id")
     private PastOrder pastOrder;
 }

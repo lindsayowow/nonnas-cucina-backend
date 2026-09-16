@@ -1,7 +1,6 @@
 package org.launchcode.nonna.services;
 
 import org.launchcode.nonna.dtos.PastOrderDTO;
-import org.launchcode.nonna.models.Filter;
 import org.launchcode.nonna.models.PastOrder;
 import org.launchcode.nonna.repositories.PastOrderRepository;
 import org.springframework.stereotype.Service;
@@ -12,13 +11,14 @@ import java.util.List;
 public class PastOrderService {
 
     private final PastOrderRepository pastOrderRepository;
+
     public PastOrderService(PastOrderRepository pastOrderRepository) {
         this.pastOrderRepository = pastOrderRepository;
     }
 
     public List<PastOrderDTO> getAllPastOrderDTOs() {
-        List<PastOrder> pastOrders = pastOrderRepository.findAll();
-        return pastOrders.stream()
+        return pastOrderRepository.findAll()
+                .stream()
                 .map(PastOrderDTO::new)
                 .toList();
     }
@@ -35,7 +35,7 @@ public class PastOrderService {
 
     public PastOrder updatePastOrder(Integer id, PastOrder updatedPastOrder) {
         PastOrder existing = pastOrderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new RuntimeException("Past order not found"));
 
         existing.setOrderTimeStamp(updatedPastOrder.getOrderTimeStamp());
         existing.setOrderTotal(updatedPastOrder.getOrderTotal());
@@ -47,17 +47,10 @@ public class PastOrderService {
         pastOrderRepository.deleteById(id);
     }
 
-    private PastOrderDTO convertToDTO(PastOrder pastOrder) {
-        return new PastOrderDTO(pastOrder);
-    }
-
     public List<PastOrderDTO> getOrdersByUserId(Integer userId) {
-        List<PastOrder> orders = pastOrderRepository.findByUserId(userId);
-
-        return orders.stream()
+        return pastOrderRepository.findByUserId(userId)
+                .stream()
                 .map(PastOrderDTO::new)
                 .toList();
     }
-
-
 }
