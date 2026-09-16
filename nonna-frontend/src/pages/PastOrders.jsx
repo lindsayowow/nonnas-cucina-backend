@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function PastOrders({ token }) {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Decode userId from token
   function getUserIdFromToken(token) {
@@ -19,7 +20,10 @@ export default function PastOrders({ token }) {
 
   // Fetch past orders for this user
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
 
     async function fetchOrders() {
       try {
@@ -27,19 +31,25 @@ export default function PastOrders({ token }) {
           `http://localhost:8080/orders/user/${userId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         if (response.ok) {
           const data = await response.json();
-          setOrders(data);
+          // Expecting each order to have: id, orderTimeStamp, orderTotal, dishes[]
+          // where dishes[] has: id, dishName, dishCost, ingredients[]
+          setOrders(data || []);
         } else {
           console.error("Failed to fetch past orders");
+          setOrders([]);
         }
       } catch (err) {
         console.error("Error fetching past orders", err);
+        setOrders([]);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -54,8 +64,8 @@ export default function PastOrders({ token }) {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -73,7 +83,29 @@ export default function PastOrders({ token }) {
       <section className="pastorders-container">
         <h1>Past Orders</h1>
         <p>Please log in to see your past orders.</p>
-        <Link to="/auth" className="login-button">Log In</Link>
+        <Link to="/auth" className="login-button">
+          Log In
+        </Link>
+      </section>
+    );
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <section className="pastorders-container">
+        <h1>Past Orders</h1>
+        <p>Loading...</p>
+      </section>
+    );
+  }
+
+  // No orders
+  if (!orders || orders.length === 0) {
+    return (
+      <section className="pastorders-container">
+        <h1>Past Orders</h1>
+        <p>You have no past orders yet.</p>
       </section>
     );
   }
@@ -82,33 +114,65 @@ export default function PastOrders({ token }) {
     <section className="pastorders-container">
       <h1>Past Orders</h1>
 
-      {orders.length === 0 && (
-        <p>You have no past orders yet.</p>
-      )}
-
-      {orders.map(order => (
+      {orders.map((order) => (
         <div key={order.id} className="order-card">
-          <h2>Order #{order.id}</h2>
-          <p className="timestamp">{order.order_time_stamp}</p>
+          <div className="order-header">
+            <p className="timestamp">
+              {order.orderTimeStamp
+                ? new Date(order.orderTimeStamp).toLocaleString()
+                : ""}
+            </p>
+            <h2>Order #{order.id}</h2>
+            <p className="order-total">
+              Total:{" "}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(order.orderTotal || 0)}
+            </p>
+          </div>
 
+          <h3>Dishes</h3>
           <ul className="order-dishes">
-            {order.dishes.map(dish => (
+            {(order.dishes || []).map((dish) => (
               <li key={dish.id} className="dish-item">
-                <span>
-                  {dish.dish_name || "Unnamed Dish"} — $
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD"
-                  }).format(dish.dish_cost)}
-                </span>
+                <div className="dish-header">
+                  <span className="dish-name">
+                    {dish.dishName || "Unnamed Dish"}
+                  </span>
+                  <span className="dish-cost">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(dish.dishCost || 0)}
+                  </span>
+                  <button
+                    className="favorite-btn"
+                    onClick={() => handleFavorite(dish.id)}
+                    aria-label="Add dish to favorites"
+                  >
+                    ♡
+                  </button>
+                </div>
 
-                <button
-                  className="favorite-btn"
-                  onClick={() => handleFavorite(dish.id)}
-                  aria-label="Add dish to favorites"
-                >
-                  ♡
-                </button>
+                <ul className="ingredient-list">
+                  {(dish.ingredients || []).map((ing) => (
+                    <li key={ing.id} className="ingredient-item">
+                      <span className="ingredient-emoji">
+                        {ing.emoji || ""}
+                      </span>
+                      <span className="ingredient-name">
+                        {ing.ingredientName || "Ingredient"}
+                      </span>
+                      <span className="ingredient-cost">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(ing.ingredientCost || 0)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>

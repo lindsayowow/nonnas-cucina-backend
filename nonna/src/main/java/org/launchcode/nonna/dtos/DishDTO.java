@@ -1,6 +1,7 @@
 package org.launchcode.nonna.dtos;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.launchcode.nonna.models.Dish;
 
 import java.util.List;
@@ -12,14 +13,15 @@ public class DishDTO {
     private Integer id;
     private double dishCost;
     private Boolean isFavorite;
-    private List<Integer> ingredientIds;
+    private List<IngredientDTO> ingredients;
 
     public DishDTO(Dish dish){
         this.id = dish.getId();
         this.dishCost = dish.getDishCost();
         this.isFavorite = dish.getIsFavorite();
-        this.ingredientIds = dish.getDishIngredients().stream()
-                .map(di -> di.getIngredient().getId())
+
+        this.ingredients = dish.getDishIngredients().stream()
+                .map(di -> new IngredientDTO(di.getIngredient()))
                 .toList();
     }
 }

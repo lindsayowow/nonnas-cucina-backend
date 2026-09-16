@@ -23,7 +23,6 @@ public class Dish {
     private double dishCost;
     private Boolean isFavorite = false;
 
-    // Cascade and orphan ensure full line is deleted when a dish is deleted, including the join table entries
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<DishIngredient> dishIngredients = new ArrayList<>();

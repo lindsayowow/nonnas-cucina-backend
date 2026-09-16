@@ -18,15 +18,16 @@ public class PastOrderDTO {
     private Timestamp orderTimeStamp;
     private double orderTotal;
     private Integer userId;
-    private List<Integer> dishIds;
+    private List<DishDTO> dishes;
 
     public PastOrderDTO(PastOrder pastOrder) {
         this.id = pastOrder.getId();
         this.orderTimeStamp = pastOrder.getOrderTimeStamp();
         this.orderTotal = pastOrder.getOrderTotal();
         this.userId = pastOrder.getUser().getId();
-        this.dishIds = pastOrder.getDishes().stream()
-                .map(d -> d.getId())
+
+        this.dishes = pastOrder.getDishes().stream()
+                .map(DishDTO::new)
                 .toList();
     }
 }
