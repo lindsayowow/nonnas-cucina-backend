@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -26,6 +26,14 @@ function RouteDebugger() {
 export default function App() {
 
   const [token, setToken] = useState(null);
+
+  // ⭐ FIX: Load token from localStorage on startup
+  useEffect(() => {
+    const stored = localStorage.getItem("token");
+    if (stored) {
+      setToken(stored);
+    }
+  }, []);
 
   return (
     <div className="app-shell">

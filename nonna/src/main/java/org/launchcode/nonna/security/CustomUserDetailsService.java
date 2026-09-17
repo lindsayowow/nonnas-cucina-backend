@@ -24,11 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash())
-                .roles(user.getRole())
+                .roles("USER")   // ⭐ FIXED: Spring requires ROLE_USER internally
                 .build();
     }
 
-    //  NEW: load user by ID for JWT authentication
     public UserDetails loadUserById(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + id));
@@ -36,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash())
-                .roles(user.getRole())
+                .roles("USER")   // ⭐ FIXED: ensures authentication works
                 .build();
     }
 }

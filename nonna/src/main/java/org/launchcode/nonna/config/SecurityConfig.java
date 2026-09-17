@@ -31,7 +31,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:5173"); // Vite frontend
+        config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/ingredients/**", "/filters/**", "/categories/**").permitAll()
 
                         // Protected endpoints
+                        .requestMatchers("/users/profile/**").authenticated()   // ⭐ FIXED
                         .requestMatchers("/favorites/**").authenticated()
                         .requestMatchers("/pastorders/**").authenticated()
 

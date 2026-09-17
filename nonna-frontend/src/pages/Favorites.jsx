@@ -9,7 +9,7 @@ export default function Favorites({ token }) {
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.sub;
+      return Number(payload.sub);
     } catch {
       return null;
     }
@@ -21,7 +21,7 @@ export default function Favorites({ token }) {
     if (!userId) return;
 
     getFavoriteDishes().then(allFavs => {
-      const userFavs = allFavs.filter(f => f.user_id === userId);
+      const userFavs = allFavs.filter(f => Number(f.user_id) === userId);
       setFavorites(userFavs);
     });
   }, [userId]);
@@ -43,9 +43,13 @@ export default function Favorites({ token }) {
       {favorites.length === 0 && <p>You have no favorites yet.</p>}
 
       <ul>
-        {favorites.map(dish => (
+        {favorites.map((dish, index) => (
           <li key={dish.id}>
-            {dish.dishName} — ${dish.dishCost}
+            Dish {index + 1} — $
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD"
+            }).format(dish.dishCost)}
           </li>
         ))}
       </ul>

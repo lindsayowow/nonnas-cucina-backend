@@ -9,7 +9,7 @@ export default function Profile({ token, setToken }) {
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.sub;
+      return Number(payload.sub);   // ⭐ FIXED: ensure numeric ID
     } catch (err) {
       console.error("Invalid token", err);
       return null;
@@ -21,11 +21,14 @@ export default function Profile({ token, setToken }) {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const response = await fetch(`http://localhost:8080/users/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const response = await fetch(
+          `http://localhost:8080/users/profile/${userId}`,   // ⭐ FIXED: correct endpoint
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        });
+        );
 
         if (response.ok) {
           const data = await response.json();
