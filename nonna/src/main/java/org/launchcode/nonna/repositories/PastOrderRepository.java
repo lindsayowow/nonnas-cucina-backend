@@ -17,6 +17,6 @@ public interface PastOrderRepository extends JpaRepository<PastOrder, Integer> {
             "dishes.dishIngredients",
             "dishes.dishIngredients.ingredient"
     })
-    @Query("SELECT p FROM PastOrder p WHERE p.user.id = :userId")
+    @Query("SELECT DISTINCT p FROM PastOrder p WHERE p.user.id = :userId")
     List<PastOrder> findByUserId(@Param("userId") Integer userId);
 }

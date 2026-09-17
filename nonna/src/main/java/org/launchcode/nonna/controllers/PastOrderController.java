@@ -46,8 +46,9 @@ public class PastOrderController {
 
     // UPDATE ORDER
     @PutMapping("/{id}")
-    public PastOrder updatePastOrder(@PathVariable Integer id, @RequestBody PastOrder pastOrder) {
-        return pastOrderService.updatePastOrder(id, pastOrder);
+    public ResponseEntity<PastOrderDTO> updatePastOrder(@PathVariable Integer id, @RequestBody PastOrder pastOrder) {
+        PastOrder updated = pastOrderService.updatePastOrder(id, pastOrder);
+        return ResponseEntity.ok(new PastOrderDTO(updated));
     }
 
     // DELETE ORDER
