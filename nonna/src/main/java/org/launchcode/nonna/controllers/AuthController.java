@@ -26,7 +26,9 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
         try {
             User user = userService.validateLogin(dto.getEmail(), dto.getPassword());
-            String token = jwtUtil.generateToken(user.getId(), user.getEmail());
+
+            // ⭐ FIXED — ONLY userId
+            String token = jwtUtil.generateToken(user.getId());
 
             return ResponseEntity.ok(
                     Map.of(

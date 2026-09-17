@@ -12,10 +12,10 @@ public class JwtUtil {
 
     private final String SECRET = "super-secret-key";
 
-    public String generateToken(Integer userId, String email) {
+    // ⭐ ROLLED BACK — ONLY userId in token
+    public String generateToken(Integer userId) {
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))   // ⭐ sub = userId
-                .claim("email", email)
+                .setSubject(String.valueOf(userId))   // ONLY userId
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
                 .signWith(SignatureAlgorithm.HS256, SECRET)
@@ -33,12 +33,7 @@ public class JwtUtil {
 
     public Integer extractUserId(String token) {
         Claims claims = extractAllClaims(token);
-        return Integer.valueOf(claims.getSubject());   // ⭐ sub = userId
-    }
-
-    public String extractEmail(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.get("email", String.class);
+        return Integer.valueOf(claims.getSubject());
     }
 
     private Claims extractAllClaims(String token) {

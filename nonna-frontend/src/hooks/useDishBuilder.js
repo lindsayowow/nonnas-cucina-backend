@@ -1,3 +1,4 @@
+// src/hooks/useDishBuilder.js
 import { useState } from "react";
 
 export default function useDishBuilder() {
@@ -11,7 +12,7 @@ export default function useDishBuilder() {
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.sub;  // numeric userId
+      return Number(payload.sub);  // numeric userId
     } catch (err) {
       console.error("Invalid token", err);
       return null;
@@ -65,19 +66,25 @@ export default function useDishBuilder() {
     currency: "USD"
   }).format(total);
 
+  // Clear entire order (for cart reset)
+  function clearOrder() {
+    setYourOrder([]);
+    setSelectedIngredients([]);
+    setSelectedFilters([]);
+  }
+
   // Send order to backend
   async function sendToKitchen(token) {
     const userId = getUserIdFromToken(token);
-console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
+    console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
 
     if (!userId) {
       console.error("No valid userId found in token");
-      return;
+      return false;
     }
 
     console.log("yourOrder:", yourOrder);
     console.log("TOKEN:", token);
-    // above line is temporary for testing. 
 
     const orderDTO = {
       userId: userId,
@@ -87,7 +94,7 @@ console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
       }))
     };
 
-    const response = await fetch("http://localhost:8080/orders", {
+    const response = await fetch("http://localhost:8080/pastorders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -98,13 +105,12 @@ console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
 
     if (!response.ok) {
       console.error("Order failed:", response.status);
-      return;
+      return false;
     }
 
     // Clear UI only after successful submission
-    setYourOrder([]);
-    setSelectedIngredients([]);
-    setSelectedFilters([]);
+    clearOrder();
+    return true;
   }
 
   // Clear filters
@@ -163,6 +169,7 @@ console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
 
     updateOrder,
     sendToKitchen,
+    clearOrder,
     clearFilter,
     clearIngredients,
     removeIngredient,

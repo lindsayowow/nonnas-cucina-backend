@@ -1,3 +1,4 @@
+// src/pages/Order.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/order.css';
@@ -15,8 +16,7 @@ export default function Order({ token }) {
     sendToKitchen,
     removeDish,
     yourOrder,
-    grandTotal,
-    clearOrder        // ⭐ added
+    grandTotal
   } = useDishBuilderContext();
 
   const [kitchenMessage, setKitchenMessage] = useState("");
@@ -33,9 +33,6 @@ export default function Order({ token }) {
 
       if (success) {
         setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
-
-        // ⭐ FIX: clear cart after successful submission
-        clearOrder();
       }
     } catch (err) {
       console.error("Error sending order:", err);
@@ -125,7 +122,6 @@ export default function Order({ token }) {
         />
       </div>
 
-      {/* ⭐ Guest Checkout Modal */}
       {showLoginModal && (
         <div className="modal-backdrop">
           <div className="modal">
