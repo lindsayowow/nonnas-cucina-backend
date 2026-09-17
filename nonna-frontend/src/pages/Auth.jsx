@@ -60,11 +60,7 @@ export default function Auth({ setToken }) {
     <section className="auth-container">
       {authMode === "login" && (
         <LoginForm
-          setToken={(responseObj) => {
-            // FIX: extract token from login response
-            const token = responseObj.token;
-            setLocalToken(token);
-          }}
+          setToken={(token) => setLocalToken(token)}
           switchToRegister={() => setAuthMode("register")}
         />
       )}
