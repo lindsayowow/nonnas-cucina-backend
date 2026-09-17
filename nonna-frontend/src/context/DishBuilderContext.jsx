@@ -1,7 +1,6 @@
-import { createContext, useContext } from "react";
-import useDishBuilder from "../hooks/useDishBuilder";
+import { DishBuilderContext } from "./DishBuilderContextObject";
 
-const DishBuilderContext = createContext(null);
+import useDishBuilder from "../hooks/useDishBuilder";
 
 export function DishBuilderProvider({ children }) {
   const value = useDishBuilder();
@@ -11,14 +10,4 @@ export function DishBuilderProvider({ children }) {
       {children}
     </DishBuilderContext.Provider>
   );
-}
-
-export function useDishBuilderContext() {
-  const context = useContext(DishBuilderContext);
-
-  if (!context) {
-    throw new Error("useDishBuilderContext must be used within DishBuilderProvider");
-  }
-
-  return context;
 }

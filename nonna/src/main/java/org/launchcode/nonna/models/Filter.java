@@ -23,7 +23,6 @@ public class Filter {
     private String filterKey;
     private boolean excludesAllergen;
 
-
     @OneToMany(mappedBy = "filter")
     @JsonIgnore
     private List<IngredientFilter> ingredientFilters;

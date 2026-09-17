@@ -14,13 +14,13 @@ public class DishIngredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "dish_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dish_id", nullable = false)
     private Dish dish;
 
-    @ManyToOne
-    @JoinColumn(name = "ingredient_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;
 }

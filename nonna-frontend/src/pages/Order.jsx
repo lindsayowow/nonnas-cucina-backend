@@ -1,14 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+// src/pages/Order.jsx
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/order.css';
 
 import OrderButton from '../components/buttons/OrderButton.jsx';
 import RemoveDishButton from '../components/buttons/RemoveDishButton.jsx';
 import DishButton from '../components/buttons/DishButton.jsx';
 
-import { useDishBuilderContext } from "../context/DishBuilderContext";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
 
-export default function Order() {
+export default function Order({ token }) {
+  const navigate = useNavigate();
+
   const {
     sendToKitchen,
     removeDish,
@@ -16,12 +19,27 @@ export default function Order() {
     grandTotal
   } = useDishBuilderContext();
 
-  const [kitchenMessage, setKitchenMessage] = React.useState("");
+  const [kitchenMessage, setKitchenMessage] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const handleSendToKitchen = () => {
-    sendToKitchen();
-    setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
+  const handleSendToKitchen = async () => {
+    if (!token) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    try {
+      const success = await sendToKitchen(token);
+
+      if (success) {
+        setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
+      }
+    } catch (err) {
+      console.error("Error sending order:", err);
+    }
   };
+
+  console.log("TOKEN IN ORDER PAGE:", token);
 
   return (
     <div className="order-page">
@@ -33,10 +51,7 @@ export default function Order() {
         <h2 id="order-title" className="text-center">Your Order</h2>
 
         {kitchenMessage && (
-          <div
-            className="kitchen-confirmation"
-            aria-live="polite"
-          >
+          <div className="kitchen-confirmation" aria-live="polite">
             {kitchenMessage}
           </div>
         )}
@@ -48,27 +63,25 @@ export default function Order() {
           </div>
         ) : (
           <div>
-            {/* Use of lists */}
             <ul
               className="activeOrder"
               role="region"
               aria-label="Current order"
             >
-              {yourOrder.map(dish => {
+              {yourOrder.map((dish, index) => {
                 const emojis = dish.ingredients.map(ing => ing.emoji).join(" ");
                 const names = dish.ingredients.map(ing => ing.name).join(", ");
 
                 return (
                   <li
-                    key={dish.id}
-                    aria-label={`Dish ${dish.id}: ${names}`}
+                    key={index}
+                    aria-label={`Dish ${index + 1}: ${names}`}
                   >
                     <div className="dishInfo">
                       <div className="dishLine">
-                        <strong>Dish {dish.id}</strong>
+                        <strong>Dish {index + 1}</strong>
                       </div>
 
-                      {/* Decorative emojis hidden from screen readers */}
                       <div className="dishLine" aria-hidden="true">
                         {emojis}
                       </div>
@@ -85,9 +98,7 @@ export default function Order() {
                       </div>
                     </div>
 
-                    <RemoveDishButton
-                      onRemoveDish={() => removeDish(dish)}
-                    />
+                    <RemoveDishButton onRemoveDish={() => removeDish(dish)} />
                   </li>
                 );
               })}
@@ -110,6 +121,29 @@ export default function Order() {
           disabled={yourOrder.length === 0}
         />
       </div>
+
+      {showLoginModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>Please log in</h3>
+            <p>You need to be logged in to place your order.</p>
+
+            <button
+              className="modal-btn"
+              onClick={() => navigate("/auth")}
+            >
+              Go to Login
+            </button>
+
+            <button
+              className="modal-btn cancel"
+              onClick={() => setShowLoginModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

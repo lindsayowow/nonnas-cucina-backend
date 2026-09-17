@@ -20,36 +20,44 @@ public class UserController {
         this.userService = userService;
     }
 
+    // GET ALL USERS
     @GetMapping
     public List<UserDTO> getAllUsers() {
         return userService.getAllUserDTOs();
     }
 
+    // GET USER BY ID
     @GetMapping("/{id}")
     public UserDTO getByUserDTOId(@PathVariable Integer id) {
         return userService.getByUserDTOId(id);
     }
 
+    // GET PROFILE
     @GetMapping("/profile/{id}")
     public ProfileDTO getProfileDTOId(@PathVariable Integer id) {
         return userService.getByProfileDTOId(id);
     }
 
+    // UPDATE USER (admin-level)
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Integer id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public UserDTO updateUser(@PathVariable Integer id, @RequestBody User user) {
+        User updated = userService.updateUser(id, user);
+        return new UserDTO(updated);
     }
 
+    // UPDATE PROFILE
     @PutMapping("/profile/{id}")
     public ProfileDTO updateProfileDTO(@PathVariable Integer id, @RequestBody ProfileDTO profileDTO) {
         return userService.updateProfileDTO(id, profileDTO);
     }
 
+    // DELETE USER
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
     }
 
+    // REGISTER USER
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody RegisterUserDTO dto) {
         UserDTO savedUser = userService.registerUser(dto);

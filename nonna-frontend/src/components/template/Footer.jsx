@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/footer.css';
+import '../../styles/footer.css';
 
 // Logo and Nonna Reactions: designed by felicities / Freepik — Creative Commons License (CC BY 4.0)
 // Original URL: https://www.freepik.com/search?format=search&term=%40felicities+grandmother

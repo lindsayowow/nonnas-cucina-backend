@@ -22,6 +22,11 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     public List<UserDTO> getAllUserDTOs() {
         return userRepository.findAll()
                 .stream()
@@ -44,8 +49,8 @@ public class UserService {
         existing.setLastName(updatedUser.getLastName());
         existing.setPhoneNumber(updatedUser.getPhoneNumber());
 
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-            existing.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        if (updatedUser.getPasswordHash() != null && !updatedUser.getPasswordHash().isBlank()) {
+            existing.setPasswordHash(passwordEncoder.encode(updatedUser.getPasswordHash()));
         }
 
         return userRepository.save(existing);
@@ -55,6 +60,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    // REGISTER USER
     public UserDTO registerUser(RegisterUserDTO dto) {
 
         if (userRepository.existsByEmail(dto.getEmail())) {
@@ -66,37 +72,39 @@ public class UserService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
 
         User saved = userRepository.save(user);
         return new UserDTO(saved);
     }
 
+    // LOGIN VALIDATION
     public User validateLogin(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new RuntimeException("Invalid email or password");
         }
 
         return user;
     }
 
+    // GET PROFILE
     public ProfileDTO getByProfileDTOId(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ProfileDTO dto = new ProfileDTO();
-        dto.setId(user.getId());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setEmail(user.getEmail());
-        dto.setPhoneNumber(user.getPhoneNumber());
-
-        return dto;
+        return new ProfileDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhoneNumber()
+        );
     }
 
+    // UPDATE PROFILE
     public ProfileDTO updateProfileDTO(Integer id, ProfileDTO profileDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -108,15 +116,12 @@ public class UserService {
 
         userRepository.save(user);
 
-        ProfileDTO updated = new ProfileDTO();
-        updated.setId(user.getId());
-        updated.setFirstName(user.getFirstName());
-        updated.setLastName(user.getLastName());
-        updated.setEmail(user.getEmail());
-        updated.setPhoneNumber(user.getPhoneNumber());
-
-        return updated;
+        return new ProfileDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhoneNumber()
+        );
     }
-
-
 }

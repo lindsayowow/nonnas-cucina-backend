@@ -34,6 +34,4 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient")
     @JsonIgnore
     private List<IngredientCategory> ingredientCategories;
-
-
 }

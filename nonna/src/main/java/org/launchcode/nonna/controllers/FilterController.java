@@ -28,13 +28,15 @@ public class FilterController {
     }
 
     @PostMapping
-    public Filter createFilter(@RequestBody Filter filter) {
-        return filterService.saveFilter(filter);
+    public FilterDTO createFilter(@RequestBody Filter filter) {
+        Filter saved = filterService.saveFilter(filter);
+        return new FilterDTO(saved);
     }
 
     @PutMapping("/{id}")
-    public Filter updateFilter(@PathVariable Integer id, @RequestBody Filter filter) {
-        return filterService.updateFilter(id, filter);
+    public FilterDTO updateFilter(@PathVariable Integer id, @RequestBody Filter filter) {
+        Filter updated = filterService.updateFilter(id, filter);
+        return new FilterDTO(updated);
     }
 
     @DeleteMapping("/{id}")

@@ -1,0 +1,56 @@
+.pastorders-container {
+  padding: 2rem;
+}
+
+.order-card {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 10px;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.order-dishes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dish-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.dish-label {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.dish-ingredients {
+  flex: 1;
+}
+
+.dish-cost {
+  white-space: nowrap;
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #d35400;
+}
+
+.favorite-btn:hover {
+  color: #e67e22;
+}

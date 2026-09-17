@@ -10,10 +10,9 @@ import java.util.List;
 @Service
 public class FilterService {
 
-    public final FilterRepository filterRepository;
+    private final FilterRepository filterRepository;
 
-    public FilterService(FilterRepository filterRepository)
-    {
+    public FilterService(FilterRepository filterRepository) {
         this.filterRepository = filterRepository;
     }
 
@@ -30,24 +29,22 @@ public class FilterService {
                 .orElse(null);
     }
 
-    public Filter saveFilter(Filter filter)
-    {
+    public Filter saveFilter(Filter filter) {
         return filterRepository.save(filter);
     }
 
     public Filter updateFilter(Integer id, Filter updatedFilter) {
         Filter existing = filterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new RuntimeException("Filter not found"));
 
         existing.setFilterLabel(updatedFilter.getFilterLabel());
         existing.setFilterKey(updatedFilter.getFilterKey());
-        existing.setFilterLabel(updatedFilter.getFilterLabel());
+        existing.setExcludesAllergen(updatedFilter.isExcludesAllergen());
 
         return filterRepository.save(existing);
     }
 
-    public void deleteFilter(int id)
-    {
+    public void deleteFilter(int id) {
         filterRepository.deleteById(id);
     }
 

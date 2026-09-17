@@ -5,7 +5,6 @@ import org.launchcode.nonna.repositories.IngredientRepository;
 import org.springframework.stereotype.Service;
 import org.launchcode.nonna.dtos.IngredientDTO;
 
-
 import java.util.List;
 
 @Service
@@ -40,7 +39,7 @@ public class IngredientService {
 
     public Ingredient updateIngredient(Integer id, Ingredient updatedIngredient) {
         Ingredient existing = ingredientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new RuntimeException("Ingredient not found"));
 
         existing.setIngredientName(updatedIngredient.getIngredientName());
         existing.setIngredientCost(updatedIngredient.getIngredientCost());
@@ -56,5 +55,4 @@ public class IngredientService {
     private IngredientDTO convertToDTO(Ingredient ingredient) {
         return new IngredientDTO(ingredient);
     }
-
 }

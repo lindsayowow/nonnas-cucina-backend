@@ -1,12 +1,13 @@
 package org.launchcode.nonna.dtos;
 
-import org.launchcode.nonna.models.Dish;
+import lombok.*;
 
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class CreateDishDTO {
 
-    private String dishName;
     private double dishCost;
     private List<Integer> ingredients;
 

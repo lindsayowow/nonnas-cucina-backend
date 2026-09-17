@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "dishes")
@@ -20,15 +20,18 @@ public class Dish {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String dishName;
     private double dishCost;
     private Boolean isFavorite = false;
 
-    @OneToMany(mappedBy = "dish")
-    @JsonIgnore
-    private List<DishIngredient> dishIngredients = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "dish",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<DishIngredient> dishIngredients = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "past_order_id", nullable = false)
+    @JsonIgnore
     private PastOrder pastOrder;
 }

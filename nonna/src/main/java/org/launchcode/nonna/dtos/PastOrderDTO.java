@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.launchcode.nonna.models.Dish;
 import org.launchcode.nonna.models.PastOrder;
 
 import java.sql.Timestamp;
@@ -18,15 +19,23 @@ public class PastOrderDTO {
     private Timestamp orderTimeStamp;
     private double orderTotal;
     private Integer userId;
-    private List<Integer> dishIds;
+    private List<DishDTO> dishes;
 
     public PastOrderDTO(PastOrder pastOrder) {
+
         this.id = pastOrder.getId();
         this.orderTimeStamp = pastOrder.getOrderTimeStamp();
         this.orderTotal = pastOrder.getOrderTotal();
-        this.userId = pastOrder.getUser().getId();
-        this.dishIds = pastOrder.getDishes().stream()
-                .map(d -> d.getId())
+
+        this.userId = pastOrder.getUser() != null
+                ? pastOrder.getUser().getId()
+                : null;
+
+        List<Dish> dishList = pastOrder.getDishes();
+        this.dishes = (dishList == null)
+                ? List.of()
+                : dishList.stream()
+                .map(DishDTO::new)   // ✔ ensures ingredients are included
                 .toList();
     }
 }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import '../styles/ingredients.css';
-import IngredientsData from '../data/ingredients.json';
+
 import IngredientButton from './buttons/IngredientButton.jsx';
 import ClearIngredientsButton from './buttons/ClearIngredientsButton.jsx';
 import DishButton from "./buttons/DishButton.jsx";
-import { categoryMap, inversionList, filterMap } from '../utils/constants.js';
+
+import useFilters from "../hooks/useFilters";
+import useIngredients from "../hooks/useIngredients";
 
 export default function Ingredients({
   Categories,
@@ -19,9 +21,15 @@ export default function Ingredients({
   scrollToRef
 }) {
 
-  // Example of hooks
+  const { ingredients, loading } = useIngredients();
+  const { filters } = useFilters();
+
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [fadeOut, setFadeOut] = useState(false);
+
+  if (loading) {
+    return <p>Loading ingredients...</p>;
+  }
 
   const handleAddToOrder = () => {
     const newDish = updateOrder();
@@ -39,7 +47,6 @@ export default function Ingredients({
     clearIngredients();
     resetFilters && resetFilters();
 
-    // allow React to finish re-rendering before scrolling
     setTimeout(() => {
       scrollToRef?.current?.scrollIntoView({
         behavior: "smooth",
@@ -49,7 +56,6 @@ export default function Ingredients({
   };
 
   return (
-    // region landmark for screen readers
     <div
       className="card ingredientClass"
       role="region"
@@ -61,33 +67,46 @@ export default function Ingredients({
 
       {Categories.map((Category) => (
         <div
-          key={Category}
+          key={Category.id}
           className="categoryContainer"
           role="region"
-          aria-label={`${Category} ingredients`}
+          aria-label={`${Category.categoryName} ingredients`}
         >
-          <h3 className="categoryHeader text-center">{Category}</h3>
+          <h3 className="categoryHeader text-center">
+            {Category.categoryName}
+          </h3>
 
           <div className="ingredientButtons">
-            {IngredientsData
-              .filter((ingredient) => ingredient.category === categoryMap[Category])
+            {ingredients
+              .filter((ingredient) =>
+                ingredient.categoryIds.includes(Category.id)
+              )
               .map((ingredient) => {
-                const disabled = selectedFilters.some((filter) => {
-                  const property = filterMap[filter];
-                  const isInverted = inversionList.includes(filter);
-                  return isInverted
-                    ? ingredient[property] === true
-                    : ingredient[property] === false;
+
+                const disabled = selectedFilters.some((filterId) => {
+                  const filterObj = filters.find(f => f.id === filterId);
+                  if (!filterObj) return false;
+
+                  const isAllergenExclusion = filterObj.excludesAllergen === 1;
+
+                  return isAllergenExclusion
+                    ? ingredient.filterIds.includes(filterObj.id)
+                    : !ingredient.filterIds.includes(filterObj.id);
                 });
 
                 const isSelected = selectedIngredients.some(
-                  (item) => item.name === ingredient.name
+                  (item) => item.name === ingredient.ingredientName
                 );
 
                 return (
                   <IngredientButton
-                    key={ingredient.name}
-                    ingredient={ingredient}
+                    key={ingredient.id}
+                    ingredient={{
+                      id: ingredient.id,                // ⭐ FIXED: include ID
+                      name: ingredient.ingredientName,
+                      price: ingredient.ingredientCost,
+                      emoji: ingredient.emoji
+                    }}
                     onToggleIngredient={onToggleIngredient}
                     isSelected={isSelected}
                     disabled={disabled}
@@ -108,7 +127,6 @@ export default function Ingredients({
           Add to Order
         </DishButton>
 
-        {/* Parent passing props to child */}
         <ClearIngredientsButton
           className="btn build-action-button"
           clearIngredients={clearIngredients}

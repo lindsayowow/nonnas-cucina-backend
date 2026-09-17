@@ -1,8 +1,11 @@
 package org.launchcode.nonna.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,11 +21,15 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String passwordHash;
 
     private String firstName;
     private String lastName;
     private String phoneNumber;
 
     private String role = "USER";
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<PastOrder> pastOrders;
 }

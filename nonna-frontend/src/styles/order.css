@@ -132,3 +132,39 @@
 .btn.OrderButton:disabled {
   color: white;
 }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.modal-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background: #d35400;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.modal-btn.cancel {
+  background: #7f8c8d;
+}

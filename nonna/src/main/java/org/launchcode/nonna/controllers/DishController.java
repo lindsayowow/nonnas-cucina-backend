@@ -1,12 +1,12 @@
 package org.launchcode.nonna.controllers;
 
+import org.launchcode.nonna.dtos.CreateDishDTO;
 import org.launchcode.nonna.dtos.DishDTO;
-import org.launchcode.nonna.models.Dish;
+import org.launchcode.nonna.dtos.UpdateFavoriteDTO;
 import org.launchcode.nonna.services.DishService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/dishes")
@@ -29,19 +29,14 @@ public class DishController {
     }
 
     @PostMapping
-    public Dish createDish(@RequestBody Dish dish) {
-        return dishService.saveDish(dish);
-    }
-
-    @PutMapping("/{id}")
-    public Dish updateDish(@PathVariable Integer id, @RequestBody Dish dish) {
-        return dishService.updateDish(id, dish);
+    public DishDTO createDish(@RequestBody CreateDishDTO dto) {
+        return dishService.createDish(dto);
     }
 
     @PutMapping("/{id}/favorite")
-    public Dish updateFavorite(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
-        Boolean isFavorite = body.get("isFavorite");
-        return dishService.updateFavorite(id, isFavorite);
+    public DishDTO updateFavorite(@PathVariable Integer id,
+                                  @RequestBody UpdateFavoriteDTO dto) {
+        return dishService.updateFavorite(id, dto.getIsFavorite());
     }
 
     @DeleteMapping("/{id}")

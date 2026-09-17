@@ -24,11 +24,15 @@ public class PastOrder {
     private Timestamp orderTimeStamp;
     private double orderTotal;
 
-    @OneToMany(mappedBy = "pastOrder")
-    @JsonIgnore
+    @OneToMany(
+            mappedBy = "pastOrder",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Dish> dishes = new ArrayList<>();
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 }
