@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/past-orders.css";
 import { Link } from "react-router-dom";
+import SideNavBar from "../components/template/SideBarNav.jsx";
 
 const currency = (value) =>
   new Intl.NumberFormat("en-US", {
@@ -114,12 +115,21 @@ export default function PastOrders({ token }) {
     return (
       <section className="pastorders-container">
         <h1>Past Orders</h1>
-        <p>You have no past orders yet.</p>
+        <p>You have not created any orders yet.</p>
       </section>
     );
   }
 
   return (
+<main className="pastorders-layout" aria-label="Past Orders page">    
+
+      {/* DESKTOP NAVBAR */}
+      <div className="section-0 desktop-only" role="region" aria-label="Side navigation bar">
+        <div className="navbar-container">
+          <SideNavBar />
+        </div>
+      </div>
+
     <section className="pastorders-container">
       <h1>Past Orders</h1>
 
@@ -166,5 +176,6 @@ export default function PastOrders({ token }) {
         </div>
       ))}
     </section>
+    </main>
   );
 }
