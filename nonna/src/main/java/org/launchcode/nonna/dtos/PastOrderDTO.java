@@ -35,7 +35,7 @@ public class PastOrderDTO {
         this.dishes = (dishList == null)
                 ? List.of()
                 : dishList.stream()
-                .map(DishDTO::new)
+                .map(DishDTO::new)   // ✔ ensures ingredients are included
                 .toList();
     }
 }

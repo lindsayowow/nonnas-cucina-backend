@@ -15,20 +15,31 @@ export default function Order({ token }) {
     sendToKitchen,
     removeDish,
     yourOrder,
-    grandTotal
+    grandTotal,
+    clearOrder        // ⭐ added
   } = useDishBuilderContext();
 
   const [kitchenMessage, setKitchenMessage] = useState("");
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const handleSendToKitchen = () => {
+  const handleSendToKitchen = async () => {
     if (!token) {
       setShowLoginModal(true);
       return;
     }
 
-    sendToKitchen(token);
-    setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
+    try {
+      const success = await sendToKitchen(token);
+
+      if (success) {
+        setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
+
+        // ⭐ FIX: clear cart after successful submission
+        clearOrder();
+      }
+    } catch (err) {
+      console.error("Error sending order:", err);
+    }
   };
 
   console.log("TOKEN IN ORDER PAGE:", token);

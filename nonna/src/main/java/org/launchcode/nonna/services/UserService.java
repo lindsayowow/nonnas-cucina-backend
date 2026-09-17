@@ -22,6 +22,12 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ⭐ NEW — REQUIRED BY JwtAuthenticationFilter
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     // GET ALL USERS
     public List<UserDTO> getAllUserDTOs() {
         return userRepository.findAll()
@@ -30,7 +36,7 @@ public class UserService {
                 .toList();
     }
 
-    // GET USER BY ID
+    // GET USER BY ID (DTO)
     public UserDTO getByUserDTOId(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));

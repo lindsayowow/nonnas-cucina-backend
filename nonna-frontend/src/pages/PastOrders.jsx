@@ -5,11 +5,14 @@ import { Link } from "react-router-dom";
 export default function PastOrders({ token }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(false);
 
+  // ✅ Updated to handle new login response structure
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.sub;
+      // Your backend now sends "sub" as userId (string)
+      return Number(payload.sub ?? payload.userId ?? payload.id);
     } catch {
       return null;
     }
@@ -25,6 +28,9 @@ export default function PastOrders({ token }) {
 
     async function fetchOrders() {
       try {
+        console.log("TOKEN:", token);
+        console.log("USER ID:", userId);
+
         const response = await fetch(
           `http://localhost:8080/pastorders/user/${userId}`,
           {
@@ -32,8 +38,18 @@ export default function PastOrders({ token }) {
           }
         );
 
+        console.log("PAST ORDERS STATUS:", response.status);
+
+        if (response.status === 401 || response.status === 403) {
+          console.error("AUTH ERROR FETCHING PAST ORDERS");
+          setAuthError(true);
+          setOrders([]);
+          return;
+        }
+
         if (response.ok) {
           const data = await response.json();
+          console.log("PAST ORDERS DATA:", data);
           setOrders(data ?? []);
         } else {
           console.error("Failed to fetch past orders");
@@ -68,6 +84,7 @@ export default function PastOrders({ token }) {
     }
   }
 
+  // 🧩 Conditional rendering
   if (!token) {
     return (
       <section className="pastorders-container">
@@ -87,6 +104,15 @@ export default function PastOrders({ token }) {
     );
   }
 
+  if (authError) {
+    return (
+      <section className="pastorders-container">
+        <h1>Past Orders</h1>
+        <p>You are not authorized to view these orders.</p>
+      </section>
+    );
+  }
+
   if (!orders || orders.length === 0) {
     return (
       <section className="pastorders-container">
@@ -96,6 +122,7 @@ export default function PastOrders({ token }) {
     );
   }
 
+  // ✅ Render grouped dishes and ingredients
   return (
     <section className="pastorders-container">
       <h1>Past Orders</h1>
@@ -118,41 +145,52 @@ export default function PastOrders({ token }) {
 
           <h3>Dishes</h3>
           <ul className="order-dishes">
-            {(order.dishes ?? []).map(dish => (
-              <li key={dish.id} className="dish-item">
-                <div className="dish-header">
-                  <span className="dish-cost">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD"
-                    }).format(dish.dishCost || 0)}
-                  </span>
+            {(order.dishes ?? []).map(dish => {
+              const ingredients =
+                dish.ingredients ??
+                dish.ingredientList ??
+                dish.ingredientsForDish ??
+                [];
 
-                  <button
-                    className="favorite-btn"
-                    onClick={() => handleFavorite(dish.id)}
-                    aria-label="Add dish to favorites"
-                  >
-                    ♡
-                  </button>
-                </div>
+              return (
+                <li key={dish.id} className="dish-item">
+                  <div className="dish-header">
+                    <span className="dish-cost">
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD"
+                      }).format(dish.dishCost || 0)}
+                    </span>
 
-                <ul className="ingredient-list">
-                  {(dish.ingredients ?? []).map(ing => (
-                    <li key={ing.id} className="ingredient-item">
-                      <span className="ingredient-emoji">{ing.emoji}</span>
-                      <span className="ingredient-name">{ing.ingredientName}</span>
-                      <span className="ingredient-cost">
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "USD"
-                        }).format(ing.ingredientCost || 0)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
+                    <button
+                      className="favorite-btn"
+                      onClick={() => handleFavorite(dish.id)}
+                      aria-label="Add dish to favorites"
+                    >
+                      ♡
+                    </button>
+                  </div>
+
+                  {/* ✅ Group ingredients under each dish */}
+                  {ingredients.length > 0 && (
+                    <ul className="ingredient-list">
+                      {ingredients.map(ing => (
+                        <li key={ing.id} className="ingredient-item">
+                          <span className="ingredient-emoji">{ing.emoji}</span>
+                          <span className="ingredient-name">{ing.ingredientName}</span>
+                          <span className="ingredient-cost">
+                            {new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: "USD"
+                            }).format(ing.ingredientCost || 0)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}
