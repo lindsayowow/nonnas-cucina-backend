@@ -2,23 +2,32 @@ package org.launchcode.nonna.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "super-secret-key";
+    private final SecretKey signingKey;
+    private final long expirationMillis;
 
-    // ⭐ ROLLED BACK — ONLY userId in token
+    public JwtUtil(@Value("${jwt.secret}") String base64Secret,
+                   @Value("${jwt.expiration-ms:86400000}") long expirationMillis) {
+        // jwt.secret must be a Base64-encoded value that decodes to >= 256 bits for HS256
+        this.signingKey = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(base64Secret));
+        this.expirationMillis = expirationMillis;
+    }
+
     public String generateToken(Integer userId) {
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))   // ONLY userId
+                .setSubject(String.valueOf(userId))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(signingKey)
                 .compact();
     }
 
@@ -37,8 +46,9 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET)
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }

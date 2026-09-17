@@ -1,11 +1,8 @@
 package org.launchcode.nonna.config;
 
 import org.launchcode.nonna.security.JwtAuthenticationFilter;
-import org.launchcode.nonna.security.JwtAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,12 +17,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
-    private final JwtAuthenticationProvider jwtProvider;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter,
-                          JwtAuthenticationProvider jwtProvider) {
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
-        this.jwtProvider = jwtProvider;
     }
 
     @Bean
@@ -48,14 +42,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(jwtProvider)
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/auth/login", "/users/register").permitAll()
                         .requestMatchers("/ingredients/**", "/filters/**", "/categories/**").permitAll()
 
                         // Protected endpoints
-                        .requestMatchers("/users/profile/**").authenticated()   // ⭐ FIXED
+                        .requestMatchers("/users/profile/**").authenticated()
                         .requestMatchers("/favorites/**").authenticated()
                         .requestMatchers("/pastorders/**").authenticated()
 
@@ -66,11 +59,6 @@ public class SecurityConfig {
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
     }
 
     @Bean
