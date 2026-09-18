@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AuthButton from "./buttons/AuthButton";
+import "../styles/profile.css";   // ⭐ new stylesheet
 
 export default function Profile({ token, setToken }) {
   const [user, setUser] = useState(null);
@@ -9,7 +10,7 @@ export default function Profile({ token, setToken }) {
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return Number(payload.sub);   // ⭐ FIXED: ensure numeric ID
+      return Number(payload.sub);
     } catch (err) {
       console.error("Invalid token", err);
       return null;
@@ -22,11 +23,11 @@ export default function Profile({ token, setToken }) {
     async function fetchUser() {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/profile/${userId}`,   // ⭐ FIXED: correct endpoint
+          `http://localhost:8080/users/profile/${userId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -56,42 +57,52 @@ export default function Profile({ token, setToken }) {
   }
 
   return (
-    <div className="profile-view">
-      <h2>My Profile</h2>
+    <div className="profile-card">
+      <h2 className="profile-title">My Profile</h2>
+
+      <div className="profile-button-row">
+        <Link to="/favorites">
+          <AuthButton>View Favorites ❤️</AuthButton>
+        </Link>
+
+        <Link to="/orders">
+          <AuthButton>View Past Orders 📜</AuthButton>
+        </Link>
+
+        <AuthButton onClick={() => setEditing(true)}>
+          Edit Profile
+        </AuthButton>
+
+        <AuthButton onClick={logout}>
+          Logout
+        </AuthButton>
+      </div>
 
       {!editing && (
-        <>
-          <p><strong>First Name:</strong> {user.firstName}</p>
-          <p><strong>Last Name:</strong> {user.lastName}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Phone Number:</strong> {user.phoneNumber}</p>
-
-          <Link to="/favorites">
-            <AuthButton>View Favorites ❤️</AuthButton>
-          </Link>
-
-          <Link to="/orders">
-            <AuthButton>View Past Orders 📜</AuthButton>
-          </Link>
-
-          <AuthButton onClick={() => setEditing(true)}>
-            Edit Profile
-          </AuthButton>
-
-          <AuthButton onClick={logout}>
-            Logout
-          </AuthButton>
-        </>
+        <div className="profile-content">
+          <p>
+            <strong>First Name:</strong> {user.firstName}
+          </p>
+          <p>
+            <strong>Last Name:</strong> {user.lastName}
+          </p>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
+          <p>
+            <strong>Phone Number:</strong> {user.phoneNumber}
+          </p>
+        </div>
       )}
 
       {editing && (
-        <>
+        <div className="profile-content">
           <p>Edit mode coming soon…</p>
 
           <AuthButton onClick={() => setEditing(false)}>
             Cancel
           </AuthButton>
-        </>
+        </div>
       )}
     </div>
   );

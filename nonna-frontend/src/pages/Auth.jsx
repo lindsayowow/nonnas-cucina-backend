@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Profile from "../components/Profile";
 import LoginForm from "../components/forms/LoginForm";
 import RegisterForm from "../components/forms/RegisterForm";
+import "../styles/auth.css";   // ⭐ make sure this file exists
 
 export default function Auth({ setToken }) {
   const [authMode, setAuthMode] = useState("login");
@@ -17,7 +18,6 @@ export default function Auth({ setToken }) {
     }
   }
 
-  // Validate token on load + whenever localToken changes
   useEffect(() => {
     if (!localToken) {
       setToken(null);
@@ -42,7 +42,6 @@ export default function Auth({ setToken }) {
     }
   }, [localToken, setToken]);
 
-  // Sync localToken → App.jsx token + localStorage
   useEffect(() => {
     if (localToken) {
       localStorage.setItem("token", localToken);
@@ -50,14 +49,34 @@ export default function Auth({ setToken }) {
     }
   }, [localToken, setToken]);
 
-  // Logged in → show profile
+  // Logged in → show profile inside centered container
   if (localToken) {
-    return <Profile token={localToken} setToken={setLocalToken} />;
+    return (
+      <section
+        className="auth-container"
+        role="region"
+        aria-labelledby="auth-title"
+      >
+        <h1 id="auth-title" className="visually-hidden">
+          My Account
+        </h1>
+
+        <Profile token={localToken} setToken={setLocalToken} />
+      </section>
+    );
   }
 
-  // Not logged in → show login/register
+  // Not logged in → show login/register in same centered container
   return (
-    <section className="auth-container">
+    <section
+      className="auth-container"
+      role="region"
+      aria-labelledby="auth-title"
+    >
+      <h1 id="auth-title" className="visually-hidden">
+        Authentication
+      </h1>
+
       {authMode === "login" && (
         <LoginForm
           setToken={(token) => setLocalToken(token)}
