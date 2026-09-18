@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "../styles/past-orders.css";
 import { Link } from "react-router-dom";
 import SideNavBar from "../components/template/SideBarNav.jsx";
+import useFavoriteToggle from "../hooks/useFavoriteToggle";
+import FavoriteButton from "../components/buttons/FavoriteButton";
 
 const currency = (value) =>
   new Intl.NumberFormat("en-US", {
@@ -14,10 +16,11 @@ export default function PastOrders({ token }) {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(false);
 
+  const { toggleFavorite } = useFavoriteToggle(orders, setOrders, token);
+
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      // Backend sends "sub" as the userId (string)
       return Number(payload.sub ?? payload.userId ?? payload.id);
     } catch {
       return null;
@@ -65,24 +68,6 @@ export default function PastOrders({ token }) {
     fetchOrders();
   }, [userId, token]);
 
-  async function handleFavorite(dishId) {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/favorites/${dishId}`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      if (!response.ok) {
-        console.error("Failed to favorite dish");
-      }
-    } catch (err) {
-      console.error("Error favoriting dish", err);
-    }
-  }
-
   if (!token) {
     return (
       <section className="pastorders-container">
@@ -121,61 +106,72 @@ export default function PastOrders({ token }) {
   }
 
   return (
-<main className="pastorders-layout" aria-label="Past Orders page">    
+    <main className="pastorders-layout" aria-label="Past Orders page">
 
-      {/* DESKTOP NAVBAR */}
       <div className="section-0 desktop-only" role="region" aria-label="Side navigation bar">
         <div className="navbar-container">
           <SideNavBar />
         </div>
       </div>
 
-    <section className="pastorders-container">
-      <h1>Past Orders</h1>
+      <section className="pastorders-container">
+        <h1>Past Orders</h1>
 
-      {orders.map(order => (
-        <div key={order.id} className="order-card">
-          <div className="order-header">
-            <p className="timestamp">
-              {new Date(order.orderTimeStamp).toLocaleString()}
-            </p>
-            <h2>Order #{order.id}</h2>
-            <p className="order-total">
-              Total: {currency(order.orderTotal)}
-            </p>
+        {orders.map(order => (
+          <div key={order.id} className="order-card">
+
+            {/* --- NEW HEADER LAYOUT --- */}
+            <div className="order-header unified-header">
+              <span className="left">
+                {new Date(order.orderTimeStamp).toLocaleString()}
+              </span>
+
+              <span className="center">
+                Order #{order.id}
+              </span>
+
+              <span className="right">
+                Total: {currency(order.orderTotal)}
+              </span>
+            </div>
+
+            <ul className="order-dishes">
+              {(order.dishes ?? []).map((dish, index) => {
+                const ingredients =
+                  dish.ingredients ??
+                  dish.ingredientList ??
+                  dish.ingredientsForDish ??
+                  [];
+
+                const ingredientNames = ingredients.length > 0
+                  ? ingredients.map(ing => ing.ingredientName).join(", ")
+                  : "No ingredients listed";
+
+                return (
+                  <li key={dish.id} className="dish-item dish-row">
+
+                    <div className="dish-info">
+                      <span className="dish-label">Dish {index + 1}:  </span>
+                      <span className="dish-ingredients">{ingredientNames}</span>
+                    </div>
+
+                    <div className="dish-actions">
+                      <span className="dish-cost">{currency(dish.dishCost)}</span>
+
+                      <FavoriteButton
+                        orderId={order.id}
+                        dish={dish}
+                        toggleFavorite={toggleFavorite}
+                      />
+                    </div>
+
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-
-          <ul className="order-dishes">
-            {(order.dishes ?? []).map((dish, index) => {
-              const ingredients =
-                dish.ingredients ??
-                dish.ingredientList ??
-                dish.ingredientsForDish ??
-                [];
-
-              const ingredientNames = ingredients.length > 0
-                ? ingredients.map(ing => ing.ingredientName).join(", ")
-                : "No ingredients listed";
-
-              return (
-                <li key={dish.id} className="dish-item">
-                  <span className="dish-label">Dish {index + 1}:</span>
-                  <span className="dish-ingredients">{ingredientNames}</span>
-                  <span className="dish-cost">{currency(dish.dishCost)}</span>
-                  <button
-                    className="favorite-btn"
-                    onClick={() => handleFavorite(dish.id)}
-                    aria-label="Add dish to favorites"
-                  >
-                    ♡
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
-    </section>
+        ))}
+      </section>
     </main>
   );
 }

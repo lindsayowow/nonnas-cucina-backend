@@ -1,48 +1,72 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from "react-router-dom";
 
-export default function SideBarNav() {
-    const [open, setOpen] = useState(false);
+export default function SideBarNav({setToken}) {
 
-    return (
-        <div>
-            <nav
-                id="primary-navigation"
-                aria-label="Main navigation"
-                className={`sidebar-nav ${open ? "open" : ""}`}
+  const location = useLocation();
+  const onProfilePage = location.pathname === "/auth";
+
+  function logout() {
+    localStorage.removeItem("token");
+    setToken(null);
+  }
+
+  return (
+    <nav className="profile-nav">
+      <ul className="profile-nav-list">
+
+        {/* If NOT on profile page → show Profile link */}
+        {!onProfilePage && (
+          <li>
+            <NavLink
+              to="/auth"
+              className={({ isActive }) => isActive ? "active-link" : ""}
             >
-                <ul className="sidebar-navigation">
-                    <li>
-                        <NavLink 
-                            to="/auth"
-                            className={({ isActive }) => isActive ? "active-link" : ""}
-                            onClick={() => setOpen(false)}
-                        >
-                            Profile
-                        </NavLink>
-                    </li>
+              Profile
+            </NavLink>
+          </li>
+        )}
 
-                    <li>
-                        <NavLink 
-                            to="/orders"
-                            className={({ isActive }) => isActive ? "active-link" : ""}
-                            onClick={() => setOpen(false)}
-                        >
-                            Past Orders
-                        </NavLink>
-                    </li>
+        {/* If ON profile page → show Edit Profile */}
+        {onProfilePage && (
+          <li>
+            <button
+              className="link-button"
+              onClick={() => console.log("Edit mode coming soon")}
+            >
+              Edit Profile
+            </button>
+          </li>
+        )}
 
-                    <li>
-                        <NavLink 
-                            to="/favorites"
-                            className={({ isActive }) => isActive ? "active-link" : ""}
-                            onClick={() => setOpen(false)}
-                        >
-                            Favorites
-                        </NavLink>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    );
+        <li>
+          <NavLink
+            to="/orders"
+            className={({ isActive }) => isActive ? "active-link" : ""}
+          >
+            Past Orders
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink
+            to="/favorites"
+            className={({ isActive }) => isActive ? "active-link" : ""}
+          >
+            Favorites
+          </NavLink>
+        </li>
+
+        {/* Only show logout on profile page */}
+        {onProfilePage && (
+          <li>
+            <button className="link-button" onClick={logout}>
+              Logout
+            </button>
+          </li>
+        )}
+
+      </ul>
+    </nav>
+  );
 }

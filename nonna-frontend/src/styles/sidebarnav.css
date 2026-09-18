@@ -81,3 +81,17 @@ a:hover {
     font-size: 2.25rem;
   }
 }
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--link-color);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link-button:hover {
+  color: var(--link-hover-color);
+}

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "../styles/favorites.css";
-import { getFavoriteDishes } from "../services/api";
 import { Link } from "react-router-dom";
+import FavoriteButton from "../components/buttons/FavoriteButton";
+import useFavoriteToggle from "../hooks/useFavoriteToggle";
+import SideNavBar from "../components/template/SideBarNav.jsx";
 
 export default function Favorites({ token }) {
-  const [favorites, setFavorites] = useState([]);
+  const [allDishes, setAllDishes] = useState([]);
 
   function getUserIdFromToken(token) {
     try {
@@ -17,14 +19,65 @@ export default function Favorites({ token }) {
 
   const userId = getUserIdFromToken(token);
 
+  // ⭐ WRAPPER APPROACH
+  // Convert flat dish list → fake "orders" array so the hook sees the same shape as PastOrders
+  const wrappedOrders = [
+    {
+      id: 0,            // fake order ID (not used by backend)
+      dishes: allDishes // real dishes
+    }
+  ];
+
+  // ⭐ Hook now receives wrappedOrders instead of flat dishes
+  const { toggleFavorite } = useFavoriteToggle(
+    wrappedOrders,
+    newOrders => {
+      // unwrap dishes back out after hook updates them
+      setAllDishes(newOrders[0].dishes);
+    },
+    token
+  );
+
   useEffect(() => {
     if (!userId) return;
 
-    getFavoriteDishes().then(allFavs => {
-      const userFavs = allFavs.filter(f => Number(f.user_id) === userId);
-      setFavorites(userFavs);
-    });
-  }, [userId]);
+    async function fetchFavorites() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/pastorders/user/${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        if (!response.ok) {
+          setAllDishes([]);
+          return;
+        }
+
+        const orders = await response.json();
+
+        const dishes = orders.flatMap(order =>
+          (order.dishes ?? []).map(dish => ({
+            ...dish,
+            orderId: order.id,
+            ingredients:
+              dish.ingredients ??
+              dish.ingredientList ??
+              dish.ingredientsForDish ??
+              []
+          }))
+        );
+
+        setAllDishes(dishes);
+      } catch (err) {
+        console.error("Error fetching favorites", err);
+        setAllDishes([]);
+      }
+    }
+
+    fetchFavorites();
+  }, [userId, token]);
 
   if (!token) {
     return (
@@ -36,23 +89,53 @@ export default function Favorites({ token }) {
     );
   }
 
+  // ⭐ Only filter favorites at render time
+  const favorites = allDishes.filter(dish => dish.isFavorite === true);
+
   return (
-    <section className="favorites-container">
-      <h1>My Favorite Dishes</h1>
+    <main className="favorites-layout" aria-label="Favorites page">
 
-      {favorites.length === 0 && <p>You have no favorites yet.</p>}
+      <div className="section-0 desktop-only" role="region" aria-label="Side navigation bar">
+        <div className="navbar-container">
+          <SideNavBar />
+        </div>
+      </div>
 
-      <ul>
-        {favorites.map((dish, index) => (
-          <li key={dish.id}>
-            Dish {index + 1} — $
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD"
-            }).format(dish.dishCost)}
-          </li>
-        ))}
-      </ul>
-    </section>
+      <section className="favorites-container">
+        <h1>My Favorite Dishes</h1>
+
+        {favorites.length === 0 && <p>You have no favorites yet.</p>}
+
+        <ul className="favorites-list">
+          {favorites.map((dish, index) => {
+            const ingredientNames =
+              dish.ingredients.length > 0
+                ? dish.ingredients.map(ing => ing.ingredientName).join(", ")
+                : "No ingredients listed";
+
+            return (
+              <li key={dish.id} className="favorite-item">
+                <div className="favorite-row">
+                  <span className="dish-label">Dish {index + 1}:</span>
+                  <span className="dish-ingredients">{ingredientNames}</span>
+                  <span className="dish-cost">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD"
+                    }).format(dish.dishCost)}
+                  </span>
+
+                  <FavoriteButton
+                    orderId={dish.orderId}
+                    dish={dish}
+                    toggleFavorite={toggleFavorite}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </main>
   );
 }
