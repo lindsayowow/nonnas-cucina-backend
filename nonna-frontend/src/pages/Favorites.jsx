@@ -90,7 +90,7 @@ export default function Favorites({ token }) {
   return (
     <main className="favorites-layout" aria-label="Favorites page">
 
-      {/* ⭐ ALWAYS RENDER SIDEBAR — mobile + desktop */}
+      {/* Always render sidebar - mobile + desktop */}
       <div className="section-0" role="region" aria-label="Side navigation bar">
         <div className="navbar-container">
           <SideNavBar />
@@ -122,7 +122,7 @@ export default function Favorites({ token }) {
                   </span>
 
                   <FavoriteButton
-                    orderId={dish.orderId}
+                    orderId={0}
                     dish={dish}
                     toggleFavorite={toggleFavorite}
                   />

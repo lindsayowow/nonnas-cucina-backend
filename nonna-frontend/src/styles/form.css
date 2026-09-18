@@ -73,3 +73,16 @@ button.btn:disabled {
 .btn:disabled {
   color: white;
 }
+/* Remove vertical stacking for auth forms */
+.form-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Inputs inside horizontal rows */
+.form-row input {
+  padding: 0.4rem;
+  font-size: 1rem;
+}

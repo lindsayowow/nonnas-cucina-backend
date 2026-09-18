@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import Profile from "../components/Profile";
 import LoginForm from "../components/forms/LoginForm";
 import RegisterForm from "../components/forms/RegisterForm";
-import SideBarNav from "../components/template/SideBarNav";   // ⭐ added
+import SideBarNav from "../components/template/SideBarNav";
 import "../styles/auth.css";
 
 export default function Auth({ setToken }) {
   const [authMode, setAuthMode] = useState("login");
   const [localToken, setLocalToken] = useState(localStorage.getItem("token"));
+  const [editing, setEditing] = useState(false);
 
   function decodeToken(token) {
     try {
@@ -22,6 +23,7 @@ export default function Auth({ setToken }) {
   useEffect(() => {
     if (!localToken) {
       setToken(null);
+      window.dispatchEvent(new Event("authchange"));
       return;
     }
 
@@ -31,6 +33,7 @@ export default function Auth({ setToken }) {
       localStorage.removeItem("token");
       setLocalToken(null);
       setToken(null);
+      window.dispatchEvent(new Event("authchange"));
       return;
     }
 
@@ -40,6 +43,7 @@ export default function Auth({ setToken }) {
       localStorage.removeItem("token");
       setLocalToken(null);
       setToken(null);
+      window.dispatchEvent(new Event("authchange"));
     }
   }, [localToken, setToken]);
 
@@ -47,6 +51,7 @@ export default function Auth({ setToken }) {
     if (localToken) {
       localStorage.setItem("token", localToken);
       setToken(localToken);
+      window.dispatchEvent(new Event("authchange"));
     }
   }, [localToken, setToken]);
 
@@ -62,9 +67,16 @@ export default function Auth({ setToken }) {
           My Account
         </h1>
 
-        <SideBarNav setToken={setLocalToken} />
+        <SideBarNav
+          setToken={setLocalToken}
+          onEditProfile={() => setEditing(true)}
+        />
 
-        <Profile token={localToken} setToken={setLocalToken} />
+        <Profile
+          token={localToken}
+          editing={editing}
+          setEditing={setEditing}
+        />
       </section>
     );
   }

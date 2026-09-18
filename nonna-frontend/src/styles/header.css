@@ -72,6 +72,29 @@ a:hover {
     drop-shadow(0 0 6px rgba(210, 235, 190, 0.25));
 }
 
+/* profile icon login/logout states */
+.profile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0.15rem 0.35rem;
+  transition: color 0.2s ease, text-shadow 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-icon.logged-out {
+  color: var(--color-text-inverse);
+  opacity: 0.75;
+}
+
+.profile-icon.logged-in {
+  color: var(--surface-yellow);
+  text-shadow:
+    0 0 6px rgba(255, 215, 0, 0.6),
+    0 0 12px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.6);
+}
+
 .hamburger {
   display: none;
   background: none;
@@ -135,4 +158,8 @@ a:hover {
   .hamburger {
     font-size: 2.25rem;
   }
+}
+
+.fav-icon {
+  color: #ffffff;
 }

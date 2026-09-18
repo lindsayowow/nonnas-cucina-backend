@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import AuthButton from "./buttons/AuthButton";
-import "../styles/profile.css";   // ⭐ new stylesheet
+import "../styles/profile.css";
 
-export default function Profile({ token, setToken }) {
+export default function Profile({ token, editing, setEditing }) {
   const [user, setUser] = useState(null);
-  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: ""
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   function getUserIdFromToken(token) {
     try {
@@ -34,6 +40,12 @@ export default function Profile({ token, setToken }) {
         if (response.ok) {
           const data = await response.json();
           setUser(data);
+          setForm({
+            firstName: data.firstName ?? "",
+            lastName: data.lastName ?? "",
+            email: data.email ?? "",
+            phoneNumber: data.phoneNumber ?? ""
+          });
         } else {
           console.error("Failed to fetch user");
         }
@@ -47,9 +59,57 @@ export default function Profile({ token, setToken }) {
     }
   }, [userId, token]);
 
-  function logout() {
-    localStorage.removeItem("token");
-    setToken(null);
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+  }
+
+  function handleCancel() {
+    if (user) {
+      setForm({
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        email: user.email ?? "",
+        phoneNumber: user.phoneNumber ?? ""
+      });
+    }
+    setError(null);
+    setEditing(false);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/profile/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(form)
+        }
+      );
+
+      if (!response.ok) {
+        setError("Failed to update profile.");
+        setSaving(false);
+        return;
+      }
+
+      const updated = await response.json();
+      setUser(updated);
+      setEditing(false);
+    } catch (err) {
+      console.error("Error updating profile", err);
+      setError("Error updating profile.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (!user) {
@@ -78,13 +138,62 @@ export default function Profile({ token, setToken }) {
       )}
 
       {editing && (
-        <div className="profile-content">
-          <p>Edit mode coming soon…</p>
+        <form className="profile-content" onSubmit={handleSubmit}>
+          <label>
+            First Name
+            <input
+              type="text"
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              required
+            />
+          </label>
 
-          <AuthButton onClick={() => setEditing(false)}>
-            Cancel
-          </AuthButton>
-        </div>
+          <label>
+            Last Name
+            <input
+              type="text"
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Email
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Phone Number
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={form.phoneNumber}
+              onChange={handleChange}
+            />
+          </label>
+
+          {error && <p className="profile-error">{error}</p>}
+
+          <div className="profile-actions">
+            <AuthButton type="submit" disabled={saving}>
+              {saving ? "Saving..." : "Save"}
+            </AuthButton>
+
+            <AuthButton type="button" onClick={handleCancel}>
+              Cancel
+            </AuthButton>
+          </div>
+        </form>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../../styles/header.css';
 import nonnasLogo from '../../assets/Nonnas_Logo.png';
@@ -9,6 +9,21 @@ import { DishBuilderContext } from "../../context/DishBuilderContextObject";
 export default function Header() {
   const { yourOrder } = useDishBuilderContext();
   const [open, setOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+
+  useEffect(() => {
+    const syncLoginState = () => setIsLoggedIn(!!localStorage.getItem("token"));
+
+    // fires on changes from other tabs
+    window.addEventListener("storage", syncLoginState);
+    // fires on changes from this tab (dispatched in Auth.jsx / SideBarNav.jsx)
+    window.addEventListener("authchange", syncLoginState);
+
+    return () => {
+      window.removeEventListener("storage", syncLoginState);
+      window.removeEventListener("authchange", syncLoginState);
+    };
+  }, []);
 
   return (
     // semantic header
@@ -47,9 +62,19 @@ export default function Header() {
         <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
         <NavLink to="/buildadish" onClick={() => setOpen(false)}>Build a Dish</NavLink>
         <NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink>
-        {/* <NavLink to="/profile" onClick={() => setOpen(false)}>👤︎</NavLink> */}
-        <NavLink to="/auth" onClick={() => setOpen(false)}>👤︎</NavLink>
-        <NavLink to="/favorites" onClick={() => setOpen(false)}>♡</NavLink>
+        <NavLink
+          to="/auth"
+          onClick={() => setOpen(false)}
+          className={({ isActive }) =>
+            `profile-icon ${isLoggedIn ? "logged-in" : "logged-out"} ${isActive ? "active" : ""}`
+          }
+          aria-label={isLoggedIn ? "My Account (logged in)" : "Log in or register"}
+        >
+          👤︎
+        </NavLink>
+        <NavLink to="/favorites" onClick={() => setOpen(false)} aria-label="Favorites">
+          <span aria-hidden="true" className="fav-icon">♥</span>
+        </NavLink>
         
         <NavLink
           to="/cart"

@@ -1,13 +1,14 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
-export default function SideBarNav({ setToken }) {
+export default function SideBarNav({ setToken, onEditProfile }) {
   const location = useLocation();
   const onProfilePage = location.pathname === "/auth";
 
   function logout() {
     localStorage.removeItem("token");
     setToken(null);
+    window.dispatchEvent(new Event("authchange"));
   }
 
   return (
@@ -27,7 +28,7 @@ export default function SideBarNav({ setToken }) {
 
         {onProfilePage && (
           <li>
-            <button className="link-button">
+            <button className="link-button" onClick={onEditProfile}>
               Edit Profile
             </button>
           </li>

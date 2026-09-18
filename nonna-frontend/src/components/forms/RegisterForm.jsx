@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AuthButton from "../../components/buttons/AuthButton";
+import "../../styles/form.css";
 
 export default function RegisterForm({ switchToLogin }) {
   const [formData, setFormData] = useState({
@@ -11,12 +12,22 @@ export default function RegisterForm({ switchToLogin }) {
     confirmPassword: ""
   });
 
-  // Email validation
-  const validEmail = /\S+@\S+\.\S+/.test(formData.email.trim());
-  const emailHasError =
-    formData.email.trim().length > 0 && !validEmail;
+  function formatPhoneNumber(value) {
+    const digits = value.replace(/\D/g, "").slice(0, 10);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
 
-  // Password complexity checks
+  function handleChange(e) {
+    let { name, value } = e.target;
+    if (name === "phoneNumber") value = formatPhoneNumber(value);
+    setFormData({ ...formData, [name]: value });
+  }
+
+  const validEmail = /\S+@\S+\.\S+/.test(formData.email.trim());
+  const emailHasError = formData.email.trim().length > 0 && !validEmail;
+
   const hasUppercase = /[A-Z]/.test(formData.password);
   const hasLowercase = /[a-z]/.test(formData.password);
   const hasNumber = /[0-9]/.test(formData.password);
@@ -24,38 +35,39 @@ export default function RegisterForm({ switchToLogin }) {
   const hasMinLength = formData.password.length >= 8;
 
   const passwordIsValid =
-    hasUppercase &&
-    hasLowercase &&
-    hasNumber &&
-    hasSymbol &&
-    hasMinLength;
+    hasUppercase && hasLowercase && hasNumber && hasSymbol && hasMinLength;
 
-  // Password match check
   const passwordsMatch =
     formData.password.trim().length > 0 &&
     formData.password === formData.confirmPassword;
 
-  // Disable submit until everything is valid
+  // NEW VALIDATION
+  const firstNameValid = formData.firstName.trim().length >= 2;
+  const lastNameValid = formData.lastName.trim().length >= 2;
+
   const isIncomplete =
-    formData.firstName.trim().length === 0 ||
-    formData.lastName.trim().length === 0 ||
-    formData.phoneNumber.trim().length === 0 ||
-    formData.email.trim().length === 0 ||
-    formData.password.trim().length === 0 ||
-    formData.confirmPassword.trim().length === 0 ||
+    !firstNameValid ||
+    !lastNameValid ||
+    !formData.phoneNumber.trim() ||
+    !formData.email.trim() ||
+    !formData.password.trim() ||
+    !formData.confirmPassword.trim() ||
     !validEmail ||
     !passwordIsValid ||
     !passwordsMatch;
 
-  function handleChange(e) {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  }
-
   async function handleRegister(e) {
     e.preventDefault();
+
+    if (!firstNameValid) {
+      alert("First name must be at least 2 characters.");
+      return;
+    }
+
+    if (!lastNameValid) {
+      alert("Last name must be at least 2 characters.");
+      return;
+    }
 
     if (!validEmail) {
       alert("Please enter a valid email.");
@@ -63,9 +75,7 @@ export default function RegisterForm({ switchToLogin }) {
     }
 
     if (!passwordIsValid) {
-      alert(
-        "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol."
-      );
+      alert("Password must meet complexity requirements.");
       return;
     }
 
@@ -74,7 +84,6 @@ export default function RegisterForm({ switchToLogin }) {
       return;
     }
 
-    // Backend expects full DTO fields
     const payload = {
       email: formData.email,
       firstName: formData.firstName,
@@ -98,72 +107,96 @@ export default function RegisterForm({ switchToLogin }) {
   }
 
   return (
-    <div className="register-form">
-      <h2>Create Account</h2>
+    <div className="card register-card">
+      <form className="register-form-container" onSubmit={handleRegister}>
+        <h2>Create Account</h2>
 
-      <form onSubmit={handleRegister}>
+        <div className="register-form-row">
+          <label htmlFor="firstName">
+            First Name <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="firstName"
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="Please enter your first name."
+            required
+          />
+          {!firstNameValid && formData.firstName.length > 0 && (
+            <p className="inputError">First name must be at least 2 characters.</p>
+          )}
+        </div>
 
-        {/* First Name */}
-        <input
-          type="text"
-          name="firstName"
-          placeholder="First Name"
-          value={formData.firstName}
-          onChange={handleChange}
-          required
-        />
+        <div className="register-form-row">
+          <label htmlFor="lastName">
+            Last Name <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="lastName"
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Please enter your last name."
+            required
+          />
+          {!lastNameValid && formData.lastName.length > 0 && (
+            <p className="inputError">Last name must be at least 2 characters.</p>
+          )}
+        </div>
 
-        {/* Last Name */}
-        <input
-          type="text"
-          name="lastName"
-          placeholder="Last Name"
-          value={formData.lastName}
-          onChange={handleChange}
-          required
-        />
+        <div className="register-form-row">
+          <label htmlFor="phoneNumber">
+            Phone Number <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="phoneNumber"
+            type="text"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            required
+            placeholder="555-555-5555"
+          />
+        </div>
 
-        {/* Phone Number */}
-        <input
-          type="text"
-          name="phoneNumber"
-          placeholder="Phone Number"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Email */}
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          aria-required="true"
-          aria-invalid={emailHasError}
-          aria-describedby={emailHasError ? "email-error" : undefined}
-        />
+        <div className="register-form-row">
+          <label htmlFor="email">
+            Email <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Please enter your email."
+            required
+            aria-invalid={emailHasError}
+          />
+        </div>
 
         {emailHasError && (
-          <p id="email-error" className="inputError">
-            Please enter a valid email.
-          </p>
+          <p className="inputError">Please enter a valid email.</p>
         )}
 
-        {/* Password */}
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          aria-invalid={!passwordIsValid && formData.password.length > 0}
-        />
+        <div className="register-form-row">
+          <label htmlFor="password">
+            Password <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder=" min 8 char, upper and lower case, symbol and number."
+            required
+          />
+        </div>
 
-        {/* Password complexity errors */}
         {!passwordIsValid && formData.password.length > 0 && (
           <ul className="inputError">
             {!hasUppercase && <li>Must include an uppercase letter</li>}
@@ -174,16 +207,19 @@ export default function RegisterForm({ switchToLogin }) {
           </ul>
         )}
 
-        {/* Confirm Password */}
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          aria-invalid={!passwordsMatch && formData.confirmPassword.length > 0}
-        />
+        <div className="register-form-row">
+          <label htmlFor="confirmPassword">
+            Confirm Password <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
         {!passwordsMatch && formData.confirmPassword.length > 0 && (
           <p className="inputError">Passwords do not match.</p>
@@ -196,11 +232,11 @@ export default function RegisterForm({ switchToLogin }) {
         >
           Register
         </AuthButton>
-      </form>
 
-      <p onClick={switchToLogin} className="switch-link">
-        Already have an account?
-      </p>
+        <p onClick={switchToLogin} className="switch-link">
+          Already have an account?
+        </p>
+      </form>
     </div>
   );
 }
