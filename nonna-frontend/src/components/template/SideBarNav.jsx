@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
-export default function SideBarNav({setToken}) {
-
+export default function SideBarNav({ setToken }) {
   const location = useLocation();
   const onProfilePage = location.pathname === "/auth";
 
@@ -12,10 +11,9 @@ export default function SideBarNav({setToken}) {
   }
 
   return (
-    <nav className="profile-nav">
-      <ul className="profile-nav-list">
+    <nav className="sidebar-nav">
+      <ul className="sidebar-navigation">
 
-        {/* If NOT on profile page → show Profile link */}
         {!onProfilePage && (
           <li>
             <NavLink
@@ -27,13 +25,9 @@ export default function SideBarNav({setToken}) {
           </li>
         )}
 
-        {/* If ON profile page → show Edit Profile */}
         {onProfilePage && (
           <li>
-            <button
-              className="link-button"
-              onClick={() => console.log("Edit mode coming soon")}
-            >
+            <button className="link-button">
               Edit Profile
             </button>
           </li>
@@ -57,7 +51,6 @@ export default function SideBarNav({setToken}) {
           </NavLink>
         </li>
 
-        {/* Only show logout on profile page */}
         {onProfilePage && (
           <li>
             <button className="link-button" onClick={logout}>

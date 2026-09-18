@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Profile from "../components/Profile";
 import LoginForm from "../components/forms/LoginForm";
 import RegisterForm from "../components/forms/RegisterForm";
-import "../styles/auth.css";   // ⭐ make sure this file exists
+import SideBarNav from "../components/template/SideBarNav";   // ⭐ added
+import "../styles/auth.css";
 
 export default function Auth({ setToken }) {
   const [authMode, setAuthMode] = useState("login");
@@ -49,11 +50,11 @@ export default function Auth({ setToken }) {
     }
   }, [localToken, setToken]);
 
-  // Logged in → show profile inside centered container
+  /* Logged in → show sidebar + profile in 2-column layout */
   if (localToken) {
     return (
       <section
-        className="auth-container"
+        className="auth-layout"
         role="region"
         aria-labelledby="auth-title"
       >
@@ -61,12 +62,14 @@ export default function Auth({ setToken }) {
           My Account
         </h1>
 
+        <SideBarNav setToken={setLocalToken} />
+
         <Profile token={localToken} setToken={setLocalToken} />
       </section>
     );
   }
 
-  // Not logged in → show login/register in same centered container
+  /* Not logged in → show login/register centered */
   return (
     <section
       className="auth-container"

@@ -60,24 +60,6 @@ export default function Profile({ token, setToken }) {
     <div className="profile-card">
       <h2 className="profile-title">My Profile</h2>
 
-      <div className="profile-button-row">
-        <Link to="/favorites">
-          <AuthButton>View Favorites ❤️</AuthButton>
-        </Link>
-
-        <Link to="/orders">
-          <AuthButton>View Past Orders 📜</AuthButton>
-        </Link>
-
-        <AuthButton onClick={() => setEditing(true)}>
-          Edit Profile
-        </AuthButton>
-
-        <AuthButton onClick={logout}>
-          Logout
-        </AuthButton>
-      </div>
-
       {!editing && (
         <div className="profile-content">
           <p>

@@ -19,20 +19,16 @@ export default function Favorites({ token }) {
 
   const userId = getUserIdFromToken(token);
 
-  // ⭐ WRAPPER APPROACH
-  // Convert flat dish list → fake "orders" array so the hook sees the same shape as PastOrders
   const wrappedOrders = [
     {
-      id: 0,            // fake order ID (not used by backend)
-      dishes: allDishes // real dishes
+      id: 0,
+      dishes: allDishes
     }
   ];
 
-  // ⭐ Hook now receives wrappedOrders instead of flat dishes
   const { toggleFavorite } = useFavoriteToggle(
     wrappedOrders,
     newOrders => {
-      // unwrap dishes back out after hook updates them
       setAllDishes(newOrders[0].dishes);
     },
     token
@@ -89,13 +85,13 @@ export default function Favorites({ token }) {
     );
   }
 
-  // ⭐ Only filter favorites at render time
   const favorites = allDishes.filter(dish => dish.isFavorite === true);
 
   return (
     <main className="favorites-layout" aria-label="Favorites page">
 
-      <div className="section-0 desktop-only" role="region" aria-label="Side navigation bar">
+      {/* ⭐ ALWAYS RENDER SIDEBAR — mobile + desktop */}
+      <div className="section-0" role="region" aria-label="Side navigation bar">
         <div className="navbar-container">
           <SideNavBar />
         </div>

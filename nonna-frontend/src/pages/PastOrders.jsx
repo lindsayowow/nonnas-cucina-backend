@@ -108,7 +108,7 @@ export default function PastOrders({ token }) {
   return (
     <main className="pastorders-layout" aria-label="Past Orders page">
 
-      <div className="section-0 desktop-only" role="region" aria-label="Side navigation bar">
+      <div className="section-0" role="region" aria-label="Side navigation bar">
         <div className="navbar-container">
           <SideNavBar />
         </div>
@@ -120,14 +120,14 @@ export default function PastOrders({ token }) {
         {orders.map(order => (
           <div key={order.id} className="order-card">
 
-            {/* --- NEW HEADER LAYOUT --- */}
+            {/* NEW — centered Order # */}
+            <span className="order-number">
+              Order #{order.id}
+            </span>
+
             <div className="order-header unified-header">
               <span className="left">
                 {new Date(order.orderTimeStamp).toLocaleString()}
-              </span>
-
-              <span className="center">
-                Order #{order.id}
               </span>
 
               <span className="right">
