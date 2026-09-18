@@ -26,14 +26,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
         try {
             User user = userService.validateLogin(dto.getEmail(), dto.getPassword());
-
-            // TEMP DEBUG — remove after diagnosing login issue
-            System.out.println("[AUTH DEBUG] validateLogin succeeded for userId=" + user.getId());
-
             String token = jwtUtil.generateToken(user.getId());
-
-            // TEMP DEBUG — remove after diagnosing login issue
-            System.out.println("[AUTH DEBUG] token generated successfully, length=" + token.length());
 
             return ResponseEntity.ok(
                     Map.of(
@@ -43,11 +36,6 @@ public class AuthController {
             );
 
         } catch (RuntimeException e) {
-            // TEMP DEBUG — remove after diagnosing login issue
-            System.out.println("[AUTH DEBUG] caught exception type=" + e.getClass().getName());
-            System.out.println("[AUTH DEBUG] caught exception message=" + e.getMessage());
-            e.printStackTrace();
-
             return ResponseEntity.badRequest()
                     .body(Map.of("error", e.getMessage()));
         }
