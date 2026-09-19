@@ -29,7 +29,7 @@ export default function useFavoriteToggle(orders, setOrders, token) {
     });
 
     if (newValue === undefined) {
-      console.error("toggleFavorite: could not locate dish", { orderId, dishId });
+      // Couldn't locate the target dish -- nothing to toggle
       return;
     }
 
@@ -50,11 +50,11 @@ export default function useFavoriteToggle(orders, setOrders, token) {
       );
 
       if (!response.ok) {
-        console.error("Failed to update favorite");
+        // Request failed -- roll back the optimistic update
         setOrders(previousOrders);
       }
-    } catch (err) {
-      console.error("Error updating favorite", err);
+    } catch {
+      // Network error -- roll back the optimistic update
       setOrders(previousOrders);
     }
   }, [orders, setOrders, token]);

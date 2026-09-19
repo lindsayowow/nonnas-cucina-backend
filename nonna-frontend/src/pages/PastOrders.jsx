@@ -54,11 +54,11 @@ export default function PastOrders({ token }) {
           const data = await response.json();
           setOrders(data ?? []);
         } else {
-          console.error("Failed to fetch past orders");
+          // Non-OK, non-auth failure -- fall back to an empty order list
           setOrders([]);
         }
-      } catch (err) {
-        console.error("Error fetching past orders", err);
+      } catch {
+        // Network error -- fall back to an empty order list
         setOrders([]);
       } finally {
         setLoading(false);
@@ -168,10 +168,3 @@ export default function PastOrders({ token }) {
                   </li>
                 );
               })}
-            </ul>
-          </div>
-        ))}
-      </section>
-    </main>
-  );
-}

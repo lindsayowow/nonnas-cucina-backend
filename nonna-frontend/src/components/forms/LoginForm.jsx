@@ -5,9 +5,11 @@ import "../../styles/form.css";
 export default function LoginForm({ setToken, switchToRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   async function handleLogin(e) {
     e.preventDefault();
+    setLoginError("");
 
     const payload = { email, password };
 
@@ -22,14 +24,14 @@ export default function LoginForm({ setToken, switchToRegister }) {
       data = await response.json();
     } catch {
       const text = await response.text();
-      alert(text);
+      setLoginError(text || "Login failed. Please try again.");
       return;
     }
 
     if (response.ok && data.token) {
       setToken(data.token);
     } else {
-      alert(data.error || "Invalid login.");
+      setLoginError(data.error || "Invalid login.");
     }
   }
 
@@ -58,6 +60,13 @@ export default function LoginForm({ setToken, switchToRegister }) {
           required
           onChange={e => setPassword(e.target.value)}
         />
+
+        {/* In-UI feedback for failed login */}
+        {loginError && (
+          <p className="inputError" role="alert">
+            {loginError}
+          </p>
+        )}
 
         <AuthButton
           type="submit"

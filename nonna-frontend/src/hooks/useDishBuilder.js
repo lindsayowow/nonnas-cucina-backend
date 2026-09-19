@@ -13,8 +13,8 @@ export default function useDishBuilder() {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return Number(payload.sub);  // numeric userId
-    } catch (err) {
-      console.error("Invalid token", err);
+    } catch {
+      // Malformed/invalid token -- caller treats null as "no user"
       return null;
     }
   }
@@ -73,18 +73,15 @@ export default function useDishBuilder() {
     setSelectedFilters([]);
   }
 
-  // Send order to backend
+  // Send order to backend. Returns true on success, false on any failure
+  // (invalid token, network error, or non-OK response) -- caller (Order.jsx)
+  // surfaces failure to the user via UI state.
   async function sendToKitchen(token) {
     const userId = getUserIdFromToken(token);
-    console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
 
     if (!userId) {
-      console.error("No valid userId found in token");
       return false;
     }
-
-    console.log("yourOrder:", yourOrder);
-    console.log("TOKEN:", token);
 
     const orderDTO = {
       userId: userId,
@@ -104,7 +101,6 @@ export default function useDishBuilder() {
     });
 
     if (!response.ok) {
-      console.error("Order failed:", response.status);
       return false;
     }
 

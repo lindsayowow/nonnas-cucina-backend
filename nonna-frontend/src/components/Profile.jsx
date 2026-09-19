@@ -12,13 +12,15 @@ export default function Profile({ token, editing, setEditing }) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  // Load failure state, shown in place of the console.error that used to fire here
+  const [loadError, setLoadError] = useState(null);
 
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return Number(payload.sub);
-    } catch (err) {
-      console.error("Invalid token", err);
+    } catch {
+      // Malformed/invalid token -- treat as no user
       return null;
     }
   }
@@ -47,10 +49,10 @@ export default function Profile({ token, editing, setEditing }) {
             phoneNumber: data.phoneNumber ?? ""
           });
         } else {
-          console.error("Failed to fetch user");
+          setLoadError("Failed to load your profile.");
         }
-      } catch (err) {
-        console.error("Error fetching user", err);
+      } catch {
+        setLoadError("Error loading your profile.");
       }
     }
 
@@ -104,8 +106,7 @@ export default function Profile({ token, editing, setEditing }) {
       const updated = await response.json();
       setUser(updated);
       setEditing(false);
-    } catch (err) {
-      console.error("Error updating profile", err);
+    } catch {
       setError("Error updating profile.");
     } finally {
       setSaving(false);
@@ -113,7 +114,8 @@ export default function Profile({ token, editing, setEditing }) {
   }
 
   if (!user) {
-    return <p>Loading profile...</p>;
+    // Show the load failure in the UI instead of only logging to the console
+    return <p>{loadError ?? "Loading profile..."}</p>;
   }
 
   return (

@@ -10,8 +10,8 @@ export default function useFilters() {
         const response = await fetch("http://localhost:8080/filters");
         const data = await response.json();
         setFilters(data);
-      } catch (err) {
-        console.error("Failed to load filters", err);
+      } catch {
+        // Fetch failed -- filters stays empty, consumers already handle that state
       } finally {
         setLoading(false);
       }

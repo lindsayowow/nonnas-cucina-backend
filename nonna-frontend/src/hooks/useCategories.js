@@ -10,8 +10,8 @@ export default function useCategories() {
         const response = await fetch("http://localhost:8080/categories");
         const data = await response.json();
         setCategories(data);
-      } catch (err) {
-        console.error("Failed to load categories", err);
+      } catch {
+        // Fetch failed -- categories stays empty, consumers already handle that state
       } finally {
         setLoading(false);
       }

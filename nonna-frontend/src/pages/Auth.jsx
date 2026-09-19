@@ -14,8 +14,8 @@ export default function Auth({ setToken }) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return payload;
-    } catch (err) {
-      console.error("Invalid token", err);
+    } catch {
+      // Malformed/invalid token -- treat as logged out
       return null;
     }
   }
@@ -39,7 +39,7 @@ export default function Auth({ setToken }) {
 
     const isExpired = decoded.exp * 1000 < Date.now();
     if (isExpired) {
-      console.log("Token expired — logging out");
+      // Token expired -- clear it and log the user out
       localStorage.removeItem("token");
       setLocalToken(null);
       setToken(null);

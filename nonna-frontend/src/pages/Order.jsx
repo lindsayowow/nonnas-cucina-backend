@@ -39,8 +39,6 @@ export default function Order({ token }) {
     }
   };
 
-  console.log("TOKEN IN ORDER PAGE:", token);
-
   return (
     <div className="order-page">
       <div

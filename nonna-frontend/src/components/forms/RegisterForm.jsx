@@ -12,6 +12,10 @@ export default function RegisterForm({ switchToLogin }) {
     confirmPassword: ""
   });
 
+  // error alerts
+  const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState("");
+
   function formatPhoneNumber(value) {
     const digits = value.replace(/\D/g, "").slice(0, 10);
     if (digits.length <= 3) return digits;
@@ -58,29 +62,32 @@ export default function RegisterForm({ switchToLogin }) {
 
   async function handleRegister(e) {
     e.preventDefault();
+    setFormError("");
+    setFormSuccess("");
 
+    // alert
     if (!firstNameValid) {
-      alert("First name must be at least 2 characters.");
+      setFormError("First name must be at least 2 characters.");
       return;
     }
 
     if (!lastNameValid) {
-      alert("Last name must be at least 2 characters.");
+      setFormError("Last name must be at least 2 characters.");
       return;
     }
 
     if (!validEmail) {
-      alert("Please enter a valid email.");
+      setFormError("Please enter a valid email.");
       return;
     }
 
     if (!passwordIsValid) {
-      alert("Password must meet complexity requirements.");
+      setFormError("Password must meet complexity requirements.");
       return;
     }
 
     if (!passwordsMatch) {
-      alert("Passwords do not match.");
+      setFormError("Passwords do not match.");
       return;
     }
 
@@ -99,10 +106,11 @@ export default function RegisterForm({ switchToLogin }) {
     });
 
     if (response.ok) {
-      alert("Account created!");
-      switchToLogin();
+      setFormSuccess("Account created! Redirecting to login...");
+      // Brief pause so the success message is visible before switching views
+      setTimeout(() => switchToLogin(), 1200);
     } else {
-      alert("Registration failed — email may already exist.");
+      setFormError("Registration failed — email may already exist.");
     }
   }
 
@@ -223,6 +231,20 @@ export default function RegisterForm({ switchToLogin }) {
 
         {!passwordsMatch && formData.confirmPassword.length > 0 && (
           <p className="inputError">Passwords do not match.</p>
+        )}
+
+        {/* alert */}
+        {formError && (
+          <p className="inputError" role="alert">
+            {formError}
+          </p>
+        )}
+
+        {/* alert */}
+        {formSuccess && (
+          <p className="successMessage" role="status" aria-live="polite">
+            {formSuccess}
+          </p>
         )}
 
         <AuthButton

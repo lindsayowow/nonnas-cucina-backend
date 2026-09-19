@@ -66,8 +66,8 @@ export default function Favorites({ token }) {
         );
 
         setAllDishes(dishes);
-      } catch (err) {
-        console.error("Error fetching favorites", err);
+      } catch {
+        // Network error -- fall back to an empty favorites list
         setAllDishes([]);
       }
     }
