@@ -10,12 +10,11 @@ import NonnaEncouraging from '../assets/nonna-encouraging.png';
 import NonnaAlmostThere from '../assets/nonna-almostThere.png';
 import NonnaHappy from '../assets/nonna-happy.png';
 import NonnaComplete from '../assets/nonna-complete.png';
-import NonnaSpecial from '../assets/nonna-special.png';
-
 import nonnaStates from "../data/nonna.json";
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
-import { DishBuilderContext } from "../context/DishBuilderContextObject";
 
+// included for future feature
+import NonnaSpecial from '../assets/nonna-special.png';
 
 const nonnaImages = {
   neutral: NonnaNeutral,
@@ -72,13 +71,13 @@ export default function NonnaReaction() {
     cartCount === 0
       ? "Let’s get started with your order!"
       : (
-          <>
-            You have {cartCount} item(s) in your{" "}
-            <Link to="/cart" className="nonna-cart-link">
-              cart 
-            </Link>.
-          </>
-        );
+        <>
+          You have {cartCount} item(s) in your{" "}
+          <Link to="/cart" className="nonna-cart-link">
+            cart
+          </Link>.
+        </>
+      );
 
   // example of conditional rendering
   const imageSrc = showNonnaWarning

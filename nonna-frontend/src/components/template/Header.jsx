@@ -3,8 +3,6 @@ import { NavLink } from 'react-router-dom';
 import '../../styles/header.css';
 import nonnasLogo from '../../assets/Nonnas_Logo.png';
 import useDishBuilderContext from "../../hooks/useDishBuilderContext";
-import { DishBuilderContext } from "../../context/DishBuilderContextObject";
-
 
 export default function Header() {
   const { yourOrder } = useDishBuilderContext();
@@ -16,7 +14,8 @@ export default function Header() {
 
     // fires on changes from other tabs
     window.addEventListener("storage", syncLoginState);
-    // fires on changes from this tab (dispatched in Auth.jsx / SideBarNav.jsx)
+    
+    // fires on changes from this tab (passed to Auth.jsx & SideBarNav.jsx)
     window.addEventListener("authchange", syncLoginState);
 
     return () => {
@@ -75,7 +74,7 @@ export default function Header() {
         <NavLink to="/favorites" onClick={() => setOpen(false)} aria-label="Favorites">
           <span aria-hidden="true" className="fav-icon">♥</span>
         </NavLink>
-        
+
         <NavLink
           to="/cart"
           onClick={() => setOpen(false)}

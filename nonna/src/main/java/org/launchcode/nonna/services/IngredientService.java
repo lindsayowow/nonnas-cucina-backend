@@ -16,6 +16,7 @@ public class IngredientService {
         this.ingredientRepository = ingredientRepository;
     }
 
+    // READ -- all ingredients, as DTOs
     public List<IngredientDTO> getAllIngredientDTOs() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
         return ingredients.stream()
@@ -23,20 +24,24 @@ public class IngredientService {
                 .toList();
     }
 
+    // READ -- single ingredient by id, as a DTO
     public IngredientDTO getByIngredientDTOId(int id) {
         return ingredientRepository.findById(id)
                 .map(IngredientDTO::new)
                 .orElse(null);
     }
 
+    // CREATE -- single ingredient
     public Ingredient saveIngredient(Ingredient ingredient) {
         return ingredientRepository.save(ingredient);
     }
 
+    // CREATE -- bulk insert
     public List<Ingredient> saveAll(List<Ingredient> ingredients) {
         return ingredientRepository.saveAll(ingredients);
     }
 
+    // UPDATE
     public Ingredient updateIngredient(Integer id, Ingredient updatedIngredient) {
         Ingredient existing = ingredientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -48,11 +53,8 @@ public class IngredientService {
         return ingredientRepository.save(existing);
     }
 
+    // DELETE
     public void deleteIngredient(int id) {
         ingredientRepository.deleteById(id);
-    }
-
-    private IngredientDTO convertToDTO(Ingredient ingredient) {
-        return new IngredientDTO(ingredient);
     }
 }

@@ -16,6 +16,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    // READ -- all categories, as DTOs
     public List<CategoryDTO> getAllCategoryDTOs() {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
@@ -23,16 +24,19 @@ public class CategoryService {
                 .toList();
     }
 
+    // READ -- single category by id, as a DTO
     public CategoryDTO getByCategoryDTOId(int id) {
         return categoryRepository.findById(id)
                 .map(CategoryDTO::new)
                 .orElse(null);
     }
 
+    // CREATE
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);
     }
 
+    // UPDATE
     public Category updateCategory(Integer id, Category updatedCategory) {
         Category existing = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -43,11 +47,8 @@ public class CategoryService {
         return categoryRepository.save(existing);
     }
 
+    // DELETE
     public void deleteCategory(int id) {
         categoryRepository.deleteById(id);
-    }
-
-    private CategoryDTO convertToDTO(Category category) {
-        return new CategoryDTO(category);
     }
 }

@@ -16,6 +16,7 @@ public class FilterService {
         this.filterRepository = filterRepository;
     }
 
+    // READ -- all filters, as DTOs
     public List<FilterDTO> getAllFilterDTOs() {
         List<Filter> filters = filterRepository.findAll();
         return filters.stream()
@@ -23,16 +24,19 @@ public class FilterService {
                 .toList();
     }
 
+    // READ -- single filter by id, as a DTO
     public FilterDTO getByFilterDTOId(int id) {
         return filterRepository.findById(id)
                 .map(FilterDTO::new)
                 .orElse(null);
     }
 
+    // CREATE
     public Filter saveFilter(Filter filter) {
         return filterRepository.save(filter);
     }
 
+    // UPDATE
     public Filter updateFilter(Integer id, Filter updatedFilter) {
         Filter existing = filterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Filter not found"));
@@ -44,11 +48,8 @@ public class FilterService {
         return filterRepository.save(existing);
     }
 
+    // DELETE
     public void deleteFilter(int id) {
         filterRepository.deleteById(id);
-    }
-
-    private FilterDTO convertToDTO(Filter filter) {
-        return new FilterDTO(filter);
     }
 }
