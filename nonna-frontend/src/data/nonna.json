@@ -1,56 +1,40 @@
 [
-    {
-        "state": "neutral",
-        "emoji": "👵",
-        "image": "/assets/nonna-neutral.png",
-        "message": "Choose your ingredients, dear!",
-        "ingredientCount": 0
-    },
-    {
-        "state": "one-ingredient",
-        "emoji": "👵🤔",
-        "image": "/assets/nonna-one-ingredient.png",
-        "message": "Just one ingredient? Cara mia, add at least one more to make it special! But if you insist, I'll cook it for you...",
-        "ingredientCount": 1
-    },
-    {
-        "state": "good-start",
-        "emoji": "👵😊",
-        "image": "/assets/nonna-good-start.png",
-        "message": "That's a good start! Add a few more ingredients!",
-        "ingredientCount": 2
-    },
-    {
-        "state": "encouraging",
-        "emoji": "👵😊",
-        "image": "/assets/nonna-encouraging.png",
-        "message": "Bene, bene! Keep going, you're doing wonderful!",
-        "ingredientCount": 3
-    },
-        {
-        "state": "almostThere",
-        "emoji": "👵✨",
-        "image": "/assets/nonna-almostThere.png",
-        "message": "Ah, I see where you're going with this! Add some more, tesoro!",
-        "ingredientCount": 4
-    },
-    {
-        "state": "happy",
-        "emoji": "👵✨",
-        "image": "/assets/nonna-happy.png",
-        "message": "Magnifico! Your dish is coming together beautifully!",
-        "ingredientCount": 5
-    },
-    {
-        "state": "complete",
-        "emoji": "👵🤌",
-        "image": "/assets/nonna-complete.png",
-        "message": "Bellissima! This dish looks delicious! You have everything!"
-    },
-    {
-        "state": "warning",
-        "emoji": "👵😱",
-        "image": "/assets/nonna-warning.png",
-        "message": "Oh no!  That ingredient is not compatible with your diet!"
-    }
+  {
+    "state": "neutral",
+    "image": "/assets/nonna-neutral.png",
+    "ingredientCount": 0
+  },
+  {
+    "state": "one-ingredient",
+    "image": "/assets/nonna-one-ingredient.png",
+    "ingredientCount": 1
+  },
+  {
+    "state": "good-start",
+    "image": "/assets/nonna-good-start.png",
+    "ingredientCount": 2
+  },
+  {
+    "state": "encouraging",
+    "image": "/assets/nonna-encouraging.png",
+    "ingredientCount": 3
+  },
+  {
+    "state": "almostThere",
+    "image": "/assets/nonna-almostThere.png",
+    "ingredientCount": 4
+  },
+  {
+    "state": "happy",
+    "image": "/assets/nonna-happy.png",
+    "ingredientCount": 5
+  },
+  {
+    "state": "complete",
+    "image": "/assets/nonna-complete.png"
+  },
+  {
+    "state": "warning",
+    "image": "/assets/nonna-warning.png"
+  }
 ]
