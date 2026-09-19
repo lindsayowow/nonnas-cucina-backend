@@ -20,6 +20,15 @@ export default function Auth({ setToken }) {
     }
   }
 
+  // logout/clear-session logic -- used for expired/invalid tokens
+  // passed down to Profile so it can recover from a stale token 
+  function clearSession() {
+    localStorage.removeItem("token");
+    setLocalToken(null);
+    setToken(null);
+    window.dispatchEvent(new Event("authchange"));
+  }
+
   useEffect(() => {
     if (!localToken) {
       setToken(null);
@@ -30,20 +39,14 @@ export default function Auth({ setToken }) {
     const decoded = decodeToken(localToken);
 
     if (!decoded || !decoded.exp) {
-      localStorage.removeItem("token");
-      setLocalToken(null);
-      setToken(null);
-      window.dispatchEvent(new Event("authchange"));
+      clearSession();
       return;
     }
 
     const isExpired = decoded.exp * 1000 < Date.now();
     if (isExpired) {
       // Token expired -- clear it and log the user out
-      localStorage.removeItem("token");
-      setLocalToken(null);
-      setToken(null);
-      window.dispatchEvent(new Event("authchange"));
+      clearSession();
     }
   }, [localToken, setToken]);
 
@@ -76,6 +79,7 @@ export default function Auth({ setToken }) {
           token={localToken}
           editing={editing}
           setEditing={setEditing}
+          onSessionExpired={clearSession}
         />
       </section>
     );

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AuthButton from "./buttons/AuthButton";
 import "../styles/profile.css";
 
-export default function Profile({ token, editing, setEditing }) {
+export default function Profile({ token, editing, setEditing, onSessionExpired }) {
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({
     firstName: "",
@@ -48,6 +48,11 @@ export default function Profile({ token, editing, setEditing }) {
             email: data.email ?? "",
             phoneNumber: data.phoneNumber ?? ""
           });
+        } else if (response.status === 401 || response.status === 403) {
+          // Token was rejected by the server (expired, invalid, or signed
+          // with an old secret) -- clear it automatically instead of
+          // leaving the user stuck on a permanent error screen.
+          onSessionExpired?.();
         } else {
           setLoadError("Failed to load your profile.");
         }
@@ -59,7 +64,7 @@ export default function Profile({ token, editing, setEditing }) {
     if (userId) {
       fetchUser();
     }
-  }, [userId, token]);
+  }, [userId, token, onSessionExpired]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -97,6 +102,11 @@ export default function Profile({ token, editing, setEditing }) {
         }
       );
 
+      if (response.status === 401 || response.status === 403) {
+        onSessionExpired?.();
+        return;
+      }
+
       if (!response.ok) {
         setError("Failed to update profile.");
         setSaving(false);
@@ -114,8 +124,19 @@ export default function Profile({ token, editing, setEditing }) {
   }
 
   if (!user) {
-    // Show the load failure in the UI instead of only logging to the console
-    return <p>{loadError ?? "Loading profile..."}</p>;
+    return (
+      <div>
+        <p>{loadError ?? "Loading profile..."}</p>
+
+        {/* Manual fallback in case a stale token slips past the 401/403
+            auto-clear above (e.g. a network/parsing error) */}
+        {loadError && (
+          <button className="switch-link" onClick={() => onSessionExpired?.()}>
+            Log in again
+          </button>
+        )}
+      </div>
+    );
   }
 
   return (
