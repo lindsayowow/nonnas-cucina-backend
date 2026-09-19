@@ -3,43 +3,30 @@ package org.launchcode.nonna.services;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import org.launchcode.nonna.dtos.NonnaMessageRequestDTO;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NonnaAiService {
 
-    private final Client geminiClient;
-
-    public NonnaAiService(@Value("${gemini.api.key}") String apiKey) {
-        this.geminiClient = Client.builder()
-                .apiKey(apiKey)
-                .build();
-    }
+    private final Client geminiClient = new Client();
 
     public String generateMessage(NonnaMessageRequestDTO request) {
-
         String prompt = buildPrompt(request);
 
-        try {
-            GenerateContentResponse response =
-                    geminiClient.models.generateContent(
-                            "gemini-3.5-flash",
-                            prompt,
-                            null
-                    );
+        GenerateContentResponse response =
+                geminiClient.models.generateContent(
+                        "gemini-3.5-flash",
+                        prompt,
+                        null
+                );
 
-            String text = response.text();
+        String text = response.text();
 
-            if (text == null || text.isBlank()) {
-                return fallbackMessage(request);
-            }
-
-            return text.trim();
-
-        } catch (Exception e) {
+        if (text == null || text.isBlank()) {
             return fallbackMessage(request);
         }
+
+        return text.trim();
     }
 
     private String buildPrompt(NonnaMessageRequestDTO request) {

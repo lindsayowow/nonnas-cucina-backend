@@ -3,8 +3,7 @@ package org.launchcode.nonna.dtos;
 import java.util.List;
 
 /**
- * DTO sent from the frontend to request a Gemini-generated Nonna message.
- * Contains the current Nonna state, ingredient count, and ingredient names.
+ * Request DTO sent from the frontend to ask Nonna/Gemini for a message.
  */
 public class NonnaMessageRequestDTO {
 

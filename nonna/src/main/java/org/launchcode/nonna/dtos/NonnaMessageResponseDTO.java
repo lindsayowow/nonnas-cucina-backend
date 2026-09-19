@@ -1,7 +1,7 @@
 package org.launchcode.nonna.dtos;
 
 /**
- * DTO returned to the frontend containing the final Gemini-generated message.
+ * Response DTO returned to the frontend containing Nonna's message.
  */
 public class NonnaMessageResponseDTO {
 
