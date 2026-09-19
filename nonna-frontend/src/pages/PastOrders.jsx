@@ -168,3 +168,10 @@ export default function PastOrders({ token }) {
                   </li>
                 );
               })}
+            </ul>
+          </div>
+        ))}
+      </section>
+    </main>
+  );
+}

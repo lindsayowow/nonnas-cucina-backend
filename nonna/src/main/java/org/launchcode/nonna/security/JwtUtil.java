@@ -15,9 +15,9 @@ public class JwtUtil {
     private final SecretKey signingKey;
     private final long expirationMillis;
 
+    //This works to hash the passwords and authenticate. Creates login token.
     public JwtUtil(@Value("${jwt.secret}") String base64Secret,
                    @Value("${jwt.expiration-ms:86400000}") long expirationMillis) {
-        // jwt.secret must be a Base64-encoded value that decodes to >= 256 bits for HS256
         this.signingKey = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(base64Secret));
         this.expirationMillis = expirationMillis;
     }

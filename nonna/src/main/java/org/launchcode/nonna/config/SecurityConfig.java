@@ -3,6 +3,7 @@ package org.launchcode.nonna.config;
 import org.launchcode.nonna.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +23,7 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
+    // CORS setup - allows the Vite dev server to call the API
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -35,6 +37,7 @@ public class SecurityConfig {
         return source;
     }
 
+    // Route-level authorization rules and JWT filter wiring
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -43,16 +46,18 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Public endpoints -- no login required
                         .requestMatchers("/auth/login", "/users/register").permitAll()
-                        .requestMatchers("/ingredients/**", "/filters/**", "/categories/**").permitAll()
 
-                        // Protected endpoints
+                        // Public READ-ONLY browsing of ingredients/filters/categories.
+                        .requestMatchers(HttpMethod.GET, "/ingredients/**", "/filters/**", "/categories/**").permitAll()
+
+                        // Protected endpoints -- explicit for clarity
                         .requestMatchers("/users/profile/**").authenticated()
                         .requestMatchers("/favorites/**").authenticated()
                         .requestMatchers("/pastorders/**").authenticated()
 
-                        // Everything else requires auth
+                        // Everything else requires a valid, authenticated user
                         .anyRequest().authenticated()
                 );
 
@@ -61,6 +66,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Password hashing bean used by UserService for registration/login
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
