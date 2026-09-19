@@ -13,15 +13,6 @@ export default function useNonna({
   const ingredientCount = selectedIngredients.length;
 
   function getNonnaState() {
-
-    // Warning takes priority over everything.
-    if (showNonnaWarning) {
-      return nonnaStates.find(
-        state => state.state === "warning"
-      );
-    }
-
-    // These are the categories required for a complete dish.
     const requiredCategories = [
       "protein",
       "veggie",
@@ -41,15 +32,12 @@ export default function useNonna({
         category => selectedCategories.has(category)
       );
 
-    // Complete takes priority over the normal count progression.
     if (hasAllCategories) {
       return nonnaStates.find(
         state => state.state === "complete"
       );
     }
 
-    // Otherwise use the numeric ingredient progression
-    // from nonna.json.
     const countState = nonnaStates.find(
       state => state.ingredientCount === ingredientCount
     );
@@ -58,7 +46,6 @@ export default function useNonna({
       return countState;
     }
 
-    // 6+ ingredients uses the happy state.
     return nonnaStates.find(
       state => state.state === "happy"
     );
@@ -66,13 +53,28 @@ export default function useNonna({
 
   const nonnaState = getNonnaState();
 
-  useEffect(() => {
+  // Create a stable value representing the selected ingredients.
+  // This prevents the Gemini effect from firing just because
+  // the selectedIngredients array received a new reference.
+  const ingredientNames = selectedIngredients
+    .map(ingredient => ingredient.name)
+    .join("|");
 
+  useEffect(() => {
     let isCancelled = false;
 
     async function fetchMessage() {
 
-      // 0 ingredients.
+      // Warning is temporary.
+      // Do not call Gemini while the warning is showing.
+      if (showNonnaWarning) {
+        setNonnaMessage(
+          "Oh, tesoro! That ingredient isn't compatible with your diet. Choose another one for Nonna, please!"
+        );
+        return;
+      }
+
+      // No ingredients.
       if (nonnaState.state === "neutral") {
         setNonnaMessage(
           "Choose your ingredients, dear!"
@@ -80,15 +82,6 @@ export default function useNonna({
         return;
       }
 
-      // Excluded ingredient.
-      if (nonnaState.state === "warning") {
-        setNonnaMessage(
-          "Oh, tesoro! That ingredient isn't compatible with your diet. Choose another one for Nonna, please!"
-        );
-        return;
-      }
-
-      // All required categories selected.
       const backendState =
         nonnaState.state === "complete"
           ? "complete"
@@ -103,7 +96,6 @@ export default function useNonna({
       });
 
       try {
-
         const message = await getNonnaMessage({
           state: backendState,
           ingredientCount,
@@ -112,38 +104,44 @@ export default function useNonna({
 
         console.log("Nonna response:", message);
 
-        if (!isCancelled) {
-          setNonnaMessage(
-            message ||
-            "Bene, bene! Your dish is coming together beautifully!"
-          );
+        // Ignore responses from old requests.
+        if (isCancelled) {
+          return;
         }
 
-      } catch (error) {
+        setNonnaMessage(
+          message ||
+          "Bene, bene! Your dish is coming together beautifully!"
+        );
 
+      } catch (error) {
         console.error(
           "Nonna Gemini request failed:",
           error
         );
 
-        if (!isCancelled) {
-          setNonnaMessage(
-            "Nonna is having trouble talking to the kitchen!"
-          );
+        if (isCancelled) {
+          return;
         }
+
+        setNonnaMessage(
+          "Bene, bene! Your dish is coming together beautifully!"
+        );
       }
     }
 
     fetchMessage();
 
     return () => {
+      // Cancel this request's ability to update the UI.
       isCancelled = true;
     };
 
   }, [
-    nonnaState.state,
+    showNonnaWarning,
     ingredientCount,
-    selectedIngredients
+    ingredientNames,
+    nonnaState.state
   ]);
 
   return {

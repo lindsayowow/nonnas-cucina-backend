@@ -63,11 +63,10 @@ export default function NonnaReaction() {
 
   return (
     <div
-      className={`card nonna ${
-        showNonnaWarning
+      className={`card nonna ${showNonnaWarning
           ? "nonna--warning"
           : ""
-      }`}
+        }`}
     >
       <h2 className="text-center">
         Verify Your Selections
@@ -87,14 +86,12 @@ export default function NonnaReaction() {
         <img
           src={imageSrc}
           alt="Nonna reacting"
-          className={`nonna-image ${
-            showNonnaWarning
+          className={`nonna-image ${showNonnaWarning
               ? "nonna-image--shake"
               : ""
-          }`}
+            }`}
           loading="eager"
           decoding="async"
-          fetchPriority="high"
           width="180"
           height="180"
         />

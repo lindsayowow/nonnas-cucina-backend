@@ -27,13 +27,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 
@@ -43,30 +47,67 @@ public class SecurityConfig {
 
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
+
                 .authorizeHttpRequests(auth -> auth
+
                         // Public endpoints -- no login required
-                        .requestMatchers("/auth/login", "/users/register").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/users/register"
+                        ).permitAll()
 
-                        // Public READ-ONLY browsing of ingredients/filters/categories.
-                        .requestMatchers(HttpMethod.GET, "/ingredients/**", "/filters/**", "/categories/**").permitAll()
+                        // Public Gemini endpoint.
+                        // The frontend does not need to send a JWT
+                        // just to ask Nonna for a message.
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/gemini"
+                        ).permitAll()
 
-                        // Protected endpoints -- explicit for clarity
-                        .requestMatchers("/users/profile/**").authenticated()
-                        .requestMatchers("/favorites/**").authenticated()
-                        .requestMatchers("/pastorders/**").authenticated()
+                        // Public READ-ONLY browsing of
+                        // ingredients/filters/categories.
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/ingredients/**",
+                                "/filters/**",
+                                "/categories/**"
+                        ).permitAll()
 
-                        // Everything else requires a valid, authenticated user
+                        // Protected endpoints
+                        .requestMatchers(
+                                "/users/profile/**"
+                        ).authenticated()
+
+                        .requestMatchers(
+                                "/favorites/**"
+                        ).authenticated()
+
+                        .requestMatchers(
+                                "/pastorders/**"
+                        ).authenticated()
+
+                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 );
 
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(
+                jwtFilter,
+                UsernamePasswordAuthenticationFilter.class
+        );
 
         return http.build();
     }
 
-    // Password hashing bean used by UserService for registration/login
+    // Password hashing bean used by UserService
+    // for registration/login.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
