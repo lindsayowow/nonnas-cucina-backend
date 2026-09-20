@@ -2,7 +2,9 @@ import { useState } from "react";
 import AuthButton from "../../components/buttons/AuthButton";
 import "../../styles/form.css";
 
-export default function RegisterForm({ switchToLogin }) {
+// setToken: logs the user straight in after a successful registration
+// switchToLogin: fallback if the post-registration auto-login itself fails
+export default function RegisterForm({ setToken, switchToLogin }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -12,7 +14,7 @@ export default function RegisterForm({ switchToLogin }) {
     confirmPassword: ""
   });
 
-  // error alerts
+  // In-UI feedback state
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
 
@@ -29,6 +31,8 @@ export default function RegisterForm({ switchToLogin }) {
     setFormData({ ...formData, [name]: value });
   }
 
+  // Field-level validation flags, used both for inline errors below and to
+  // gate the submit button via isIncomplete
   const validEmail = /\S+@\S+\.\S+/.test(formData.email.trim());
   const emailHasError = formData.email.trim().length > 0 && !validEmail;
 
@@ -45,7 +49,6 @@ export default function RegisterForm({ switchToLogin }) {
     formData.password.trim().length > 0 &&
     formData.password === formData.confirmPassword;
 
-  // NEW VALIDATION
   const firstNameValid = formData.firstName.trim().length >= 2;
   const lastNameValid = formData.lastName.trim().length >= 2;
 
@@ -65,7 +68,7 @@ export default function RegisterForm({ switchToLogin }) {
     setFormError("");
     setFormSuccess("");
 
-    // alert
+    // Safety-net checks in case submit fires while isIncomplete is stale
     if (!firstNameValid) {
       setFormError("First name must be at least 2 characters.");
       return;
@@ -105,13 +108,40 @@ export default function RegisterForm({ switchToLogin }) {
       body: JSON.stringify(payload)
     });
 
-    if (response.ok) {
-      setFormSuccess("Account created! Redirecting to login...");
-      // Brief pause so the success message is visible before switching views
-      setTimeout(() => switchToLogin(), 1200);
-    } else {
+    if (!response.ok) {
       setFormError("Registration failed — email may already exist.");
+      return;
     }
+
+    setFormSuccess("Account created! Logging you in...");
+
+    // Auto-login -- registration succeeded, so immediately exchange the same
+    // credentials for a token instead of sending the user back to a
+    // separate login screen for a second manual step.
+    try {
+      const loginResponse = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (loginResponse.ok && loginData.token) {
+        setToken(loginData.token);
+        return;
+      }
+    } catch {
+      // Fall through to the manual-login fallback below
+    }
+
+    // Auto-login failed for some reason -- fall back to sending the user
+    // to the login screen with their new account already created
+    setFormError("Account created, but automatic login failed. Please log in.");
+    setTimeout(() => switchToLogin(), 1200);
   }
 
   return (
@@ -132,10 +162,10 @@ export default function RegisterForm({ switchToLogin }) {
             placeholder="Please enter your first name."
             required
           />
-          {!firstNameValid && formData.firstName.length > 0 && (
-            <p className="inputError">First name must be at least 2 characters.</p>
-          )}
         </div>
+        {!firstNameValid && formData.firstName.length > 0 && (
+          <p className="inputError">First name must be at least 2 characters.</p>
+        )}
 
         <div className="register-form-row">
           <label htmlFor="lastName">
@@ -150,10 +180,10 @@ export default function RegisterForm({ switchToLogin }) {
             placeholder="Please enter your last name."
             required
           />
-          {!lastNameValid && formData.lastName.length > 0 && (
-            <p className="inputError">Last name must be at least 2 characters.</p>
-          )}
         </div>
+        {!lastNameValid && formData.lastName.length > 0 && (
+          <p className="inputError">Last name must be at least 2 characters.</p>
+        )}
 
         <div className="register-form-row">
           <label htmlFor="phoneNumber">
@@ -185,7 +215,6 @@ export default function RegisterForm({ switchToLogin }) {
             aria-invalid={emailHasError}
           />
         </div>
-
         {emailHasError && (
           <p className="inputError">Please enter a valid email.</p>
         )}
@@ -204,7 +233,6 @@ export default function RegisterForm({ switchToLogin }) {
             required
           />
         </div>
-
         {!passwordIsValid && formData.password.length > 0 && (
           <ul className="inputError">
             {!hasUppercase && <li>Must include an uppercase letter</li>}
@@ -228,19 +256,18 @@ export default function RegisterForm({ switchToLogin }) {
             required
           />
         </div>
-
         {!passwordsMatch && formData.confirmPassword.length > 0 && (
           <p className="inputError">Passwords do not match.</p>
         )}
 
-        {/* alert */}
+        {/* In-UI feedback for submit-time / auto-login failures */}
         {formError && (
           <p className="inputError" role="alert">
             {formError}
           </p>
         )}
 
-        {/* alert */}
+        {/* In-UI feedback while account creation / auto-login is in progress */}
         {formSuccess && (
           <p className="successMessage" role="status" aria-live="polite">
             {formSuccess}

@@ -151,21 +151,26 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
           <li className="sidebar-delete-confirm">
             <p>Delete your account?</p>
 
-            <button
-              className="link-button"
-              disabled={deleting}
-              onClick={handleDeleteAccount}
-            >
-              {deleting ? "Deleting..." : "Yes, delete"}
-            </button>
+            {/* Inline flex gap guarantees visible spacing between the two
+                buttons regardless of sidebarnav.css, so "Yes, delete" and
+                "Cancel" never run together. */}
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button
+                className="link-button"
+                disabled={deleting}
+                onClick={handleDeleteAccount}
+              >
+                {deleting ? "Deleting..." : "Yes, delete"}
+              </button>
 
-            <button
-              className="link-button"
-              disabled={deleting}
-              onClick={() => setConfirmingDelete(false)}
-            >
-              Cancel
-            </button>
+              <button
+                className="link-button"
+                disabled={deleting}
+                onClick={() => setConfirmingDelete(false)}
+              >
+                Cancel
+              </button>
+            </div>
 
             {deleteError && <p className="sidebar-delete-error">{deleteError}</p>}
           </li>

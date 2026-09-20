@@ -107,7 +107,10 @@ export default function Auth({ setToken }) {
       )}
 
       {authMode === "register" && (
-        <RegisterForm switchToLogin={() => setAuthMode("login")} />
+        <RegisterForm
+          setToken={(token) => setLocalToken(token)}
+          switchToLogin={() => setAuthMode("login")}
+        />
       )}
     </section>
   );
