@@ -51,10 +51,21 @@ public class UserController {
         return userService.updateProfileDTO(id, profileDTO);
     }
 
-    // DELETE USER
+    // DELETE USER (account deletion) -- real hard delete. Only succeeds for
+    // users with no past orders; throws (caught globally as 409) otherwise.
+    // Frontend tries this first, then falls back to /anonymize below on 409.
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
+    }
+
+    // ANONYMIZE USER (guest conversion) -- POST, not a real delete. Used as
+    // the fallback when DELETE reports the account still has past orders,
+    // so order/kitchen-management history stays intact.
+    @PostMapping("/{id}/anonymize")
+    public ResponseEntity<Void> anonymizeUser(@PathVariable Integer id) {
+        userService.anonymizeUser(id);
+        return ResponseEntity.ok().build();
     }
 
     // REGISTER USER

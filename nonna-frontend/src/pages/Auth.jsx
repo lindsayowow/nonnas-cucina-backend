@@ -20,8 +20,10 @@ export default function Auth({ setToken }) {
     }
   }
 
-  // logout/clear-session logic -- used for expired/invalid tokens
-  // passed down to Profile so it can recover from a stale token 
+  // logout/clear-session logic -- used for expired/invalid tokens below,
+  // for the sidebar's Logout button, and after a successful account
+  // delete/anonymize -- single shared place that clears localStorage +
+  // app state instead of duplicating this in multiple components.
   function clearSession() {
     localStorage.removeItem("token");
     setLocalToken(null);
@@ -71,7 +73,8 @@ export default function Auth({ setToken }) {
         </h1>
 
         <SideBarNav
-          setToken={setLocalToken}
+          token={localToken}
+          onLogout={clearSession}
           onEditProfile={() => setEditing(true)}
         />
 

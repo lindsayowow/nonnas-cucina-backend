@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -56,8 +57,37 @@ public class UserService {
         return userRepository.save(existing);
     }
 
+    // DELETE ACCOUNT (hard delete) -- only succeeds for users with no
+    // PastOrder rows. If the user has order history, the user_id foreign
+    // key on past_orders rejects the delete and Hibernate throws
+    // DataIntegrityViolationException, which GlobalExceptionHandler turns
+    // into a 409. The frontend catches that 409 and calls anonymizeUser
+    // (below) instead, so order/kitchen-management data is never lost.
     public void deleteUser(Integer id) {
         userRepository.deleteById(id);
+    }
+
+    // ANONYMIZE ACCOUNT (guest conversion) -- used instead of a hard delete
+    // when the account has past orders, so PastOrder/Dish rows referencing
+    // this user stay intact (order table stays stable for future kitchen
+    // management / ingredient research). Overwrites all identifying fields
+    // with guest placeholder data and replaces the password hash with a
+    // random, unusable value so the account can no longer be logged into.
+    // The same guest-identity shape can later seed a "checkout as guest"
+    // flow.
+    public void anonymizeUser(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFirstName("Guest");
+        user.setLastName("User");
+        // Plus-addressed per user id to satisfy the unique email constraint
+        // while staying obviously identifiable as a placeholder address.
+        user.setEmail("nonnaskitchen+" + id + "@cucina.net");
+        user.setPhoneNumber("000-000-0000");
+        user.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
+
+        userRepository.save(user);
     }
 
     // REGISTER USER
