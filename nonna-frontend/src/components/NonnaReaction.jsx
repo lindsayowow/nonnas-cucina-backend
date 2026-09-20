@@ -12,7 +12,6 @@ import NonnaHappy from "../assets/nonna-happy.png";
 import NonnaComplete from "../assets/nonna-complete.png";
 
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
-import useNonna from "../hooks/useNonna";
 
 const nonnaImages = {
   neutral: NonnaNeutral,
@@ -25,20 +24,15 @@ const nonnaImages = {
   warning: NonnaWarning
 };
 
-export default function NonnaReaction() {
+// Presentational only -- nonnaState/nonnaMessage come from a single shared
+// useNonna() call in the parent page (BuildADish.jsx). This component is
+// rendered twice (desktop + mobile layouts), so it must NOT call useNonna
+// itself, or every AI milestone request would fire twice.
+export default function NonnaReaction({ nonnaState, nonnaMessage }) {
   const {
-    selectedIngredients,
     showNonnaWarning,
     yourOrder
   } = useDishBuilderContext();
-
-  const {
-    nonnaState,
-    nonnaMessage
-  } = useNonna({
-    selectedIngredients,
-    showNonnaWarning
-  });
 
   const cartCount = yourOrder.length;
 

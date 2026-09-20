@@ -9,12 +9,14 @@ import Dish from '../components/Dish.jsx';
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
 import useFilters from "../hooks/useFilters";
 import useCategories from "../hooks/useCategories";
+import useNonna from "../hooks/useNonna";
 
 export default function BuildADish() {
   const {
     selectedFilters,
     selectedIngredients,
     totalPrice,
+    showNonnaWarning,
     toggleFilter,
     toggleIngredient,
     setSelectedCategory,
@@ -31,6 +33,15 @@ export default function BuildADish() {
   const { filters, loading: filtersLoading } = useFilters();
   const filtersRef = useRef(null);
 
+  // Single shared Nonna AI hook instance for this page. NonnaReaction is
+  // rendered twice below (desktop + mobile layouts, toggled via CSS), so
+  // calling useNonna here -- once -- and passing the result down as props
+  // keeps every milestone request to a single call instead of doubling it.
+  const { nonnaState, nonnaMessage } = useNonna({
+    selectedIngredients,
+    showNonnaWarning
+  });
+
   if (categoriesLoading) {
     return <p>Loading categories...</p>;
   }
@@ -46,7 +57,7 @@ export default function BuildADish() {
       {/* DESKTOP NONNA */}
       <div className="section-0 desktop-only" role="region" aria-label="Nonna reactions">
         <div className="nonna-container">
-          <NonnaReaction />
+          <NonnaReaction nonnaState={nonnaState} nonnaMessage={nonnaMessage} />
         </div>
       </div>
 
@@ -91,7 +102,7 @@ export default function BuildADish() {
 
         {/* MOBILE NONNA */}
         <div className="mobile-only mobile-nonna">
-          <NonnaReaction />
+          <NonnaReaction nonnaState={nonnaState} nonnaMessage={nonnaMessage} />
         </div>
       </div>
 
