@@ -12,6 +12,7 @@ import useCategories from "../hooks/useCategories";
 import useNonna from "../hooks/useNonna";
 
 export default function BuildADish() {
+  // Shared dish-builder state 
   const {
     selectedFilters,
     selectedIngredients,
@@ -19,39 +20,35 @@ export default function BuildADish() {
     showNonnaWarning,
     toggleFilter,
     toggleIngredient,
-    setSelectedCategory,
     updateOrder,
     clearFilter,
     clearIngredients,
     removeIngredient,
     yourOrder,
-    triggerNonnaWarning,
-    addDishAndReset
+    triggerNonnaWarning
   } = useDishBuilderContext();
 
+  // data - fetched  here and passed down to children
   const { categories, loading: categoriesLoading } = useCategories();
   const { filters, loading: filtersLoading } = useFilters();
   const filtersRef = useRef(null);
 
-  // Single shared Nonna AI hook instance for this page. NonnaReaction is
-  // rendered twice below (desktop + mobile layouts, toggled via CSS), so
-  // calling useNonna here -- once -- and passing the result down as props
-  // keeps every milestone request to a single call instead of doubling it.
+  //  Nonna AI hook. passed down as props 
   const { nonnaState, nonnaMessage } = useNonna({
     selectedIngredients,
     showNonnaWarning
   });
 
+  // don't render anything until data is ready
   if (categoriesLoading) {
     return <p>Loading categories...</p>;
   }
 
   if (filtersLoading) {
-  return <p>Loading filters...</p>;
-}
+    return <p>Loading filters...</p>;
+  }
 
   return (
-    // main landmark for the Build a Dish page
     <main className="build-container" aria-label="Build a Dish page">
 
       {/* DESKTOP NONNA */}
@@ -76,7 +73,7 @@ export default function BuildADish() {
           selectedFilters={selectedFilters}
           selectedIngredients={selectedIngredients}
           Categories={categories}
-          onSelectedCategory={setSelectedCategory}
+          filters={filters}
           onToggleIngredient={toggleIngredient}
           clearIngredients={clearIngredients}
           updateOrder={updateOrder}
@@ -96,7 +93,6 @@ export default function BuildADish() {
             updateOrder={updateOrder}
             removeIngredient={removeIngredient}
             yourOrder={yourOrder}
-            addDishAAndReset={addDishAndReset}
           />
         </div>
 

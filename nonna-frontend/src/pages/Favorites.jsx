@@ -3,20 +3,14 @@ import "../styles/favorites.css";
 import { Link } from "react-router-dom";
 import FavoriteButton from "../components/buttons/FavoriteButton";
 import useFavoriteToggle from "../hooks/useFavoriteToggle";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
 import SideNavBar from "../components/template/SideBarNav.jsx";
 
 export default function Favorites({ token }) {
   const [allDishes, setAllDishes] = useState([]);
 
-  function getUserIdFromToken(token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return Number(payload.sub);
-    } catch {
-      return null;
-    }
-  }
-
+  // Shared JWT-decode helper from context, instead of a local duplicate
+  const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
   const wrappedOrders = [

@@ -11,6 +11,7 @@ export default function Dish({
   removeIngredient,
   yourOrder
 }) {
+  // Dish count shown on the "Go to Cart" button
   const cartCount = yourOrder?.length || 0;
 
   return (
@@ -25,14 +26,14 @@ export default function Dish({
             <p>Your current dish is empty.</p>
           </div>
         ) : (
-          // Use of lists
+          // Use of lists 
           <ul
             className="activeIngredientsSelected"
             role="region"
             aria-label="Selected ingredients"
           >
             {selectedIngredients.map((ingredient) => (
-              <li key={ingredient.name}>
+              <li key={ingredient.id ?? ingredient.name}>
                 <span className="ingredientText">
                   <span className="ingredientEmoji" aria-hidden="true">
                     {ingredient.emoji}
@@ -54,6 +55,7 @@ export default function Dish({
         )}
       </div>
 
+      {/* Running total, only shown once something is selected */}
       {selectedIngredients.length > 0 && (
         <p className="dishTotal text-bold text-center">
           Order total:{" "}
@@ -64,6 +66,7 @@ export default function Dish({
         </p>
       )}
 
+      {/* Add current selections into a dish on the active order */}
       <DishButton
         onClick={updateOrder}
         disabled={selectedIngredients.length === 0}
@@ -71,6 +74,7 @@ export default function Dish({
         Add to Order
       </DishButton>
 
+      {/* Navigate to the cart/order page */}
       <Link to="/cart">
         <DishButton>
           Go to Cart 🛒 ({cartCount})

@@ -33,9 +33,12 @@ export default function Order({ token }) {
 
       if (success) {
         setKitchenMessage("Your order has been sent to Nonna's Kitchen!");
+      } else {
+        // Surface send failures in the UI instead of the console
+        setKitchenMessage("Something went wrong sending your order. Please try again.");
       }
-    } catch (err) {
-      console.error("Error sending order:", err);
+    } catch {
+      setKitchenMessage("Something went wrong sending your order. Please try again.");
     }
   };
 

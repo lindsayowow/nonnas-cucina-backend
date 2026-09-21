@@ -7,6 +7,8 @@ export default function IngredientButton({
   ingredient,
   triggerNonnaWarning
 }) {
+  // Disabled ingredients still respond to clicks -- they trigger Nonna's
+  // warning animation instead of toggling selection
   const handleClick = () => {
     if (disabled) {
       triggerNonnaWarning && triggerNonnaWarning();
@@ -19,9 +21,7 @@ export default function IngredientButton({
 
   return (
     <button
-      className={`btn IngredientButton 
-        ${disabled ? "is-disabled" : ""} 
-        ${isSelected ? "selected" : ""}`}
+      className={`btn IngredientButton ${disabled ? "is-disabled" : ""} ${isSelected ? "selected" : ""}`}
       onClick={handleClick}
       aria-pressed={isSelected}
       aria-disabled={disabled}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import AuthButton from "./buttons/AuthButton";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
 import "../styles/profile.css";
 
 export default function Profile({ token, editing, setEditing, onSessionExpired }) {
@@ -15,16 +16,8 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
   // Load failure state, shown in place of the console.error that used to fire here
   const [loadError, setLoadError] = useState(null);
 
-  function getUserIdFromToken(token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return Number(payload.sub);
-    } catch {
-      // Malformed/invalid token -- treat as no user
-      return null;
-    }
-  }
-
+  // Shared JWT-decode helper from context, instead of a local duplicate
+  const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
   useEffect(() => {

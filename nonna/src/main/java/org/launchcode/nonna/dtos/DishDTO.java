@@ -15,10 +15,8 @@ public class DishDTO {
     private Boolean isFavorite;
     private List<IngredientDTO> ingredients;
 
-    // Existing constructor -- relies on Dish.dishIngredients (entity collection
-    // traversal). Confirmed broken for PastOrders; left as-is here since other
-    // callers (DishController/DishService) still use it and are out of scope
-    // for this fix.
+    // used by DishService
+
     public DishDTO(Dish dish){
         this.id = dish.getId();
         this.dishCost = dish.getDishCost();
@@ -31,8 +29,6 @@ public class DishDTO {
                 .toList();
     }
 
-    // New constructor -- takes ingredients built explicitly from a direct
-    // repository query, bypassing the broken Dish.dishIngredients collection.
     // Used by PastOrderService.
     public DishDTO(Dish dish, List<IngredientDTO> ingredients) {
         this.id = dish.getId();

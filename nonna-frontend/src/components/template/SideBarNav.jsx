@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import useDishBuilderContext from "../../hooks/useDishBuilderContext";
 
 // token: current JWT, used to authorize the delete/anonymize requests below
 // onLogout: shared session-clear callback from Auth.jsx -- used both for the
@@ -15,15 +16,8 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
-  function getUserIdFromToken(token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return Number(payload.sub);
-    } catch {
-      // Malformed/invalid token -- treat as no user
-      return null;
-    }
-  }
+  // Shared JWT-decode helper from context, instead of a local duplicate
+  const { getUserIdFromToken } = useDishBuilderContext();
 
   // DELETE -- tries a real account deletion first. If the account has past
   // orders, the backend responds 409 and this falls back to POST /anonymize
@@ -140,7 +134,12 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
           <li>
             <button
               className="link-button"
-              onClick={() => setConfirmingDelete(true)}
+              onClick={() => {
+                setConfirmingDelete(true);
+                // Clear any leftover error from a previous failed attempt
+                // so it doesn't flash back on reopen
+                setDeleteError(null);
+              }}
             >
               Delete Account
             </button>

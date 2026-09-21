@@ -23,7 +23,7 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-    // CORS setup - allows the Vite dev server to call the API
+    // CORS - allows the front end to call the API
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -67,6 +67,7 @@ public class SecurityConfig {
                         // Public Gemini endpoint.
                         // The frontend does not need to send a JWT
                         // just to ask Nonna for a message.
+                        //  May choose to default sayings in future if traffic too high
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/gemini"

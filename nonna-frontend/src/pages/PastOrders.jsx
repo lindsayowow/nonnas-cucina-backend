@@ -3,6 +3,7 @@ import "../styles/past-orders.css";
 import { Link } from "react-router-dom";
 import SideNavBar from "../components/template/SideBarNav.jsx";
 import useFavoriteToggle from "../hooks/useFavoriteToggle";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
 import FavoriteButton from "../components/buttons/FavoriteButton";
 
 const currency = (value) =>
@@ -18,15 +19,10 @@ export default function PastOrders({ token }) {
 
   const { toggleFavorite } = useFavoriteToggle(orders, setOrders, token);
 
-  function getUserIdFromToken(token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return Number(payload.sub ?? payload.userId ?? payload.id);
-    } catch {
-      return null;
-    }
-  }
-
+  // Shared JWT-decode helper from context, instead of a local duplicate.
+  // (The old local version also fell back to payload.userId/payload.id,
+  // but the backend JWT only ever sets "sub" -- that fallback was dead.)
+  const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
   useEffect(() => {

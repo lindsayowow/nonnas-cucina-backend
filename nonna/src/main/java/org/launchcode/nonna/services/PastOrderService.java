@@ -43,9 +43,46 @@ public class PastOrderService {
         this.dishIngredientRepository = dishIngredientRepository;
     }
 
-    // CREATE ORDER
+    // Build a DishDTO with ingredients resolved via a direct repository query,
+    // bypassing the broken Dish.dishIngredients entity collection. Defined
+    // here, above every method that relies on it, since createOrder needs it
+    // too now (not just the read endpoints below).
+    private DishDTO buildDishDTO(Dish dish) {
+        List<IngredientDTO> ingredients = dishIngredientRepository
+                .findByDish_Id(dish.getId())
+                .stream()
+                .map(di -> {
+                    Ingredient ing = di.getIngredient();
+                    return new IngredientDTO(
+                            ing.getId(),
+                            ing.getIngredientName(),
+                            ing.getIngredientCost(),
+                            ing.getEmoji(),
+                            List.of(),   // categoryIds not needed for order display
+                            List.of()    // filterIds not needed for order display
+                    );
+                })
+                .toList();
+
+        return new DishDTO(dish, ingredients);
+    }
+
+    // Builds a full PastOrderDTO with every dish's ingredients safely
+    // resolved via buildDishDTO above, instead of the broken
+    // PastOrder -> Dish.dishIngredients traversal.
+    private PastOrderDTO buildPastOrderDTO(PastOrder order) {
+        List<DishDTO> dishDTOs = order.getDishes().stream()
+                .map(this::buildDishDTO)
+                .toList();
+        return new PastOrderDTO(order, dishDTOs);
+    }
+
+    // CREATE ORDER -- returns a PastOrderDTO built via buildPastOrderDTO so
+    // the response's dish ingredients are correct, instead of leaving DTO
+    // construction to the controller (which previously used the broken
+    // single-arg PastOrderDTO constructor).
     @Transactional
-    public PastOrder createOrder(CreateOrderDTO dto) {
+    public PastOrderDTO createOrder(CreateOrderDTO dto) {
 
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -82,36 +119,9 @@ public class PastOrderService {
         }
 
         savedOrder.setOrderTotal(total);
-        return pastOrderRepository.save(savedOrder);
-    }
+        PastOrder finalOrder = pastOrderRepository.save(savedOrder);
 
-    // Build a DishDTO with ingredients resolved via a direct repository query,
-    // bypassing the broken Dish.dishIngredients entity collection.
-    private DishDTO buildDishDTO(Dish dish) {
-        List<IngredientDTO> ingredients = dishIngredientRepository
-                .findByDish_Id(dish.getId())
-                .stream()
-                .map(di -> {
-                    Ingredient ing = di.getIngredient();
-                    return new IngredientDTO(
-                            ing.getId(),
-                            ing.getIngredientName(),
-                            ing.getIngredientCost(),
-                            ing.getEmoji(),
-                            List.of(),   // categoryIds not needed for order display
-                            List.of()    // filterIds not needed for order display
-                    );
-                })
-                .toList();
-
-        return new DishDTO(dish, ingredients);
-    }
-
-    private PastOrderDTO buildPastOrderDTO(PastOrder order) {
-        List<DishDTO> dishDTOs = order.getDishes().stream()
-                .map(this::buildDishDTO)
-                .toList();
-        return new PastOrderDTO(order, dishDTOs);
+        return buildPastOrderDTO(finalOrder);
     }
 
     // GET ALL ORDERS
@@ -131,16 +141,18 @@ public class PastOrderService {
                 .orElse(null);
     }
 
-    // UPDATE ORDER
+    // UPDATE ORDER -- returns a PastOrderDTO for the same reason as
+    // createOrder above (consistent, correct response shape).
     @Transactional
-    public PastOrder updatePastOrder(Integer id, PastOrder updatedPastOrder) {
+    public PastOrderDTO updatePastOrder(Integer id, PastOrder updatedPastOrder) {
         PastOrder existing = pastOrderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Past order not found"));
 
         existing.setOrderTimeStamp(updatedPastOrder.getOrderTimeStamp());
         existing.setOrderTotal(updatedPastOrder.getOrderTotal());
 
-        return pastOrderRepository.save(existing);
+        PastOrder saved = pastOrderRepository.save(existing);
+        return buildPastOrderDTO(saved);
     }
 
     // DELETE ORDER

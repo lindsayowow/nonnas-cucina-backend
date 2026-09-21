@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller exposing the Gemini Nonna message endpoint.
  * Frontend calls POST /gemini with state + ingredient data.
+ *
+ * CORS for this endpoint is handled globally by SecurityConfig's
+ * CorsConfigurationSource (covers /**, including /gemini) -- no
+ * per-controller @CrossOrigin needed here.
  */
 @RestController
 @RequestMapping("/gemini")
-@CrossOrigin(origins = "http://localhost:5173")
 public class NonnaAiController {
 
     private final NonnaAiService nonnaAiService;

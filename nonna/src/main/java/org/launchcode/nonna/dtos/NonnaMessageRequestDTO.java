@@ -1,45 +1,18 @@
 package org.launchcode.nonna.dtos;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
-/**
- * Request DTO sent from the frontend to ask Nonna/Gemini for a message.
- */
+/* Request DTO sent from the frontend to ask Nonna/Gemini for a message. */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class NonnaMessageRequestDTO {
 
     private String state;
     private int ingredientCount;
     private List<String> ingredients;
-
-    public NonnaMessageRequestDTO() {}
-
-    public NonnaMessageRequestDTO(String state, int ingredientCount, List<String> ingredients) {
-        this.state = state;
-        this.ingredientCount = ingredientCount;
-        this.ingredients = ingredients;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public int getIngredientCount() {
-        return ingredientCount;
-    }
-
-    public void setIngredientCount(int ingredientCount) {
-        this.ingredientCount = ingredientCount;
-    }
-
-    public List<String> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(List<String> ingredients) {
-        this.ingredients = ingredients;
-    }
 }

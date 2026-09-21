@@ -2,13 +2,16 @@
 import { useState } from "react";
 
 export default function useDishBuilder() {
+  // Core dish-building state
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [yourOrder, setYourOrder] = useState([]);
   const [showNonnaWarning, setShowNonnaWarning] = useState(false);
 
-  // Decode JWT and extract userId (sub)
+  // Decode JWT and extract userId (sub). Used internally by sendToKitchen,
+  // and also exposed below since several pages/components (Profile,
+  // SideBarNav, PastOrders, Favorites) need the same decode logic --
+  // previously each had its own duplicate copy of this function.
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -43,7 +46,8 @@ export default function useDishBuilder() {
     0
   );
 
-  // Add dish to order
+  // Add dish to order -- also clears the current ingredient/filter
+  // selection, so no separate "add and reset" step is needed
   function updateOrder() {
     const newDish = {
       ingredients: selectedIngredients,
@@ -131,14 +135,6 @@ export default function useDishBuilder() {
     setYourOrder(prev => prev.filter(item => item !== dish));
   }
 
-  // Add dish and reset selections
-  function addDishAndReset() {
-    const newDish = updateOrder();
-    clearIngredients();
-    clearFilter();
-    return newDish;
-  }
-
   // Nonna warning animation
   function triggerNonnaWarning() {
     setShowNonnaWarning(true);
@@ -148,21 +144,17 @@ export default function useDishBuilder() {
   }
 
   return {
+    // State
     selectedFilters,
-    selectedCategory,
     selectedIngredients,
     totalPrice,
     yourOrder,
     grandTotal,
     showNonnaWarning,
 
+    // Toggle/mutate actions
     toggleFilter,
     toggleIngredient,
-    setSelectedCategory,
-    setSelectedIngredients,
-    setSelectedFilters,
-    setYourOrder,
-
     updateOrder,
     sendToKitchen,
     clearOrder,
@@ -172,7 +164,6 @@ export default function useDishBuilder() {
     removeDish,
     triggerNonnaWarning,
     setShowNonnaWarning,
-    addDishAndReset,
     getUserIdFromToken
   };
 }
