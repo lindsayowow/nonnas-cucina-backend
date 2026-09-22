@@ -14,7 +14,7 @@ public class DishService {
         this.dishRepository = dishRepository;
     }
 
-    // DELETE
+    // delete dish from the database by ID
     public void deleteDish(Integer id) {
         dishRepository.deleteById(id);
     }
@@ -24,9 +24,13 @@ public class DishService {
         Dish dish = dishRepository.findById(dishId)
                 .orElseThrow(() -> new RuntimeException("Dish not found: " + dishId));
 
+        // Apply favorite flag value
         dish.setIsFavorite(isFavorite);
+
+        // save the updated dish
         Dish saved = dishRepository.save(dish);
 
+        // Return updated dish as a DTO
         return new DishDTO(saved);
     }
 }

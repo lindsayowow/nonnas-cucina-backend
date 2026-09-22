@@ -16,44 +16,48 @@ public class IngredientService {
         this.ingredientRepository = ingredientRepository;
     }
 
-    // READ -- all ingredients, as DTOs
+    // READ all ingredients from db
     public List<IngredientDTO> getAllIngredientDTOs() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
+
+        // Convert each Ingredient into DTO
         return ingredients.stream()
                 .map(IngredientDTO::new)
                 .toList();
     }
 
-    // READ -- single ingredient by id, as a DTO
+    // READ ingredient by id and convert to DTO
     public IngredientDTO getByIngredientDTOId(int id) {
-        return ingredientRepository.findById(id)
+          return ingredientRepository.findById(id)
                 .map(IngredientDTO::new)
                 .orElse(null);
     }
 
-    // CREATE -- single ingredient
+    // CREATE - new ingredient - admin only future use
     public Ingredient saveIngredient(Ingredient ingredient) {
         return ingredientRepository.save(ingredient);
     }
 
-    // CREATE -- bulk insert
+    // CREATE - bulk insert - admin only future use
     public List<Ingredient> saveAll(List<Ingredient> ingredients) {
         return ingredientRepository.saveAll(ingredients);
     }
 
-    // UPDATE
+    // UPDATE ingredient or throw error - admin only future use
     public Ingredient updateIngredient(Integer id, Ingredient updatedIngredient) {
         Ingredient existing = ingredientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
 
+        // Apply updates to ingredients - admin only
         existing.setIngredientName(updatedIngredient.getIngredientName());
         existing.setIngredientCost(updatedIngredient.getIngredientCost());
         existing.setEmoji(updatedIngredient.getEmoji());
 
+        // Save ingredient back to database
         return ingredientRepository.save(existing);
     }
 
-    // DELETE
+    // DELETE ingredient - admin only
     public void deleteIngredient(int id) {
         ingredientRepository.deleteById(id);
     }

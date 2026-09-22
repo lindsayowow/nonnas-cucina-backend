@@ -10,10 +10,8 @@ public class NonnaAiService {
 
     private final Client geminiClient = new Client();
 
-    // Generates Nonna's message via Gemini, falling back to a local
-    // hand-written message if the call fails for any reason (network error,
-    // rate limit, invalid key, blank response) -- this is an enhancement,
-    // not something the UI should ever hard-fail on.
+    // Generates Nonna's message via Gemini, falling back to a local message
+    // if fails for any reason
     public String generateMessage(NonnaMessageRequestDTO request) {
 
         String prompt = buildPrompt(request);
@@ -34,10 +32,7 @@ public class NonnaAiService {
 
             return text.trim();
         } catch (Exception e) {
-            // Gemini call itself failed (network, quota, auth, etc.) --
-            // previously this propagated as an unhandled exception instead
-            // of using the fallback message that exists specifically for
-            // this purpose.
+            // Gemini call itself failed (network, quota, auth, etc.)
             return fallbackMessage(request);
         }
     }

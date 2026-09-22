@@ -19,35 +19,39 @@ public class CategoryService {
     // READ -- all categories, as DTOs
     public List<CategoryDTO> getAllCategoryDTOs() {
         List<Category> categories = categoryRepository.findAll();
+
+        // Convert each Category into a CategoryDTO
         return categories.stream()
                 .map(CategoryDTO::new)
                 .toList();
     }
 
-    // READ -- single category by id, as a DTO
+    // Look up category by ID and convert to DTO if present
     public CategoryDTO getByCategoryDTOId(int id) {
         return categoryRepository.findById(id)
                 .map(CategoryDTO::new)
                 .orElse(null);
     }
 
-    // CREATE
+    // CREATE a new Category entity
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);
     }
 
-    // UPDATE
+    // UPDATE - Retrieve existing category or error if not found
     public Category updateCategory(Integer id, Category updatedCategory) {
         Category existing = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
+        // Apply updates
         existing.setCategoryName(updatedCategory.getCategoryName());
         existing.setCategoryMap(updatedCategory.getCategoryMap());
 
+        // Save  back to database
         return categoryRepository.save(existing);
     }
 
-    // DELETE
+    // DELETE category by ID
     public void deleteCategory(int id) {
         categoryRepository.deleteById(id);
     }
