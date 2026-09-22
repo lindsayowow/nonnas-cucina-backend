@@ -8,9 +8,11 @@ import SideNavBar from "../components/template/SideBarNav.jsx";
 
 export default function Favorites({ token }) {
   const [allDishes, setAllDishes] = useState([]);
+
   const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
+  // show dishes displayed so that toggleFavorite works
   const wrappedOrders = [
     {
       id: 0,
@@ -18,9 +20,10 @@ export default function Favorites({ token }) {
     }
   ];
 
-  const { toggleFavorite } = useFavoriteToggle(
+   const { toggleFavorite } = useFavoriteToggle(
     wrappedOrders,
     newOrders => {
+      // Extract updated dishes from wrapper
       setAllDishes(newOrders[0].dishes);
     },
     token
@@ -38,6 +41,7 @@ export default function Favorites({ token }) {
           }
         );
 
+        // If unauthorized or failed, fallback to empty list
         if (!response.ok) {
           setAllDishes([]);
           return;
@@ -59,7 +63,7 @@ export default function Favorites({ token }) {
 
         setAllDishes(dishes);
       } catch {
-        // Network error -- fall back to an empty favorites list
+        // Network error → empty list
         setAllDishes([]);
       }
     }
@@ -67,15 +71,17 @@ export default function Favorites({ token }) {
     fetchFavorites();
   }, [userId, token]);
 
+  // User not logged in
   if (!token) {
     return (      
       <section className="favorites-container">
         <h1>My Favorite Dishes</h1>
-       <p> Please <Link to="/auth" className="login-link">log in</Link> to see your favorites.</p>
+        <p> Please <Link to="/auth" className="login-link">log in</Link> to see your favorites.</p>
       </section>
     );
   }
 
+  // Filter only dishes marked as favorite
   const favorites = allDishes.filter(dish => dish.isFavorite === true);
 
   return (
@@ -91,6 +97,7 @@ export default function Favorites({ token }) {
       <section className="favorites-container">
         <h1>My Favorite Dishes</h1>
 
+        {/* Empty favorites state */}
         {favorites.length === 0 && <p>You have no favorites yet.</p>}
 
         <ul className="favorites-list">
@@ -105,6 +112,8 @@ export default function Favorites({ token }) {
                 <div className="favorite-row">
                   <span className="dish-label">Dish {index + 1}:</span>
                   <span className="dish-ingredients">{ingredientNames}</span>
+
+                  {/* Dish cost */}
                   <span className="dish-cost">
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
@@ -112,8 +121,9 @@ export default function Favorites({ token }) {
                     }).format(dish.dishCost)}
                   </span>
 
+                  {/* Favorite toggle button */}
                   <FavoriteButton
-                    orderId={0}
+                    orderId={0}          
                     dish={dish}
                     toggleFavorite={toggleFavorite}
                   />

@@ -15,13 +15,13 @@ export default function Auth({ setToken }) {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return payload;
     } catch {
-      // Malformed/invalid token -- treat as logged out
+      // invalid token -- treat as logged out
       return null;
     }
   }
 
   // logout & clear-session logic - used for expired or invalid tokens, 
-  // sidebar's Logout button, and after a successful account delete 
+  // sidebar's logout button, and after a successful account delete 
   function clearSession() {
     localStorage.removeItem("token");
     setLocalToken(null);
@@ -30,6 +30,7 @@ export default function Auth({ setToken }) {
   }
 
   useEffect(() => {
+    // If no token exists, ensure global auth state reflects logged-out
     if (!localToken) {
       setToken(null);
       window.dispatchEvent(new Event("authchange"));
@@ -38,19 +39,21 @@ export default function Auth({ setToken }) {
 
     const decoded = decodeToken(localToken);
 
+    // Token malformed or missing expiration → clear session
     if (!decoded || !decoded.exp) {
       clearSession();
       return;
     }
 
+    // Expiration check
     const isExpired = decoded.exp * 1000 < Date.now();
     if (isExpired) {
-      // Token expired. This clears it and logs the user out
       clearSession();
     }
   }, [localToken, setToken]);
 
   useEffect(() => {
+    // Sync token to localStorage + global state whenever it changes
     if (localToken) {
       localStorage.setItem("token", localToken);
       setToken(localToken);

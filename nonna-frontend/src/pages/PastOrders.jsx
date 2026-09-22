@@ -36,21 +36,23 @@ export default function PastOrders({ token }) {
           }
         );
 
+        // Token invalid or expired
         if (response.status === 401 || response.status === 403) {
           setAuthError(true);
           setOrders([]);
           return;
         }
 
+        // Successful fetch
         if (response.ok) {
           const data = await response.json();
           setOrders(data ?? []);
         } else {
-          // Non-OK, non-auth failure -- fall back to an empty order list
+          // Non-auth failure → treat as empty list
           setOrders([]);
         }
       } catch {
-        // Network error -- fall back to an empty order list
+        // Network failure → treat as empty list
         setOrders([]);
       } finally {
         setLoading(false);
@@ -60,6 +62,7 @@ export default function PastOrders({ token }) {
     fetchOrders();
   }, [userId, token]);
 
+  // User not logged in
   if (!token) {
     return (
       <section className="pastorders-container">
@@ -69,6 +72,7 @@ export default function PastOrders({ token }) {
     );
   }
 
+  // Loading state
   if (loading) {
     return (
       <section className="pastorders-container">
@@ -78,6 +82,7 @@ export default function PastOrders({ token }) {
     );
   }
 
+  // Unauthorized
   if (authError) {
     return (
       <section className="pastorders-container">
@@ -87,6 +92,7 @@ export default function PastOrders({ token }) {
     );
   }
 
+  // No orders
   if (!orders || orders.length === 0) {
     return (
       <section className="pastorders-container">
@@ -111,7 +117,6 @@ export default function PastOrders({ token }) {
         {orders.map(order => (
           <div key={order.id} className="order-card">
 
-            {/* NEW — centered Order # */}
             <span className="order-number">
               Order #{order.id}
             </span>
@@ -134,6 +139,7 @@ export default function PastOrders({ token }) {
                   dish.ingredientsForDish ??
                   [];
 
+                // Convert ingredient objects into list
                 const ingredientNames = ingredients.length > 0
                   ? ingredients.map(ing => ing.ingredientName).join(", ")
                   : "No ingredients listed";
@@ -149,6 +155,7 @@ export default function PastOrders({ token }) {
                     <div className="dish-actions">
                       <span className="dish-cost">{currency(dish.dishCost)}</span>
 
+                      {/* Favorite toggle button */}
                       <FavoriteButton
                         orderId={order.id}
                         dish={dish}

@@ -12,7 +12,7 @@ import useCategories from "../hooks/useCategories";
 import useNonna from "../hooks/useNonna";
 
 export default function BuildADish() {
-  // Shared dish-builder state 
+
   const {
     selectedFilters,
     selectedIngredients,
@@ -28,18 +28,18 @@ export default function BuildADish() {
     triggerNonnaWarning
   } = useDishBuilderContext();
 
-  // data - fetched  here and passed down to children
+  // Data passed down to children
   const { categories, loading: categoriesLoading } = useCategories();
   const { filters, loading: filtersLoading } = useFilters();
   const filtersRef = useRef(null);
 
-  //  Nonna AI hook. passed down as props 
+  // Nonna AI hook — provides visual + message state
   const { nonnaState, nonnaMessage } = useNonna({
     selectedIngredients,
     showNonnaWarning
   });
 
-  // don't render anything until data is ready
+  // Don't render anything until data is ready
   if (categoriesLoading) {
     return <p>Loading categories...</p>;
   }
