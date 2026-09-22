@@ -60,7 +60,6 @@
 /* tablet adjustments: 600–1099px */
 @media (min-width: 600px) and (max-width: 1099px) {
   .foursquare-grid {
-    grid-template-columns: repeat(2, 1fr);
     padding: 0 10px;
   }
 

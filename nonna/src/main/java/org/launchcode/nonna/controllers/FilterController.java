@@ -27,19 +27,19 @@ public class FilterController {
         return filterService.getByFilterDTOId(id);
     }
 
-    @PostMapping
+    @PostMapping  // Save a new filter entity to the database - future admin use
     public FilterDTO createFilter(@RequestBody Filter filter) {
         Filter saved = filterService.saveFilter(filter);
         return new FilterDTO(saved);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")          // Update an existing filter with new values - future admin use
     public FilterDTO updateFilter(@PathVariable Integer id, @RequestBody Filter filter) {
         Filter updated = filterService.updateFilter(id, filter);
         return new FilterDTO(updated);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")         // Remove filter from the database by ID - future admin use
     public void deleteFilter(@PathVariable int id) {
         filterService.deleteFilter(id);
     }

@@ -6,35 +6,34 @@
 }
 
 /*   COLUMN SECTIONS  */
-.section-0,
-.section-1,
-.section-2 {
+.build-container .section-0,
+.build-container .section-1,
+.build-container .section-2 {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding-top: 1.25rem;
 }
 
-/* Side columns (left + right) */
-.section-0,
-.section-2 {
+.build-container .section-0,
+.build-container .section-2 {
   padding-inline: 0.75rem;
   background-color: var(--olive-mid);
 }
 
 /* Center column */
-.section-1 {
+.build-container .section-1 {
   min-width: 0;
   padding-inline: 0.75rem;
 }
 
-h2 {
+.build-container h2 {
   margin-top: 0.5rem;
   padding: 10px;
   text-align: center;
 }
 
-h3 {
+.build-container h3 {
   text-align: center;
 }
 
@@ -74,6 +73,11 @@ h3 {
 .section-2 .dish-container,
 .section-2 .nonna-container {
   margin-bottom: 0.75rem;
+}
+
+
+.nonna-container {
+  padding: 0.75rem; 
 }
 
 /*   RESPONSIVE VISIBILITY HELPERS  */

@@ -1,97 +1,224 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import AuthButton from "./buttons/AuthButton";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
+import "../styles/profile.css";
 
-export default function Profile({ token, setToken }) {
+export default function Profile({ token, editing, setEditing, onSessionExpired }) {
   const [user, setUser] = useState(null);
-  const [editing, setEditing] = useState(false);
 
-  function getUserIdFromToken(token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return Number(payload.sub);   // ⭐ FIXED: ensure numeric ID
-    } catch (err) {
-      console.error("Invalid token", err);
-      return null;
-    }
-  }
+  // state = the profile fields
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: ""
+  });
 
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Load failure state 
+  const [loadError, setLoadError] = useState(null);
+
+  const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
   useEffect(() => {
     async function fetchUser() {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/profile/${userId}`,   // ⭐ FIXED: correct endpoint
+          `http://localhost:8080/users/profile/${userId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         if (response.ok) {
           const data = await response.json();
           setUser(data);
+          setForm({
+            firstName: data.firstName ?? "",
+            lastName: data.lastName ?? "",
+            email: data.email ?? "",
+            phoneNumber: data.phoneNumber ?? ""
+          });
+        } else if (response.status === 401 || response.status === 403) {
+          // Token rejected — force logout
+          onSessionExpired?.();
         } else {
-          console.error("Failed to fetch user");
+          setLoadError("Failed to load your profile.");
         }
-      } catch (err) {
-        console.error("Error fetching user", err);
+      } catch {
+        setLoadError("Error loading your profile.");
       }
     }
 
+    // Only get if token successful
     if (userId) {
       fetchUser();
     }
-  }, [userId, token]);
+  }, [userId, token, onSessionExpired]);
 
-  function logout() {
-    localStorage.removeItem("token");
-    setToken(null);
+  function handleChange(e) {
+    const { name, value } = e.target;
+    // Update form 
+    setForm(prev => ({ ...prev, [name]: value }));
   }
 
+  function handleCancel() {
+    // Restore values if user exists
+    if (user) {
+      setForm({
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        email: user.email ?? "",
+        phoneNumber: user.phoneNumber ?? ""
+      });
+    }
+    setError(null);
+    setEditing(false);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/profile/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(form)
+        }
+      );
+
+      // Token expired 
+      if (response.status === 401 || response.status === 403) {
+        onSessionExpired?.();
+        return;
+      }
+
+      // Backend validation or update failure
+      if (!response.ok) {
+        setError("Failed to update profile.");
+        setSaving(false);
+        return;
+      }
+
+      // Update local state with new profile data
+      const updated = await response.json();
+      setUser(updated);
+      setEditing(false);
+    } catch {
+      setError("Error updating profile.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // Loading or failure state before profile is available
   if (!user) {
-    return <p>Loading profile...</p>;
+    return (
+      <div>
+        <p>{loadError ?? "Loading profile..."}</p>
+
+        {/* Manual fallback */}
+        {loadError && (
+          <button className="switch-link" onClick={() => onSessionExpired?.()}>
+            Log in again
+          </button>
+        )}
+      </div>
+    );
   }
 
   return (
-    <div className="profile-view">
-      <h2>My Profile</h2>
+    <div className="profile-card">
+      <h2 className="profile-title">My Profile</h2>
 
+      {/* Read-only profile view */}
       {!editing && (
-        <>
-          <p><strong>First Name:</strong> {user.firstName}</p>
-          <p><strong>Last Name:</strong> {user.lastName}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Phone Number:</strong> {user.phoneNumber}</p>
-
-          <Link to="/favorites">
-            <AuthButton>View Favorites ❤️</AuthButton>
-          </Link>
-
-          <Link to="/orders">
-            <AuthButton>View Past Orders 📜</AuthButton>
-          </Link>
-
-          <AuthButton onClick={() => setEditing(true)}>
-            Edit Profile
-          </AuthButton>
-
-          <AuthButton onClick={logout}>
-            Logout
-          </AuthButton>
-        </>
+        <div className="profile-content">
+          <p>
+            <strong>First Name:</strong> {user.firstName}
+          </p>
+          <p>
+            <strong>Last Name:</strong> {user.lastName}
+          </p>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
+          <p>
+            <strong>Phone Number:</strong> {user.phoneNumber}
+          </p>
+        </div>
       )}
 
+      {/* Editable profile form */}
       {editing && (
-        <>
-          <p>Edit mode coming soon…</p>
+        <form className="profile-content" onSubmit={handleSubmit}>
+          <label>
+            First Name  
+            <input
+              type="text"
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              required
+            />
+          </label>
 
-          <AuthButton onClick={() => setEditing(false)}>
-            Cancel
-          </AuthButton>
-        </>
+          <label>
+            Last Name  
+            <input
+              type="text"
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Email  
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Phone Number  
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={form.phoneNumber}
+              onChange={handleChange}
+            />
+          </label>
+
+          {error && <p className="profile-error">{error}</p>}
+
+          <div className="profile-actions">
+            <AuthButton type="submit" disabled={saving}>
+              {saving ? "Saving..." : "Save"}
+            </AuthButton>
+
+            <AuthButton type="button" onClick={handleCancel}>
+              Cancel
+            </AuthButton>
+          </div>
+        </form>
       )}
     </div>
   );

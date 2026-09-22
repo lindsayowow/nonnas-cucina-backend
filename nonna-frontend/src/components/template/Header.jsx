@@ -1,17 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../../styles/header.css';
 import nonnasLogo from '../../assets/Nonnas_Logo.png';
 import useDishBuilderContext from "../../hooks/useDishBuilderContext";
-import { DishBuilderContext } from "../../context/DishBuilderContextObject";
-
 
 export default function Header() {
   const { yourOrder } = useDishBuilderContext();
   const [open, setOpen] = useState(false);
 
+  // Track login state 
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+
+  useEffect(() => {
+    // login state when token changes anywhere
+    const syncLoginState = () => setIsLoggedIn(!!localStorage.getItem("token"));
+
+    // Fires when another tab modifies localStorage 
+    window.addEventListener("storage", syncLoginState);
+    
+    // event fired inside this tab by Auth & SideBarNav.jsx
+    window.addEventListener("authchange", syncLoginState);
+
+    return () => {
+      window.removeEventListener("storage", syncLoginState);
+      window.removeEventListener("authchange", syncLoginState);
+    };
+  }, []);
+
   return (
-    // semantic header
     <header className="header">
       <NavLink to="/" onClick={() => setOpen(false)}>
         <img
@@ -47,10 +63,24 @@ export default function Header() {
         <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
         <NavLink to="/buildadish" onClick={() => setOpen(false)}>Build a Dish</NavLink>
         <NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink>
-        {/* <NavLink to="/profile" onClick={() => setOpen(false)}>👤︎</NavLink> */}
-        <NavLink to="/auth" onClick={() => setOpen(false)}>👤︎</NavLink>
-        <NavLink to="/favorites" onClick={() => setOpen(false)}>♡</NavLink>
-        
+
+        {/* Profile icon changes based on login state */}
+        <NavLink
+          to="/auth"
+          onClick={() => setOpen(false)}
+          className={({ isActive }) =>
+            `profile-icon ${isLoggedIn ? "logged-in" : "logged-out"} ${isActive ? "active" : ""}`
+          }
+          aria-label={isLoggedIn ? "My Account (logged in)" : "Log in or register"}
+        >
+          👤︎
+        </NavLink>
+
+        <NavLink to="/favorites" onClick={() => setOpen(false)} aria-label="Favorites">
+          <span aria-hidden="true" className="fav-icon">♥</span>
+        </NavLink>
+
+        {/* Cart counts items in current order */}
         <NavLink
           to="/cart"
           onClick={() => setOpen(false)}

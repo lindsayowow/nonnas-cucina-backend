@@ -1,20 +1,18 @@
-// src/hooks/useDishBuilder.js
 import { useState } from "react";
 
 export default function useDishBuilder() {
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [yourOrder, setYourOrder] = useState([]);
   const [showNonnaWarning, setShowNonnaWarning] = useState(false);
 
-  // Decode JWT and extract userId (sub)
+  // extract userId from token. Used by sendToKitchen, Profile, SideBarNav, PastOrders, Favorites
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return Number(payload.sub);  // numeric userId
-    } catch (err) {
-      console.error("Invalid token", err);
+    } catch {
+      // invalid token - treats null as "no user"
       return null;
     }
   }
@@ -43,7 +41,7 @@ export default function useDishBuilder() {
     0
   );
 
-  // Add dish to order
+  // Add dish to order. clears the current ingredients & filters
   function updateOrder() {
     const newDish = {
       ingredients: selectedIngredients,
@@ -66,25 +64,21 @@ export default function useDishBuilder() {
     currency: "USD"
   }).format(total);
 
-  // Clear entire order (for cart reset)
+  // Clear entire order (cart reset)
   function clearOrder() {
     setYourOrder([]);
     setSelectedIngredients([]);
     setSelectedFilters([]);
   }
 
-  // Send order to backend
+  // Send order to backend. Returns true on success, false on any failure
+  // message to the user via state.
   async function sendToKitchen(token) {
     const userId = getUserIdFromToken(token);
-    console.log("ORDER DEBUG:", JSON.stringify(yourOrder, null, 2));
 
     if (!userId) {
-      console.error("No valid userId found in token");
       return false;
     }
-
-    console.log("yourOrder:", yourOrder);
-    console.log("TOKEN:", token);
 
     const orderDTO = {
       userId: userId,
@@ -104,46 +98,32 @@ export default function useDishBuilder() {
     });
 
     if (!response.ok) {
-      console.error("Order failed:", response.status);
       return false;
     }
 
-    // Clear UI only after successful submission
+    // Clear screen after successful submission
     clearOrder();
     return true;
   }
 
-  // Clear filters
   function clearFilter() {
     setSelectedFilters([]);
   }
 
-  // Clear ingredients
   function clearIngredients() {
     setSelectedIngredients([]);
   }
 
-  // Remove ingredient
   function removeIngredient(ingredient) {
     setSelectedIngredients(prev =>
       prev.filter(item => item.name !== ingredient.name)
     );
   }
 
-  // Remove dish
   function removeDish(dish) {
     setYourOrder(prev => prev.filter(item => item !== dish));
   }
 
-  // Add dish and reset selections
-  function addDishAndReset() {
-    const newDish = updateOrder();
-    clearIngredients();
-    clearFilter();
-    return newDish;
-  }
-
-  // Nonna warning animation
   function triggerNonnaWarning() {
     setShowNonnaWarning(true);
     setTimeout(() => {
@@ -153,20 +133,13 @@ export default function useDishBuilder() {
 
   return {
     selectedFilters,
-    selectedCategory,
     selectedIngredients,
     totalPrice,
     yourOrder,
     grandTotal,
     showNonnaWarning,
-
     toggleFilter,
     toggleIngredient,
-    setSelectedCategory,
-    setSelectedIngredients,
-    setSelectedFilters,
-    setYourOrder,
-
     updateOrder,
     sendToKitchen,
     clearOrder,
@@ -176,7 +149,6 @@ export default function useDishBuilder() {
     removeDish,
     triggerNonnaWarning,
     setShowNonnaWarning,
-    addDishAndReset,
     getUserIdFromToken
   };
 }

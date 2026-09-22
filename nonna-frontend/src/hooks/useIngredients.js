@@ -7,16 +7,23 @@ export default function useIngredients() {
   useEffect(() => {
     async function fetchIngredients() {
       try {
+        // Request ingredient DTOs 
         const response = await fetch("http://localhost:8080/ingredients");
+
+        // parse JSON response
         const data = await response.json();
+
+        // Store ingredients in state
         setIngredients(data);
-      } catch (err) {
-        console.error("Failed to load ingredients", err);
+      } catch {
+        // Fetch failed -- ingredients stays empty
       } finally {
+        // Loading ends regardless of success or failure
         setLoading(false);
       }
     }
 
+    // Run once on mount
     fetchIngredients();
   }, []);
 

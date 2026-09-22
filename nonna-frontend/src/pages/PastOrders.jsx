@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "../styles/past-orders.css";
 import { Link } from "react-router-dom";
+import SideNavBar from "../components/template/SideBarNav.jsx";
+import useFavoriteToggle from "../hooks/useFavoriteToggle";
+import useDishBuilderContext from "../hooks/useDishBuilderContext";
+import FavoriteButton from "../components/buttons/FavoriteButton";
 
 const currency = (value) =>
   new Intl.NumberFormat("en-US", {
@@ -13,16 +17,8 @@ export default function PastOrders({ token }) {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(false);
 
-  function getUserIdFromToken(token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      // Backend sends "sub" as the userId (string)
-      return Number(payload.sub ?? payload.userId ?? payload.id);
-    } catch {
-      return null;
-    }
-  }
-
+  const { toggleFavorite } = useFavoriteToggle(orders, setOrders, token);
+  const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
   useEffect(() => {
@@ -40,21 +36,23 @@ export default function PastOrders({ token }) {
           }
         );
 
+        // Token invalid or expired
         if (response.status === 401 || response.status === 403) {
           setAuthError(true);
           setOrders([]);
           return;
         }
 
+        // Successful fetch
         if (response.ok) {
           const data = await response.json();
           setOrders(data ?? []);
         } else {
-          console.error("Failed to fetch past orders");
+          // Non-auth failure → treat as empty list
           setOrders([]);
         }
-      } catch (err) {
-        console.error("Error fetching past orders", err);
+      } catch {
+        // Network failure → treat as empty list
         setOrders([]);
       } finally {
         setLoading(false);
@@ -64,34 +62,17 @@ export default function PastOrders({ token }) {
     fetchOrders();
   }, [userId, token]);
 
-  async function handleFavorite(dishId) {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/favorites/${dishId}`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      if (!response.ok) {
-        console.error("Failed to favorite dish");
-      }
-    } catch (err) {
-      console.error("Error favoriting dish", err);
-    }
-  }
-
+  // User not logged in
   if (!token) {
     return (
       <section className="pastorders-container">
         <h1>Past Orders</h1>
-        <p>Please log in to see your past orders.</p>
-        <Link to="/auth" className="login-button">Log In</Link>
+        <p>Please <Link to="/auth" className="login-link">Log In</Link> to see your past orders.</p>
       </section>
     );
   }
 
+  // Loading state
   if (loading) {
     return (
       <section className="pastorders-container">
@@ -101,6 +82,7 @@ export default function PastOrders({ token }) {
     );
   }
 
+  // Unauthorized
   if (authError) {
     return (
       <section className="pastorders-container">
@@ -110,61 +92,84 @@ export default function PastOrders({ token }) {
     );
   }
 
+  // No orders
   if (!orders || orders.length === 0) {
     return (
       <section className="pastorders-container">
         <h1>Past Orders</h1>
-        <p>You have no past orders yet.</p>
+        <p>You have not created any orders yet.</p>
       </section>
     );
   }
 
   return (
-    <section className="pastorders-container">
-      <h1>Past Orders</h1>
+    <main className="pastorders-layout" aria-label="Past Orders page">
 
-      {orders.map(order => (
-        <div key={order.id} className="order-card">
-          <div className="order-header">
-            <p className="timestamp">
-              {new Date(order.orderTimeStamp).toLocaleString()}
-            </p>
-            <h2>Order #{order.id}</h2>
-            <p className="order-total">
-              Total: {currency(order.orderTotal)}
-            </p>
-          </div>
-
-          <ul className="order-dishes">
-            {(order.dishes ?? []).map((dish, index) => {
-              const ingredients =
-                dish.ingredients ??
-                dish.ingredientList ??
-                dish.ingredientsForDish ??
-                [];
-
-              const ingredientNames = ingredients.length > 0
-                ? ingredients.map(ing => ing.ingredientName).join(", ")
-                : "No ingredients listed";
-
-              return (
-                <li key={dish.id} className="dish-item">
-                  <span className="dish-label">Dish {index + 1}:</span>
-                  <span className="dish-ingredients">{ingredientNames}</span>
-                  <span className="dish-cost">{currency(dish.dishCost)}</span>
-                  <button
-                    className="favorite-btn"
-                    onClick={() => handleFavorite(dish.id)}
-                    aria-label="Add dish to favorites"
-                  >
-                    ♡
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+      <div className="section-0" role="region" aria-label="Side navigation bar">
+        <div className="navbar-container">
+          <SideNavBar />
         </div>
-      ))}
-    </section>
+      </div>
+
+      <section className="pastorders-container">
+        <h1>Past Orders</h1>
+
+        {orders.map(order => (
+          <div key={order.id} className="order-card">
+
+            <span className="order-number">
+              Order #{order.id}
+            </span>
+
+            <div className="order-header unified-header">
+              <span className="left">
+                {new Date(order.orderTimeStamp).toLocaleString()}
+              </span>
+
+              <span className="right">
+                Total: {currency(order.orderTotal)}
+              </span>
+            </div>
+
+            <ul className="order-dishes">
+              {(order.dishes ?? []).map((dish, index) => {
+                const ingredients =
+                  dish.ingredients ??
+                  dish.ingredientList ??
+                  dish.ingredientsForDish ??
+                  [];
+
+                // Convert ingredient objects into list
+                const ingredientNames = ingredients.length > 0
+                  ? ingredients.map(ing => ing.ingredientName).join(", ")
+                  : "No ingredients listed";
+
+                return (
+                  <li key={dish.id} className="dish-item dish-row">
+
+                    <div className="dish-info">
+                      <span className="dish-label">Dish {index + 1}:  </span>
+                      <span className="dish-ingredients">{ingredientNames}</span>
+                    </div>
+
+                    <div className="dish-actions">
+                      <span className="dish-cost">{currency(dish.dishCost)}</span>
+
+                      {/* Favorite toggle button */}
+                      <FavoriteButton
+                        orderId={order.id}
+                        dish={dish}
+                        toggleFavorite={toggleFavorite}
+                      />
+                    </div>
+
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </section>
+    </main>
   );
 }

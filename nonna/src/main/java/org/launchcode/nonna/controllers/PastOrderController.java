@@ -19,11 +19,11 @@ public class PastOrderController {
         this.pastOrderService = pastOrderService;
     }
 
-    // CREATE ORDER
+    // Build a new PastOrder from the incoming DTO and return the fully populated DTO
     @PostMapping
     public ResponseEntity<PastOrderDTO> createOrder(@RequestBody CreateOrderDTO dto) {
-        PastOrder order = pastOrderService.createOrder(dto);
-        return ResponseEntity.ok(new PastOrderDTO(order));
+        PastOrderDTO order = pastOrderService.createOrder(dto);
+        return ResponseEntity.ok(order);
     }
 
     // GET ALL ORDERS
@@ -44,13 +44,14 @@ public class PastOrderController {
         return pastOrderService.getOrdersByUserId(userId);
     }
 
-    // UPDATE ORDER
+    // UPDATE ORDER - same as createOrder, service returns the DTO
     @PutMapping("/{id}")
-    public PastOrder updatePastOrder(@PathVariable Integer id, @RequestBody PastOrder pastOrder) {
-        return pastOrderService.updatePastOrder(id, pastOrder);
+    public ResponseEntity<PastOrderDTO> updatePastOrder(@PathVariable Integer id, @RequestBody PastOrder pastOrder) {
+        PastOrderDTO updated = pastOrderService.updatePastOrder(id, pastOrder);
+        return ResponseEntity.ok(updated);
     }
 
-    // DELETE ORDER
+    // DELETE ORDER - admin only -future use
     @DeleteMapping("/{id}")
     public void deletePastOrder(@PathVariable int id) {
         pastOrderService.deletePastOrder(id);

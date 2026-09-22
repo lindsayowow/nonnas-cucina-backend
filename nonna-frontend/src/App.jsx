@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
 import BuildADish from "./pages/BuildADish";
@@ -16,12 +16,6 @@ import ScrollToTop from "./components/template/ScrollToTop";
 import { DishBuilderProvider } from "./context/DishBuilderContext";
 
 import "./App.css";
-
-function RouteDebugger() {
-  const location = useLocation();
-  console.log("ROUTER SEES PATH:", location.pathname);
-  return null;
-}
 
 export default function App() {
 
@@ -40,7 +34,6 @@ export default function App() {
       <DishBuilderProvider>
         <Header />
         <ScrollToTop />
-        <RouteDebugger />
 
         <main className="App">
           <Routes>

@@ -5,9 +5,9 @@ import IngredientButton from './buttons/IngredientButton.jsx';
 import ClearIngredientsButton from './buttons/ClearIngredientsButton.jsx';
 import DishButton from "./buttons/DishButton.jsx";
 
-import useFilters from "../hooks/useFilters";
 import useIngredients from "../hooks/useIngredients";
 
+// state being received from parent
 export default function Ingredients({
   Categories,
   selectedFilters,
@@ -18,12 +18,14 @@ export default function Ingredients({
   updateOrder,
   yourOrder,
   triggerNonnaWarning,
-  scrollToRef
+  scrollToRef,
+  filters
 }) {
 
+  // Ingredient data 
   const { ingredients, loading } = useIngredients();
-  const { filters } = useFilters();
 
+  // message state for "added to order" 
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [fadeOut, setFadeOut] = useState(false);
 
@@ -31,6 +33,8 @@ export default function Ingredients({
     return <p>Loading ingredients...</p>;
   }
 
+  // Adds current selection as a dish, shows confirmation message,
+  //  resets all buttons, then scrolls back up to top
   const handleAddToOrder = () => {
     const newDish = updateOrder();
 
@@ -65,6 +69,7 @@ export default function Ingredients({
         Choose Your Ingredients
       </h2>
 
+      {/* One section per category */}
       {Categories.map((Category) => (
         <div
           key={Category.id}
@@ -83,6 +88,7 @@ export default function Ingredients({
               )
               .map((ingredient) => {
 
+                // An ingredient is disabled if it conflicts with any selected filter
                 const disabled = selectedFilters.some((filterId) => {
                   const filterObj = filters.find(f => f.id === filterId);
                   if (!filterObj) return false;
@@ -102,7 +108,7 @@ export default function Ingredients({
                   <IngredientButton
                     key={ingredient.id}
                     ingredient={{
-                      id: ingredient.id,                // ⭐ FIXED: include ID
+                      id: ingredient.id,               
                       name: ingredient.ingredientName,
                       price: ingredient.ingredientCost,
                       emoji: ingredient.emoji
@@ -118,6 +124,7 @@ export default function Ingredients({
         </div>
       ))}
 
+      {/* Add ti order and clear */}
       <div className="ingredient-actions">
         <DishButton
           className="build-action-button"
@@ -134,6 +141,7 @@ export default function Ingredients({
         />
       </div>
 
+      {/* Makes confirmation message fade*/}
       {confirmationMessage && (
         <div className={`confirmation-message ${fadeOut ? "fade-out" : ""}`}>
           {confirmationMessage}

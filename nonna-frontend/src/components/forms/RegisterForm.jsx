@@ -1,7 +1,10 @@
 import { useState } from "react";
 import AuthButton from "../../components/buttons/AuthButton";
+import "../../styles/form.css";
 
-export default function RegisterForm({ switchToLogin }) {
+// setToken: logs the user straight in after a successful registration
+// switchToLogin: if the auto-login fails
+export default function RegisterForm({ setToken, switchToLogin }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -11,12 +14,27 @@ export default function RegisterForm({ switchToLogin }) {
     confirmPassword: ""
   });
 
-  // Email validation
-  const validEmail = /\S+@\S+\.\S+/.test(formData.email.trim());
-  const emailHasError =
-    formData.email.trim().length > 0 && !validEmail;
+  // user feedback
+  const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState("");
 
-  // Password complexity checks
+  function formatPhoneNumber(value) {
+    const digits = value.replace(/\D/g, "").slice(0, 10);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+
+  function handleChange(e) {
+    let { name, value } = e.target;
+    if (name === "phoneNumber") value = formatPhoneNumber(value);
+    setFormData({ ...formData, [name]: value });
+  }
+
+  // Field validation 
+  const validEmail = /\S+@\S+\.\S+/.test(formData.email.trim());
+  const emailHasError = formData.email.trim().length > 0 && !validEmail;
+
   const hasUppercase = /[A-Z]/.test(formData.password);
   const hasLowercase = /[a-z]/.test(formData.password);
   const hasNumber = /[0-9]/.test(formData.password);
@@ -24,57 +42,58 @@ export default function RegisterForm({ switchToLogin }) {
   const hasMinLength = formData.password.length >= 8;
 
   const passwordIsValid =
-    hasUppercase &&
-    hasLowercase &&
-    hasNumber &&
-    hasSymbol &&
-    hasMinLength;
+    hasUppercase && hasLowercase && hasNumber && hasSymbol && hasMinLength;
 
-  // Password match check
   const passwordsMatch =
     formData.password.trim().length > 0 &&
     formData.password === formData.confirmPassword;
 
-  // Disable submit until everything is valid
+  const firstNameValid = formData.firstName.trim().length >= 2;
+  const lastNameValid = formData.lastName.trim().length >= 2;
+
+  // Disable submit if validation fails
   const isIncomplete =
-    formData.firstName.trim().length === 0 ||
-    formData.lastName.trim().length === 0 ||
-    formData.phoneNumber.trim().length === 0 ||
-    formData.email.trim().length === 0 ||
-    formData.password.trim().length === 0 ||
-    formData.confirmPassword.trim().length === 0 ||
+    !firstNameValid ||
+    !lastNameValid ||
+    !formData.phoneNumber.trim() ||
+    !formData.email.trim() ||
+    !formData.password.trim() ||
+    !formData.confirmPassword.trim() ||
     !validEmail ||
     !passwordIsValid ||
     !passwordsMatch;
 
-  function handleChange(e) {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  }
-
   async function handleRegister(e) {
     e.preventDefault();
+    setFormError("");
+    setFormSuccess("");
+
+      if (!firstNameValid) {
+      setFormError("First name must be at least 2 characters.");
+      return;
+    }
+
+    if (!lastNameValid) {
+      setFormError("Last name must be at least 2 characters.");
+      return;
+    }
 
     if (!validEmail) {
-      alert("Please enter a valid email.");
+      setFormError("Please enter a valid email.");
       return;
     }
 
     if (!passwordIsValid) {
-      alert(
-        "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol."
-      );
+      setFormError("Password must meet complexity requirements.");
       return;
     }
 
     if (!passwordsMatch) {
-      alert("Passwords do not match.");
+      setFormError("Passwords do not match.");
       return;
     }
 
-    // Backend expects full DTO fields
+    // Build registration payload
     const payload = {
       email: formData.email,
       firstName: formData.firstName,
@@ -83,87 +102,136 @@ export default function RegisterForm({ switchToLogin }) {
       password: formData.password
     };
 
+    // Attempt registration
     const response = await fetch("http://localhost:8080/users/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
-    if (response.ok) {
-      alert("Account created!");
-      switchToLogin();
-    } else {
-      alert("Registration failed — email may already exist.");
+    if (!response.ok) {
+      setFormError("Registration failed — email may already exist.");
+      return;
     }
+
+    setFormSuccess("Account created! Logging you in...");
+
+    // Auto-login using same credentials
+    try {
+      const loginResponse = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const loginData = await loginResponse.json();
+
+      // Successful auto-login: store token and exit
+      if (loginResponse.ok && loginData.token) {
+        setToken(loginData.token);
+        return;
+      }
+    } catch {
+      // manual-login 
+    }
+
+    // Auto-login failed — send user to login screen
+    setFormError("Account created, but automatic login failed. Please log in.");
+    setTimeout(() => switchToLogin(), 1200);
   }
 
   return (
-    <div className="register-form">
-      <h2>Create Account</h2>
+    <div className="card register-card">
+      <form className="register-form-container" onSubmit={handleRegister}>
+        <h2>Create Account</h2>
 
-      <form onSubmit={handleRegister}>
-
-        {/* First Name */}
-        <input
-          type="text"
-          name="firstName"
-          placeholder="First Name"
-          value={formData.firstName}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Last Name */}
-        <input
-          type="text"
-          name="lastName"
-          placeholder="Last Name"
-          value={formData.lastName}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Phone Number */}
-        <input
-          type="text"
-          name="phoneNumber"
-          placeholder="Phone Number"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Email */}
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          aria-required="true"
-          aria-invalid={emailHasError}
-          aria-describedby={emailHasError ? "email-error" : undefined}
-        />
-
-        {emailHasError && (
-          <p id="email-error" className="inputError">
-            Please enter a valid email.
-          </p>
+        <div className="register-form-row">
+          <label htmlFor="firstName">
+            First Name <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="firstName"
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="Please enter your first name."
+            required
+          />
+        </div>
+        {!firstNameValid && formData.firstName.length > 0 && (
+          <p className="inputError">First name must be at least 2 characters.</p>
         )}
 
-        {/* Password */}
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          aria-invalid={!passwordIsValid && formData.password.length > 0}
-        />
+        <div className="register-form-row">
+          <label htmlFor="lastName">
+            Last Name <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="lastName"
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Please enter your last name."
+            required
+          />
+        </div>
+        {!lastNameValid && formData.lastName.length > 0 && (
+          <p className="inputError">Last name must be at least 2 characters.</p>
+        )}
 
-        {/* Password complexity errors */}
+        <div className="register-form-row">
+          <label htmlFor="phoneNumber">
+            Phone Number <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="phoneNumber"
+            type="text"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            required
+            placeholder="555-555-5555"
+          />
+        </div>
+
+        <div className="register-form-row">
+          <label htmlFor="email">
+            Email <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Please enter your email."
+            required
+            aria-invalid={emailHasError}
+          />
+        </div>
+        {emailHasError && (
+          <p className="inputError">Please enter a valid email.</p>
+        )}
+
+        <div className="register-form-row">
+          <label htmlFor="password">
+            Password <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder=" min 8 char, upper and lower case, symbol and number."
+            required
+          />
+        </div>
         {!passwordIsValid && formData.password.length > 0 && (
           <ul className="inputError">
             {!hasUppercase && <li>Must include an uppercase letter</li>}
@@ -174,19 +242,36 @@ export default function RegisterForm({ switchToLogin }) {
           </ul>
         )}
 
-        {/* Confirm Password */}
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          aria-invalid={!passwordsMatch && formData.confirmPassword.length > 0}
-        />
-
+        <div className="register-form-row">
+          <label htmlFor="confirmPassword">
+            Confirm Password <span className="required-asterisk">*</span>
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            placeholder="Passwords must match."
+            onChange={handleChange}
+            required
+          />
+        </div>
         {!passwordsMatch && formData.confirmPassword.length > 0 && (
           <p className="inputError">Passwords do not match.</p>
+        )}
+
+        {/*  feedback for auto-login failures */}
+        {formError && (
+          <p className="inputError" role="alert">
+            {formError}
+          </p>
+        )}
+
+        {/* feedback while action is in progress */}
+        {formSuccess && (
+          <p className="successMessage" role="status" aria-live="polite">
+            {formSuccess}
+          </p>
         )}
 
         <AuthButton
@@ -196,11 +281,11 @@ export default function RegisterForm({ switchToLogin }) {
         >
           Register
         </AuthButton>
-      </form>
 
-      <p onClick={switchToLogin} className="switch-link">
-        Already have an account?
-      </p>
+        <p onClick={switchToLogin} className="switch-link">
+          Already have an account?
+        </p>
+      </form>
     </div>
   );
 }

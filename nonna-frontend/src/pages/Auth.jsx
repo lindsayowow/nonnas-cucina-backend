@@ -2,62 +2,104 @@ import React, { useState, useEffect } from "react";
 import Profile from "../components/Profile";
 import LoginForm from "../components/forms/LoginForm";
 import RegisterForm from "../components/forms/RegisterForm";
+import SideBarNav from "../components/template/SideBarNav";
+import "../styles/auth.css";
 
 export default function Auth({ setToken }) {
   const [authMode, setAuthMode] = useState("login");
   const [localToken, setLocalToken] = useState(localStorage.getItem("token"));
+  const [editing, setEditing] = useState(false);
 
   function decodeToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return payload;
-    } catch (err) {
-      console.error("Invalid token", err);
+    } catch {
+      // invalid token -- treat as logged out
       return null;
     }
   }
 
-  // Validate token on load + whenever localToken changes
+  // logout & clear-session logic - used for expired or invalid tokens, 
+  // sidebar's logout button, and after a successful account delete 
+  function clearSession() {
+    localStorage.removeItem("token");
+    setLocalToken(null);
+    setToken(null);
+    window.dispatchEvent(new Event("authchange"));
+  }
+
   useEffect(() => {
+    // If no token exists, ensure global auth state reflects logged-out
     if (!localToken) {
       setToken(null);
+      window.dispatchEvent(new Event("authchange"));
       return;
     }
 
     const decoded = decodeToken(localToken);
 
+    // Token malformed or missing expiration → clear session
     if (!decoded || !decoded.exp) {
-      localStorage.removeItem("token");
-      setLocalToken(null);
-      setToken(null);
+      clearSession();
       return;
     }
 
+    // Expiration check
     const isExpired = decoded.exp * 1000 < Date.now();
     if (isExpired) {
-      console.log("Token expired — logging out");
-      localStorage.removeItem("token");
-      setLocalToken(null);
-      setToken(null);
+      clearSession();
     }
   }, [localToken, setToken]);
 
-  // Sync localToken → App.jsx token + localStorage
   useEffect(() => {
+    // Sync token to localStorage + global state whenever it changes
     if (localToken) {
       localStorage.setItem("token", localToken);
       setToken(localToken);
+      window.dispatchEvent(new Event("authchange"));
     }
   }, [localToken, setToken]);
 
-  // Logged in → show profile
+  /* 2-column layout */
   if (localToken) {
-    return <Profile token={localToken} setToken={setLocalToken} />;
+    return (
+      <section
+        className="auth-layout"
+        role="region"
+        aria-labelledby="auth-title"
+      >
+        <h1 id="auth-title" className="visually-hidden">
+          My Account
+        </h1>
+
+        <SideBarNav
+          token={localToken}
+          onLogout={clearSession}
+          onEditProfile={() => setEditing(true)}
+        />
+
+        <Profile
+          token={localToken}
+          editing={editing}
+          setEditing={setEditing}
+          onSessionExpired={clearSession}
+        />
+      </section>
+    );
   }
 
-  // Not logged in → show login/register
+  /* single column */
   return (
-    <section className="auth-container">
+    <section
+      className="auth-container"
+      role="region"
+      aria-labelledby="auth-title"
+    >
+      <h1 id="auth-title" className="visually-hidden">
+        Authentication
+      </h1>
+
       {authMode === "login" && (
         <LoginForm
           setToken={(token) => setLocalToken(token)}
@@ -66,7 +108,10 @@ export default function Auth({ setToken }) {
       )}
 
       {authMode === "register" && (
-        <RegisterForm switchToLogin={() => setAuthMode("login")} />
+        <RegisterForm
+          setToken={(token) => setLocalToken(token)}
+          switchToLogin={() => setAuthMode("login")}
+        />
       )}
     </section>
   );

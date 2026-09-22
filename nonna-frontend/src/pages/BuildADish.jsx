@@ -7,47 +7,54 @@ import Ingredients from '../components/Ingredients.jsx';
 import Dish from '../components/Dish.jsx';
 
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
-import { DishBuilderContext } from "../context/DishBuilderContextObject";
 import useFilters from "../hooks/useFilters";
 import useCategories from "../hooks/useCategories";
+import useNonna from "../hooks/useNonna";
 
 export default function BuildADish() {
+
   const {
     selectedFilters,
     selectedIngredients,
     totalPrice,
+    showNonnaWarning,
     toggleFilter,
     toggleIngredient,
-    setSelectedCategory,
     updateOrder,
     clearFilter,
     clearIngredients,
     removeIngredient,
     yourOrder,
-    triggerNonnaWarning,
-    addDishAndReset
+    triggerNonnaWarning
   } = useDishBuilderContext();
 
+  // Data passed down to children
   const { categories, loading: categoriesLoading } = useCategories();
   const { filters, loading: filtersLoading } = useFilters();
   const filtersRef = useRef(null);
 
+  // Nonna AI hook — provides visual + message state
+  const { nonnaState, nonnaMessage } = useNonna({
+    selectedIngredients,
+    showNonnaWarning
+  });
+
+  // Don't render anything until data is ready
   if (categoriesLoading) {
     return <p>Loading categories...</p>;
   }
 
   if (filtersLoading) {
-  return <p>Loading filters...</p>;
-}
+    return <p>Loading filters...</p>;
+  }
 
   return (
-    // main landmark for the Build a Dish page
     <main className="build-container" aria-label="Build a Dish page">
 
       {/* DESKTOP NONNA */}
       <div className="section-0 desktop-only" role="region" aria-label="Nonna reactions">
         <div className="nonna-container">
-          <NonnaReaction />
+          <NonnaReaction nonnaState={nonnaState} nonnaMessage={nonnaMessage} />
         </div>
       </div>
 
@@ -66,7 +73,7 @@ export default function BuildADish() {
           selectedFilters={selectedFilters}
           selectedIngredients={selectedIngredients}
           Categories={categories}
-          onSelectedCategory={setSelectedCategory}
+          filters={filters}
           onToggleIngredient={toggleIngredient}
           clearIngredients={clearIngredients}
           updateOrder={updateOrder}
@@ -86,13 +93,12 @@ export default function BuildADish() {
             updateOrder={updateOrder}
             removeIngredient={removeIngredient}
             yourOrder={yourOrder}
-            addDishAAndReset={addDishAndReset}
           />
         </div>
 
         {/* MOBILE NONNA */}
         <div className="mobile-only mobile-nonna">
-          <NonnaReaction />
+          <NonnaReaction nonnaState={nonnaState} nonnaMessage={nonnaMessage} />
         </div>
       </div>
 

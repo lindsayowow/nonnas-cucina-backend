@@ -15,6 +15,8 @@ public class DishDTO {
     private Boolean isFavorite;
     private List<IngredientDTO> ingredients;
 
+    // used by DishService
+
     public DishDTO(Dish dish){
         this.id = dish.getId();
         this.dishCost = dish.getDishCost();
@@ -25,5 +27,13 @@ public class DishDTO {
                 : dish.getDishIngredients().stream()
                 .map(di -> new IngredientDTO(di.getIngredient()))
                 .toList();
+    }
+
+    // Used by PastOrderService.
+    public DishDTO(Dish dish, List<IngredientDTO> ingredients) {
+        this.id = dish.getId();
+        this.dishCost = dish.getDishCost();
+        this.isFavorite = dish.getIsFavorite();
+        this.ingredients = ingredients == null ? List.of() : ingredients;
     }
 }

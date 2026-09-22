@@ -15,7 +15,10 @@ export default function About() {
         About Nonna’s Cucina
       </h1>
 
+      {/* Bio component displays restaurant story / mission */}
       <Bio />
+
+      {/* Contact form component for user inquiries */}
       <Form />
     </section>
   );

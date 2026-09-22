@@ -17,7 +17,6 @@ export default function Bio() {
           // alt text for image accessibility
           alt="Portrait of Lindsay Webb, long brown hair and glasses in a white suit"
           className="proPic"
-          aria-hidden="true"
         />
 
         <p className="text-readable">
