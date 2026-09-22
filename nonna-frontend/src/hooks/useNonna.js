@@ -1,8 +1,7 @@
-// src/hooks/useNonna.js
 import { useEffect, useRef, useState } from "react";
 import { getNonnaMessage } from "../services/gemini";
 
-// Messages shown immediately while the Gemini request runs in the background.
+// Messages shown immediately while AI request runs in background.
 const happyMessages = [
   "Bellissima! Look at all those wonderful ingredients. Nonna is so proud!",
   "Mamma mia! What a beautiful collection of ingredients, cara mia!",
@@ -11,7 +10,7 @@ const happyMessages = [
   "Magnifico! So many delicious choices. I can already imagine the finished dish!"
 ];
 
-// Returns an immediate local message so the interface never has to wait for Gemini.
+// Returns local message so the interface never has to wait for AI.
 function getInstantMessage(state, ingredientCount) {
   switch (state) {
     case "neutral":
@@ -34,6 +33,7 @@ function getInstantMessage(state, ingredientCount) {
         case 4:
           return "Almost there, dolcezza! Just a little more and Nonna will be very happy!";
         default:
+          // Rotate through messages for 5+ ingredients
           return happyMessages[(ingredientCount - 5) % happyMessages.length];
       }
 
@@ -42,7 +42,7 @@ function getInstantMessage(state, ingredientCount) {
   }
 }
 
-// NEW: Map ingredientCount → visual state used by NonnaReaction.jsx
+//  Map ingredientCount → visual state used by NonnaReaction.jsx
 function mapVisualState(ingredientCount, showNonnaWarning) {
   if (showNonnaWarning) return "warning";
   if (ingredientCount === 0) return "neutral";
@@ -58,35 +58,32 @@ export default function useNonna({
   selectedIngredients,
   showNonnaWarning
 }) {
-  // Nonna's current message displayed in the speech bubble.
+  // current message displayed in bubble.
   const [nonnaMessage, setNonnaMessage] = useState(
     "Choose your ingredients, dear!"
   );
 
-  // Nonna's current visual state.
+  // current visual state.
   const [nonnaState, setNonnaState] = useState({
     state: "neutral",
     ingredientCount: 0
   });
 
-  // Keeps track of the last Gemini request.
+  // Keeps track of the last AI request.
   const lastRequestedKeyRef = useRef(null);
 
-  // Unique ID for Gemini requests.
+  // Unique ID for AI requests.
   const requestIdRef = useRef(0);
 
   const ingredientCount = selectedIngredients.length;
 
-  // List of ingredient names for Gemini.
+  // List of ingredient names for AI.
   const ingredientNames = selectedIngredients.map(
     ingredient => ingredient.name
   );
 
-  // ------------------------------
-  // LOCAL STATE + INSTANT MESSAGE
-  // ------------------------------
+    // trigger visual state for images
   useEffect(() => {
-    // NEW: Compute correct visual state for images
     const visualState = mapVisualState(ingredientCount, showNonnaWarning);
 
     setNonnaState({
@@ -94,7 +91,7 @@ export default function useNonna({
       ingredientCount
     });
 
-    // Warning messages override everything
+    // Warning message overrides everything
     if (showNonnaWarning) {
       setNonnaMessage(getInstantMessage("warning", ingredientCount));
       return;
@@ -106,17 +103,16 @@ export default function useNonna({
       return;
     }
 
-    // Progress messages (instant)
+    // Progress messages 
     setNonnaMessage(getInstantMessage("progress", ingredientCount));
   }, [ingredientCount, showNonnaWarning]);
 
-  // ------------------------------
-  // GEMINI MILESTONE REQUESTS
-  // ------------------------------
+  // Skip AI calls during warning or empty state
   useEffect(() => {
-    if (showNonnaWarning) return;
+      if (showNonnaWarning) return;
     if (ingredientCount === 0) return;
 
+    // AI runs at 1,3,5 ingredients
     const isMilestone =
       ingredientCount === 1 ||
       ingredientCount === 3 ||
@@ -124,20 +120,24 @@ export default function useNonna({
 
     if (!isMilestone) return;
 
+    // unique key for request
     const requestKey = [
       "progress",
       ingredientCount,
       ...ingredientNames
     ].join("|");
 
+    // Prevent duplicate requests
     if (lastRequestedKeyRef.current === requestKey) {
       return;
     }
 
     lastRequestedKeyRef.current = requestKey;
 
+    // Increment request ID
     const requestId = ++requestIdRef.current;
 
+    // Delay AI  slightly to avoid rapid-fire requests
     const timer = setTimeout(async () => {
       try {
         const message = await getNonnaMessage({
@@ -146,15 +146,17 @@ export default function useNonna({
           selectedIngredients
         });
 
+        // Ignore outdated responses
         if (requestId !== requestIdRef.current) {
           return;
         }
 
+        // Update message if AI returns message
         if (message) {
           setNonnaMessage(message);
         }
       } catch {
-        // fallback to instant message
+        // fallback to local message
       }
     }, 500);
 

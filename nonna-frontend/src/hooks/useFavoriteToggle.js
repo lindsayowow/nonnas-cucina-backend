@@ -6,12 +6,13 @@ export default function useFavoriteToggle(orders, setOrders, token) {
     let newValue;
 
     const updatedOrders = orders.map(order => {
-      // CASE 1: PastOrders shape - { id, dishes: [...] }
       if (order.dishes) {
         if (order.id !== orderId) return order;
 
         const updatedDishes = order.dishes.map(dish => {
           if (dish.id !== dishId) return dish;
+
+          // switch favorite value true/false and store it
           newValue = !dish.isFavorite;
           return { ...dish, isFavorite: newValue };
         });
@@ -19,7 +20,6 @@ export default function useFavoriteToggle(orders, setOrders, token) {
         return { ...order, dishes: updatedDishes };
       }
 
-      // CASE 2: Favorites shape - flat dish list
       if (order.id === dishId) {
         newValue = !order.isFavorite;
         return { ...order, isFavorite: newValue };
@@ -29,7 +29,6 @@ export default function useFavoriteToggle(orders, setOrders, token) {
     });
 
     if (newValue === undefined) {
-      // Couldn't locate the target dish -- nothing to toggle
       return;
     }
 
@@ -50,11 +49,10 @@ export default function useFavoriteToggle(orders, setOrders, token) {
       );
 
       if (!response.ok) {
-        // Request failed -- roll back the optimistic update
         setOrders(previousOrders);
       }
     } catch {
-      // Network error -- roll back the optimistic update
+      // Network error — roll back update
       setOrders(previousOrders);
     }
   }, [orders, setOrders, token]);

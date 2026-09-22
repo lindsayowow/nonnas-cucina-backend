@@ -7,12 +7,18 @@ export default function useFilters() {
   useEffect(() => {
     async function fetchFilters() {
       try {
+        // Request filter DTOs
         const response = await fetch("http://localhost:8080/filters");
+
+        // parsing JSON response
         const data = await response.json();
+
+        // Stores filter state
         setFilters(data);
       } catch {
-        // Fetch failed -- filters stays empty, consumers already handle that state
+        // Fetch failed - filters stay empty
       } finally {
+        // Loading ends regardless of success or failure
         setLoading(false);
       }
     }

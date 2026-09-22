@@ -1,23 +1,18 @@
-// src/hooks/useDishBuilder.js
 import { useState } from "react";
 
 export default function useDishBuilder() {
-  // Core dish-building state
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [yourOrder, setYourOrder] = useState([]);
   const [showNonnaWarning, setShowNonnaWarning] = useState(false);
 
-  // Decode JWT and extract userId (sub). Used internally by sendToKitchen,
-  // and also exposed below since several pages/components (Profile,
-  // SideBarNav, PastOrders, Favorites) need the same decode logic --
-  // previously each had its own duplicate copy of this function.
+  // extract userId from token. Used by sendToKitchen, Profile, SideBarNav, PastOrders, Favorites
   function getUserIdFromToken(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return Number(payload.sub);  // numeric userId
     } catch {
-      // Malformed/invalid token -- caller treats null as "no user"
+      // invalid token - treats null as "no user"
       return null;
     }
   }
@@ -46,8 +41,7 @@ export default function useDishBuilder() {
     0
   );
 
-  // Add dish to order -- also clears the current ingredient/filter
-  // selection, so no separate "add and reset" step is needed
+  // Add dish to order. clears the current ingredients & filters
   function updateOrder() {
     const newDish = {
       ingredients: selectedIngredients,
@@ -70,7 +64,7 @@ export default function useDishBuilder() {
     currency: "USD"
   }).format(total);
 
-  // Clear entire order (for cart reset)
+  // Clear entire order (cart reset)
   function clearOrder() {
     setYourOrder([]);
     setSelectedIngredients([]);
@@ -78,8 +72,7 @@ export default function useDishBuilder() {
   }
 
   // Send order to backend. Returns true on success, false on any failure
-  // (invalid token, network error, or non-OK response) -- caller (Order.jsx)
-  // surfaces failure to the user via UI state.
+  // message to the user via state.
   async function sendToKitchen(token) {
     const userId = getUserIdFromToken(token);
 
@@ -108,34 +101,29 @@ export default function useDishBuilder() {
       return false;
     }
 
-    // Clear UI only after successful submission
+    // Clear screen after successful submission
     clearOrder();
     return true;
   }
 
-  // Clear filters
   function clearFilter() {
     setSelectedFilters([]);
   }
 
-  // Clear ingredients
   function clearIngredients() {
     setSelectedIngredients([]);
   }
 
-  // Remove ingredient
   function removeIngredient(ingredient) {
     setSelectedIngredients(prev =>
       prev.filter(item => item.name !== ingredient.name)
     );
   }
 
-  // Remove dish
   function removeDish(dish) {
     setYourOrder(prev => prev.filter(item => item !== dish));
   }
 
-  // Nonna warning animation
   function triggerNonnaWarning() {
     setShowNonnaWarning(true);
     setTimeout(() => {
@@ -144,15 +132,12 @@ export default function useDishBuilder() {
   }
 
   return {
-    // State
     selectedFilters,
     selectedIngredients,
     totalPrice,
     yourOrder,
     grandTotal,
     showNonnaWarning,
-
-    // Toggle/mutate actions
     toggleFilter,
     toggleIngredient,
     updateOrder,

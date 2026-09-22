@@ -7,16 +7,23 @@ export default function useCategories() {
   useEffect(() => {
     async function fetchCategories() {
       try {
+        // Request all category DTOs 
         const response = await fetch("http://localhost:8080/categories");
+
+        // parse JSON response
         const data = await response.json();
+
+        // Store categories in state
         setCategories(data);
       } catch {
-        // Fetch failed -- categories stays empty, consumers already handle that state
+        // Fetch failed — categories remains empty
       } finally {
+        // Loading ends
         setLoading(false);
       }
     }
 
+    // Run once on mount
     fetchCategories();
   }, []);
 
