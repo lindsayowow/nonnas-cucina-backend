@@ -52,6 +52,18 @@
   background-color: var(--surface-cream);
   padding: 2rem;
   border-radius: 12px;
+  text-align: center;
+}
+
+.login-link {
+  color: var(--olive-dark);
+  text-decoration: underline;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-link:hover {
+  color: var(--olive-mid);
 }
 
 h1 {

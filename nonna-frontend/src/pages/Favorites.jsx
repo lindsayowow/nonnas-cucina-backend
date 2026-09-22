@@ -8,8 +8,6 @@ import SideNavBar from "../components/template/SideBarNav.jsx";
 
 export default function Favorites({ token }) {
   const [allDishes, setAllDishes] = useState([]);
-
-  // Shared JWT-decode helper from context, instead of a local duplicate
   const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
@@ -70,11 +68,10 @@ export default function Favorites({ token }) {
   }, [userId, token]);
 
   if (!token) {
-    return (
+    return (      
       <section className="favorites-container">
         <h1>My Favorite Dishes</h1>
-        <p>Please log in to see your favorites.</p>
-        <Link to="/auth" className="login-button">Log In</Link>
+       <p> Please <Link to="/auth" className="login-link">log in</Link> to see your favorites.</p>
       </section>
     );
   }

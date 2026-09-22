@@ -93,3 +93,57 @@
     font-size: 1.35rem;
   }
 }
+
+/* Space between label title and input box */
+.profile-content label {
+  display: flex;
+  flex-direction: column;  
+  gap: 0.4rem;              
+}
+
+/* Center the Save / Cancel buttons + spacing between them */
+.profile-actions {
+  display: flex;
+  justify-content: center;  /*  horizontal */
+  gap: 1.5rem;              /* space between buttons */
+  margin-top: 1rem;         
+}
+
+/* Delete Account Confirmation */
+.delete-confirm-dialog {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.delete-confirm-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Put buttons on separate rows */
+.delete-confirm-actions {
+  display: flex;
+  flex-direction: column;   /*  vertical */
+  gap: 1rem;                
+  align-items: center;      /* horizontal */
+}
+
+.delete-confirm-yes {
+  background-color: var(--color-card-border);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.delete-confirm-cancel {
+  background: none;
+  border: none;
+  color: #ff2e2e;           
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}

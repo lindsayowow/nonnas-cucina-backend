@@ -1,3 +1,4 @@
+// src/hooks/useNonna.js
 import { useEffect, useRef, useState } from "react";
 import { getNonnaMessage } from "../services/gemini";
 
@@ -26,27 +27,31 @@ function getInstantMessage(state, ingredientCount) {
       switch (ingredientCount) {
         case 1:
           return "Ah, just getting started, cara mia! Keep choosing ingredients and we'll make something delicious!";
-
         case 2:
           return "Bene, bene! Now we're making a good start. Keep going, tesoro!";
-
         case 3:
           return "Ahh, now this pasta is taking shape! You're doing beautifully, mi amore!";
-
         case 4:
           return "Almost there, dolcezza! Just a little more and Nonna will be very happy!";
-
         default:
-          // Rotate through different messages instead of repeating the same
-          // message for every selection after five ingredients.
-          return happyMessages[
-            (ingredientCount - 5) % happyMessages.length
-          ];
+          return happyMessages[(ingredientCount - 5) % happyMessages.length];
       }
 
     default:
       return "Tutto bene! Your dish is coming together beautifully!";
   }
+}
+
+// NEW: Map ingredientCount → visual state used by NonnaReaction.jsx
+function mapVisualState(ingredientCount, showNonnaWarning) {
+  if (showNonnaWarning) return "warning";
+  if (ingredientCount === 0) return "neutral";
+  if (ingredientCount === 1) return "one-ingredient";
+  if (ingredientCount === 2) return "good-start";
+  if (ingredientCount === 3) return "encouraging";
+  if (ingredientCount === 4) return "almostThere";
+  if (ingredientCount >= 5) return "happy";
+  return "neutral";
 }
 
 export default function useNonna({
@@ -65,134 +70,95 @@ export default function useNonna({
   });
 
   // Keeps track of the last Gemini request.
-  // This ref prevents the exact same request from being sent twice.
   const lastRequestedKeyRef = useRef(null);
 
-  //Gives every Gemini request a unique ID.
-  // If the user changes their selections while Gemini is still thinking,
-  // an older response won't replace the newer message.
+  // Unique ID for Gemini requests.
   const requestIdRef = useRef(0);
 
   const ingredientCount = selectedIngredients.length;
 
-  //  list of ingredient names for the Gemini request.
+  // List of ingredient names for Gemini.
   const ingredientNames = selectedIngredients.map(
     ingredient => ingredient.name
   );
 
-  // Update Nonna's local state and  message. (default)
-
+  // ------------------------------
+  // LOCAL STATE + INSTANT MESSAGE
+  // ------------------------------
   useEffect(() => {
-    let state = "progress";
-
-    if (showNonnaWarning) {
-      state = "warning";
-    } else if (ingredientCount === 0) {
-      state = "neutral";
-    } else if (ingredientCount >= 5) {
-      state = "happy";
-    }
+    // NEW: Compute correct visual state for images
+    const visualState = mapVisualState(ingredientCount, showNonnaWarning);
 
     setNonnaState({
-      state,
+      state: visualState,
       ingredientCount
     });
 
-    // Warning messages.
+    // Warning messages override everything
     if (showNonnaWarning) {
-      setNonnaMessage(
-        getInstantMessage("warning", ingredientCount)
-      );
+      setNonnaMessage(getInstantMessage("warning", ingredientCount));
       return;
     }
 
-    // initial state 
+    // Neutral state (no ingredients)
     if (ingredientCount === 0) {
-      setNonnaMessage(
-        getInstantMessage("neutral", 0)
-      );
+      setNonnaMessage(getInstantMessage("neutral", 0));
       return;
     }
 
-    // show an immediate response
-    setNonnaMessage(
-      getInstantMessage("progress", ingredientCount)
-    );
+    // Progress messages (instant)
+    setNonnaMessage(getInstantMessage("progress", ingredientCount));
   }, [ingredientCount, showNonnaWarning]);
 
-  // Gemini is only called at 1, 3, 5 ingredients to improve UX
-  // All other messages are handled instantly on the frontend.
+  // ------------------------------
+  // GEMINI MILESTONE REQUESTS
+  // ------------------------------
   useEffect(() => {
-    // Do not call Gemini while showing the warning.
-    if (showNonnaWarning) {
-      return;
-    }
-
-    // Nothing to send when there are no ingredients.
-    if (ingredientCount === 0) {
-      return;
-    }
+    if (showNonnaWarning) return;
+    if (ingredientCount === 0) return;
 
     const isMilestone =
       ingredientCount === 1 ||
       ingredientCount === 3 ||
       ingredientCount === 5;
 
-    if (!isMilestone) {
-      return;
-    }
+    if (!isMilestone) return;
 
-    // unique key for this exact request.
     const requestKey = [
       "progress",
       ingredientCount,
       ...ingredientNames
     ].join("|");
 
-    // Prevents from sending the same request twice.
     if (lastRequestedKeyRef.current === requestKey) {
       return;
     }
 
     lastRequestedKeyRef.current = requestKey;
 
-    //  unique ID for request
     const requestId = ++requestIdRef.current;
 
-    //  delay before calling Gemini to give UI time to update.
-    //prevents the request from blocking the interface.
     const timer = setTimeout(async () => {
       try {
-        const request = {
+        const message = await getNonnaMessage({
           state: "progress",
           ingredientCount,
-          ingredients: ingredientNames
-        };
-
-        const message = await getNonnaMessage({
-          state: request.state,
-          ingredientCount: request.ingredientCount,
           selectedIngredients
         });
 
-        // Ignore the response if a newer one has been started.
         if (requestId !== requestIdRef.current) {
           return;
         }
 
-        // Only replace the local message if request returned something.
         if (message) {
           setNonnaMessage(message);
         }
       } catch {
-        // If Gemini fails, use the local  Nonna message instead
+        // fallback to instant message
       }
     }, 500);
 
-    // Cancel the timer if user changes ingredients before it fires.
-    return () => {
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, [ingredientCount, ingredientNames.join("|"), showNonnaWarning]);
 
   return {

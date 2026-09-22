@@ -18,10 +18,6 @@ export default function PastOrders({ token }) {
   const [authError, setAuthError] = useState(false);
 
   const { toggleFavorite } = useFavoriteToggle(orders, setOrders, token);
-
-  // Shared JWT-decode helper from context, instead of a local duplicate.
-  // (The old local version also fell back to payload.userId/payload.id,
-  // but the backend JWT only ever sets "sub" -- that fallback was dead.)
   const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
@@ -68,8 +64,7 @@ export default function PastOrders({ token }) {
     return (
       <section className="pastorders-container">
         <h1>Past Orders</h1>
-        <p>Please log in to see your past orders.</p>
-        <Link to="/auth" className="login-button">Log In</Link>
+        <p>Please <Link to="/auth" className="login-link">Log In</Link> to see your past orders.</p>
       </section>
     );
   }

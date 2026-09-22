@@ -1,10 +1,22 @@
-/* MATCH PAST ORDERS LAYOUT */
 .favorites-layout {
   display: grid;
   grid-template-columns: 1fr 4fr;
   gap: 16px;
   background-color: var(--surface-cream);
+  text-align: center;
 }
+
+.login-link {
+  color: var(--olive-dark);
+  text-decoration: underline;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-link:hover {
+  color: var(--olive-mid);
+}
+
 
 /* LEFT COLUMN */
 .section-0 {
@@ -53,9 +65,10 @@
   background-color: var(--surface-cream);
   padding: 2rem;
   border-radius: 12px;
+  text-align: center;
 }
 
-/* FAVORITE ITEM CARD — MATCH PROFILE */
+/* FAVORITE ITEM CARD */
 .favorite-item {
   background-color: var(--color-card-bg);
   border: 5px solid var(--color-card-border);

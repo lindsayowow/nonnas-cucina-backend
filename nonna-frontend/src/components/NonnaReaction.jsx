@@ -13,6 +13,7 @@ import NonnaComplete from "../assets/nonna-complete.png";
 
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
 
+// Mapping of visual states → image assets
 const nonnaImages = {
   neutral: NonnaNeutral,
   "one-ingredient": NonnaOneIngredient,
@@ -36,6 +37,7 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
 
   const cartCount = yourOrder.length;
 
+  // Cart message remains unchanged
   const cartMessage =
     cartCount === 0
       ? "Let’s get started with your order!"
@@ -51,9 +53,21 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
         </>
       );
 
+  // Image selection based on nonnaState
   const imageSrc =
     nonnaImages[nonnaState.state] ||
     NonnaNeutral;
+
+  // NEW: Reduced‑motion detection
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // NEW: Disable shake animation if user prefers reduced motion
+  const shakeClass =
+    showNonnaWarning && !prefersReducedMotion
+      ? "nonna-image--shake"
+      : "";
 
   return (
     <div
@@ -66,11 +80,16 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
         Verify Your Selections
       </h2>
 
+      {/* 
+        NEW: aria-live="polite" ensures screen readers announce Nonna's 
+        changing messages without interrupting the user.
+      */}
       <div className="nonna-speech-wrapper">
         <div
           className="nonna-speech-bubble"
           role="region"
           aria-label="Nonna message"
+          aria-live="polite"
         >
           {nonnaMessage}
         </div>
@@ -79,11 +98,8 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
       <div className="nonna-image-wrapper">
         <img
           src={imageSrc}
-          alt="Nonna reacting"
-          className={`nonna-image ${showNonnaWarning
-              ? "nonna-image--shake"
-              : ""
-            }`}
+          alt={`Nonna reacting: ${nonnaState.state}`}
+          className={`nonna-image ${shakeClass}`}
           loading="eager"
           decoding="async"
           width="180"
@@ -91,7 +107,14 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
         />
       </div>
 
-      <div className="nonna-cart-message">
+      {/* 
+        NEW: aria-live="polite" so screen readers announce cart updates 
+        when ingredients are added/removed.
+      */}
+      <div
+        className="nonna-cart-message"
+        aria-live="polite"
+      >
         {cartMessage}
       </div>
     </div>

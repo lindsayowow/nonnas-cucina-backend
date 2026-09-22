@@ -13,10 +13,8 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  // Load failure state, shown in place of the console.error that used to fire here
+  // Load failure state 
   const [loadError, setLoadError] = useState(null);
-
-  // Shared JWT-decode helper from context, instead of a local duplicate
   const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
@@ -42,9 +40,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
             phoneNumber: data.phoneNumber ?? ""
           });
         } else if (response.status === 401 || response.status === 403) {
-          // Token was rejected by the server (expired, invalid, or signed
-          // with an old secret) -- clear it automatically instead of
-          // leaving the user stuck on a permanent error screen.
+          // If token  rejected by the server then clear it automatically 
           onSessionExpired?.();
         } else {
           setLoadError("Failed to load your profile.");
@@ -121,8 +117,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
       <div>
         <p>{loadError ?? "Loading profile..."}</p>
 
-        {/* Manual fallback in case a stale token slips past the 401/403
-            auto-clear above (e.g. a network/parsing error) */}
+        {/* Manual fallback */}
         {loadError && (
           <button className="switch-link" onClick={() => onSessionExpired?.()}>
             Log in again
@@ -156,7 +151,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
       {editing && (
         <form className="profile-content" onSubmit={handleSubmit}>
           <label>
-            First Name
+            First Name  
             <input
               type="text"
               name="firstName"
@@ -167,7 +162,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
           </label>
 
           <label>
-            Last Name
+            Last Name  
             <input
               type="text"
               name="lastName"
@@ -178,7 +173,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
           </label>
 
           <label>
-            Email
+            Email  
             <input
               type="email"
               name="email"
@@ -189,7 +184,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
           </label>
 
           <label>
-            Phone Number
+            Phone Number  
             <input
               type="tel"
               name="phoneNumber"

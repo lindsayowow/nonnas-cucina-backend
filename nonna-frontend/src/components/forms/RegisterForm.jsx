@@ -252,6 +252,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
             type="password"
             name="confirmPassword"
             value={formData.confirmPassword}
+            placeholder="Passwords must match."
             onChange={handleChange}
             required
           />

@@ -20,10 +20,8 @@ export default function Auth({ setToken }) {
     }
   }
 
-  // logout/clear-session logic -- used for expired/invalid tokens below,
-  // for the sidebar's Logout button, and after a successful account
-  // delete/anonymize -- single shared place that clears localStorage +
-  // app state instead of duplicating this in multiple components.
+  // logout & clear-session logic - used for expired or invalid tokens, 
+  // sidebar's Logout button, and after a successful account delete 
   function clearSession() {
     localStorage.removeItem("token");
     setLocalToken(null);
@@ -47,7 +45,7 @@ export default function Auth({ setToken }) {
 
     const isExpired = decoded.exp * 1000 < Date.now();
     if (isExpired) {
-      // Token expired -- clear it and log the user out
+      // Token expired. This clears it and logs the user out
       clearSession();
     }
   }, [localToken, setToken]);
@@ -60,7 +58,7 @@ export default function Auth({ setToken }) {
     }
   }, [localToken, setToken]);
 
-  /* Logged in → show sidebar + profile in 2-column layout */
+  /* 2-column layout */
   if (localToken) {
     return (
       <section
@@ -88,7 +86,7 @@ export default function Auth({ setToken }) {
     );
   }
 
-  /* Not logged in → show login/register centered */
+  /* single column */
   return (
     <section
       className="auth-container"
