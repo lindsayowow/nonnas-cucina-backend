@@ -25,10 +25,7 @@ const nonnaImages = {
   warning: NonnaWarning
 };
 
-// Presentational only -- nonnaState/nonnaMessage come from a single shared
-// useNonna() call in the parent page (BuildADish.jsx). This component is
-// rendered twice (desktop + mobile layouts), so it must NOT call useNonna
-// itself, or every AI milestone request would fire twice.
+// nonnaState/nonnaMessage come from useNonna
 export default function NonnaReaction({ nonnaState, nonnaMessage }) {
   const {
     showNonnaWarning,
@@ -37,7 +34,7 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
 
   const cartCount = yourOrder.length;
 
-  // Cart message remains unchanged
+  // Empty cart message
   const cartMessage =
     cartCount === 0
       ? "Let’s get started with your order!"
@@ -58,12 +55,12 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
     nonnaImages[nonnaState.state] ||
     NonnaNeutral;
 
-  // NEW: Reduced‑motion detection
+  //  Reduced‑motion detection
   const prefersReducedMotion =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // NEW: Disable shake animation if user prefers reduced motion
+  // accessibility: Disable shake animation 
   const shakeClass =
     showNonnaWarning && !prefersReducedMotion
       ? "nonna-image--shake"
@@ -80,10 +77,7 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
         Verify Your Selections
       </h2>
 
-      {/* 
-        NEW: aria-live="polite" ensures screen readers announce Nonna's 
-        changing messages without interrupting the user.
-      */}
+      {/* screen readers read Nonna's messages */}
       <div className="nonna-speech-wrapper">
         <div
           className="nonna-speech-bubble"
@@ -107,10 +101,7 @@ export default function NonnaReaction({ nonnaState, nonnaMessage }) {
         />
       </div>
 
-      {/* 
-        NEW: aria-live="polite" so screen readers announce cart updates 
-        when ingredients are added/removed.
-      */}
+      {/* screen readers read cart updates when ingredients are added/removed.*/}
       <div
         className="nonna-cart-message"
         aria-live="polite"

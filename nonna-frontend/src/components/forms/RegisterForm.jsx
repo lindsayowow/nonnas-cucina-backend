@@ -3,7 +3,7 @@ import AuthButton from "../../components/buttons/AuthButton";
 import "../../styles/form.css";
 
 // setToken: logs the user straight in after a successful registration
-// switchToLogin: fallback if the post-registration auto-login itself fails
+// switchToLogin: if the auto-login fails
 export default function RegisterForm({ setToken, switchToLogin }) {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -14,7 +14,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
     confirmPassword: ""
   });
 
-  // In-UI feedback state
+  // user feedback
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
 
@@ -31,8 +31,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
     setFormData({ ...formData, [name]: value });
   }
 
-  // Field-level validation flags, used both for inline errors below and to
-  // gate the submit button via isIncomplete
+  // Field validation 
   const validEmail = /\S+@\S+\.\S+/.test(formData.email.trim());
   const emailHasError = formData.email.trim().length > 0 && !validEmail;
 
@@ -52,6 +51,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
   const firstNameValid = formData.firstName.trim().length >= 2;
   const lastNameValid = formData.lastName.trim().length >= 2;
 
+  // Disable submit if validation fails
   const isIncomplete =
     !firstNameValid ||
     !lastNameValid ||
@@ -68,8 +68,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
     setFormError("");
     setFormSuccess("");
 
-    // Safety-net checks in case submit fires while isIncomplete is stale
-    if (!firstNameValid) {
+      if (!firstNameValid) {
       setFormError("First name must be at least 2 characters.");
       return;
     }
@@ -94,6 +93,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
       return;
     }
 
+    // Build registration payload
     const payload = {
       email: formData.email,
       firstName: formData.firstName,
@@ -102,6 +102,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
       password: formData.password
     };
 
+    // Attempt registration
     const response = await fetch("http://localhost:8080/users/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -115,9 +116,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
 
     setFormSuccess("Account created! Logging you in...");
 
-    // Auto-login -- registration succeeded, so immediately exchange the same
-    // credentials for a token instead of sending the user back to a
-    // separate login screen for a second manual step.
+    // Auto-login using same credentials
     try {
       const loginResponse = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -130,16 +129,16 @@ export default function RegisterForm({ setToken, switchToLogin }) {
 
       const loginData = await loginResponse.json();
 
+      // Successful auto-login: store token and exit
       if (loginResponse.ok && loginData.token) {
         setToken(loginData.token);
         return;
       }
     } catch {
-      // Fall through to the manual-login fallback below
+      // manual-login 
     }
 
-    // Auto-login failed for some reason -- fall back to sending the user
-    // to the login screen with their new account already created
+    // Auto-login failed — send user to login screen
     setFormError("Account created, but automatic login failed. Please log in.");
     setTimeout(() => switchToLogin(), 1200);
   }
@@ -261,14 +260,14 @@ export default function RegisterForm({ setToken, switchToLogin }) {
           <p className="inputError">Passwords do not match.</p>
         )}
 
-        {/* In-UI feedback for submit-time / auto-login failures */}
+        {/*  feedback for auto-login failures */}
         {formError && (
           <p className="inputError" role="alert">
             {formError}
           </p>
         )}
 
-        {/* In-UI feedback while account creation / auto-login is in progress */}
+        {/* feedback while action is in progress */}
         {formSuccess && (
           <p className="successMessage" role="status" aria-live="polite">
             {formSuccess}

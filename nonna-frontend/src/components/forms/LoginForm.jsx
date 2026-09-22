@@ -13,6 +13,7 @@ export default function LoginForm({ setToken, switchToRegister }) {
 
     const payload = { email, password };
 
+    // Send login request to backend
     const response = await fetch("http://localhost:8080/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -21,20 +22,25 @@ export default function LoginForm({ setToken, switchToRegister }) {
 
     let data;
     try {
+      // parse JSON response
       data = await response.json();
     } catch {
+      // If backend returns plain text instead of JSON, show it
       const text = await response.text();
       setLoginError(text || "Login failed. Please try again.");
       return;
     }
 
+    // Successful login: store JWT token
     if (response.ok && data.token) {
       setToken(data.token);
     } else {
+      // Backend error message
       setLoginError(data.error || "Invalid login.");
     }
   }
 
+  // Disable login if fields are empty
   const isIncomplete =
     email.trim().length === 0 || password.trim().length === 0;
 
@@ -61,7 +67,7 @@ export default function LoginForm({ setToken, switchToRegister }) {
           onChange={e => setPassword(e.target.value)}
         />
 
-        {/* In-UI feedback for failed login */}
+        {/* failed login message */}
         {loginError && (
           <p className="inputError" role="alert">
             {loginError}

@@ -11,7 +11,7 @@ export default function Dish({
   removeIngredient,
   yourOrder
 }) {
-  // Dish count shown on the "Go to Cart" button
+  // Dish count 
   const cartCount = yourOrder?.length || 0;
 
   return (
@@ -44,6 +44,7 @@ export default function Dish({
                     currency: "USD"
                   }).format(ingredient.price)}
                 </span>
+
                 {/* passing props from parent to child */}
                 <RemoveIngredientButton
                   ingredient={ingredient}

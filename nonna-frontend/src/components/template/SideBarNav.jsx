@@ -2,22 +2,21 @@ import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import useDishBuilderContext from "../../hooks/useDishBuilderContext";
 
-
 export default function SideBarNav({ token, onLogout, onEditProfile }) {
   const location = useLocation();
 
-  // Detect if user is currently on the profile page
+  // verify user is on the profile page
   const onProfilePage = location.pathname === "/auth";
+
+  // Delete-account view
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
-  // Shared JWT decode helper from context
-  const { getUserIdFromToken } = useDishBuilderContext();
+   const { getUserIdFromToken } = useDishBuilderContext();
 
-  /* DELETE ACCOUNT — MAIN ACTION. Attempts DELETE /users/{id}.
-     If user has past orders, falls back to anonymize instead.*/
-
+  /* DELETE ACCOUNT — MAIN ACTION Attempts DELETE /users/{id}.
+     If user has past orders, falls back to anonymize instead. */
   async function handleDeleteAccount() {
     setDeleting(true);
     setDeleteError(null);
@@ -25,6 +24,7 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
     const userId = getUserIdFromToken(token);
 
     try {
+      // Attempt hard delete
       const deleteResponse = await fetch(
         `http://localhost:8080/users/${userId}`,
         {
@@ -45,7 +45,7 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
         return;
       }
 
-      // Has past orders — fallback to anonymization
+      // Has past orders — fallback to anonymize
       if (deleteResponse.status === 409) {
         const anonymizeResponse = await fetch(
           `http://localhost:8080/users/${userId}/anonymize`,
@@ -55,16 +55,19 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
           }
         );
 
+        // Token expired or invalid 
         if (anonymizeResponse.status === 401 || anonymizeResponse.status === 403) {
           onLogout();
           return;
         }
 
+        // Fallback failed
         if (!anonymizeResponse.ok) {
           setDeleteError("Failed to delete account.");
           return;
         }
 
+        // Fallback succeeded
         onLogout();
         return;
       }
@@ -72,18 +75,19 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
       // Generic failure
       setDeleteError("Failed to delete account.");
     } catch {
+      // Network or unexpected error
       setDeleteError("Error deleting account.");
     } finally {
       setDeleting(false);
     }
   }
 
-  /*  MAIN SIDEBAR NAVIGATION */
+  /* MAIN SIDEBAR NAVIGATION */
   return (
     <nav className="sidebar-nav">
       <ul className="sidebar-navigation">
 
-        {/* Profile link (hidden when already on profile page) */}
+        {/* Profile link (hidden when on profile page) */}
         {!onProfilePage && (
           <li>
             <NavLink
@@ -133,14 +137,14 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
           </li>
         )}
 
-        {/* Delete Account — initial trigger */}
+        {/* Delete Account — initial trigger, only visible on profile page */}
         {onProfilePage && !confirmingDelete && (
           <li>
             <button
               className="link-button"
               onClick={() => {
                 setConfirmingDelete(true);
-                setDeleteError(null); // clear old errors
+                setDeleteError(null); 
               }}
             >
               Delete Account
@@ -148,12 +152,11 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
           </li>
         )}
 
-        {/* Delete Account — confirmation dialog */}
+        {/* Delete Account — confirmation  */}
         {onProfilePage && confirmingDelete && (
           <li className="sidebar-delete-confirm">
             <p>Delete your account?</p>
 
-            {/* Updated layout: buttons stacked vertically */}
             <div className="delete-confirm-actions">
               <button
                 className="link-button"
@@ -163,7 +166,6 @@ export default function SideBarNav({ token, onLogout, onEditProfile }) {
                 {deleting ? "Deleting..." : "Yes, delete"}
               </button>
 
-              {/* NEW CLASS: delete-confirm-cancel */}
               <button
                 className="delete-confirm-cancel"
                 disabled={deleting}

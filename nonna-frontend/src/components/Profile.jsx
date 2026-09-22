@@ -5,16 +5,21 @@ import "../styles/profile.css";
 
 export default function Profile({ token, editing, setEditing, onSessionExpired }) {
   const [user, setUser] = useState(null);
+
+  // state = the profile fields
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: ""
   });
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
   // Load failure state 
   const [loadError, setLoadError] = useState(null);
+
   const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
@@ -40,7 +45,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
             phoneNumber: data.phoneNumber ?? ""
           });
         } else if (response.status === 401 || response.status === 403) {
-          // If token  rejected by the server then clear it automatically 
+          // Token rejected — force logout
           onSessionExpired?.();
         } else {
           setLoadError("Failed to load your profile.");
@@ -50,6 +55,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
       }
     }
 
+    // Only get if token successful
     if (userId) {
       fetchUser();
     }
@@ -57,10 +63,12 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
 
   function handleChange(e) {
     const { name, value } = e.target;
+    // Update form 
     setForm(prev => ({ ...prev, [name]: value }));
   }
 
   function handleCancel() {
+    // Restore values if user exists
     if (user) {
       setForm({
         firstName: user.firstName ?? "",
@@ -91,17 +99,20 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
         }
       );
 
+      // Token expired 
       if (response.status === 401 || response.status === 403) {
         onSessionExpired?.();
         return;
       }
 
+      // Backend validation or update failure
       if (!response.ok) {
         setError("Failed to update profile.");
         setSaving(false);
         return;
       }
 
+      // Update local state with new profile data
       const updated = await response.json();
       setUser(updated);
       setEditing(false);
@@ -112,6 +123,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
     }
   }
 
+  // Loading or failure state before profile is available
   if (!user) {
     return (
       <div>
@@ -131,6 +143,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
     <div className="profile-card">
       <h2 className="profile-title">My Profile</h2>
 
+      {/* Read-only profile view */}
       {!editing && (
         <div className="profile-content">
           <p>
@@ -148,6 +161,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
         </div>
       )}
 
+      {/* Editable profile form */}
       {editing && (
         <form className="profile-content" onSubmit={handleSubmit}>
           <label>

@@ -7,15 +7,18 @@ import useDishBuilderContext from "../../hooks/useDishBuilderContext";
 export default function Header() {
   const { yourOrder } = useDishBuilderContext();
   const [open, setOpen] = useState(false);
+
+  // Track login state 
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
 
   useEffect(() => {
+    // login state when token changes anywhere
     const syncLoginState = () => setIsLoggedIn(!!localStorage.getItem("token"));
 
-    // fires on changes from other tabs
+    // Fires when another tab modifies localStorage 
     window.addEventListener("storage", syncLoginState);
     
-    // fires on changes from this tab (passed to Auth.jsx & SideBarNav.jsx)
+    // event fired inside this tab by Auth & SideBarNav.jsx
     window.addEventListener("authchange", syncLoginState);
 
     return () => {
@@ -25,7 +28,6 @@ export default function Header() {
   }, []);
 
   return (
-    // semantic header
     <header className="header">
       <NavLink to="/" onClick={() => setOpen(false)}>
         <img
@@ -61,6 +63,8 @@ export default function Header() {
         <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
         <NavLink to="/buildadish" onClick={() => setOpen(false)}>Build a Dish</NavLink>
         <NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink>
+
+        {/* Profile icon changes based on login state */}
         <NavLink
           to="/auth"
           onClick={() => setOpen(false)}
@@ -71,10 +75,12 @@ export default function Header() {
         >
           👤︎
         </NavLink>
+
         <NavLink to="/favorites" onClick={() => setOpen(false)} aria-label="Favorites">
           <span aria-hidden="true" className="fav-icon">♥</span>
         </NavLink>
 
+        {/* Cart counts items in current order */}
         <NavLink
           to="/cart"
           onClick={() => setOpen(false)}
