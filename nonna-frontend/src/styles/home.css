@@ -80,7 +80,7 @@
   z-index: 5;
 }
 
-/* decorative hearts — visually meaningful but not read by screen readers */
+/* decorative hearts — visually meaningful, not read by screen readers */
 .nonna-wrapper::after {
   content: "❤       ❤       ❤";
   position: absolute;
@@ -116,22 +116,21 @@
   }
 }
 
-h1 {
+.hero h1 {
   font-size: 3rem;
   font-weight: bolder;
   margin: 8px 0;
 }
 
-h2 {
+.hero h2 {
   font-size: large;
   margin-bottom: 8px;
 }
 
-/* improved contrast for accessibility */
-button {
+.hero button {
   background-color: var(--color-button-bg);
   border: 5px solid var(--olive-dark);
-  color: var(--color-text-inverse); /* accessible contrast */
+  color: var(--color-text-inverse); 
   font-weight: bold;
   padding: 15px 15px;
   font-size: 16px;
@@ -141,7 +140,7 @@ button {
   transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-button:hover {
+.hero button:hover {
   background-color: var(--color-button-hover);
   box-shadow: var(--shadow-button-hover);
   transform: translateY(-2px);

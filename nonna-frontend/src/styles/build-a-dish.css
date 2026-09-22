@@ -6,38 +6,34 @@
 }
 
 /*   COLUMN SECTIONS  */
-.section-0,
-.section-1,
-.section-2 {
+.build-container .section-0,
+.build-container .section-1,
+.build-container .section-2 {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding-top: 1.25rem;
 }
 
-/* Side columns (left + right)
-   NOTE: These should both be olive-mid.
-   If another stylesheet overrides .section-0,
-   we restore it later with a more specific selector. */
-.section-0,
-.section-2 {
+.build-container .section-0,
+.build-container .section-2 {
   padding-inline: 0.75rem;
   background-color: var(--olive-mid);
 }
 
 /* Center column */
-.section-1 {
+.build-container .section-1 {
   min-width: 0;
   padding-inline: 0.75rem;
 }
 
-h2 {
+.build-container h2 {
   margin-top: 0.5rem;
   padding: 10px;
   text-align: center;
 }
 
-h3 {
+.build-container h3 {
   text-align: center;
 }
 
@@ -79,16 +75,9 @@ h3 {
   margin-bottom: 0.75rem;
 }
 
-/* -----------------------------------------------------------
-   FIX: Match Nonna padding to Dish padding
-   -----------------------------------------------------------
-   Dish has natural spacing because its card sits inside a column
-   with padding. Nonna’s card was touching the edges because the
-   wrapper (.nonna-container) had *no* padding.
-   ----------------------------------------------------------- */
 
 .nonna-container {
-  padding: 0.75rem; /* matches column spacing so Nonna card floats nicely */
+  padding: 0.75rem; 
 }
 
 /*   RESPONSIVE VISIBILITY HELPERS  */
@@ -144,8 +133,4 @@ h3 {
     animation: nonnaSlideUp 1s ease forwards;
   }
   */
-}
-
-.build-container .section-0 {
-  background-color: var(--olive-mid) !important; 
 }

@@ -7,7 +7,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   margin: 0 auto;
 }
 
@@ -16,7 +16,7 @@
   margin-bottom: 0.5rem;
 }
 
-label {
+.form-container label {
   width: 90%;
   margin: 0 auto;
   display: block;
@@ -34,7 +34,7 @@ label {
   font-size: 1rem;
 }
 
-textarea {
+.form-container textarea {
   height: 120px;
   resize: vertical;
 }
@@ -47,7 +47,7 @@ button.btn {
 
 button.btn:disabled {
   background-color: var(--sage-dark);
-  color: white; /* updated for better disabled contrast */
+  color: white; 
   border: none;
   cursor: not-allowed;
   box-shadow: none;
@@ -68,17 +68,6 @@ button.btn:disabled {
   color: var(--olive-dark);
   font-size: 1.5rem;
   margin-top: 1rem;
-}
-
-.btn:disabled {
-  color: white;
-}
-/* Remove vertical stacking for auth forms */
-.form-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 /* Inputs inside horizontal rows */

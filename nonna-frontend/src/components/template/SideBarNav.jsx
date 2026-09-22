@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import useDishBuilderContext from "../../hooks/useDishBuilderContext";
+import "../../styles/sidebarnav.css";
 
 export default function SideBarNav({ token, onLogout, onEditProfile }) {
   const location = useLocation();

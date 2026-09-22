@@ -19,7 +19,7 @@
 
 
 /* LEFT COLUMN */
-.section-0 {
+.favorites-layout .section-0 {
   background-color: var(--surface-cream);
   padding: 1rem 0;
   display: block;
@@ -107,7 +107,7 @@
   color: #e67e22;
 }
 
-ul {
+.favorites-list {
   list-style: none;
   padding-left: 0;
 }

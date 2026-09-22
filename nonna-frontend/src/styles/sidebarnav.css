@@ -1,35 +1,88 @@
+/* SIDEBAR NAVIGATION (PROFILE PAGE) Vertical column layout */
 .sidebar-nav {
   display: flex;
-  gap: 0.75rem;
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-right: 1rem;
-  justify-self: end;
+  flex-direction: column;
+  background-color: var(--olive-mid);
+  padding: 1.5rem;
+  border-radius: 12px;
+  height: fit-content;
+  position: sticky;
+  top: 0.75rem;
 }
 
-.sidebar-nav a.active {
-  border-bottom: 10px solid white;
-  padding-bottom: 10px;
-  text-shadow:
-    0 0 6px rgba(255, 180, 200, 0.55),
-    0 0 12px rgba(210, 235, 190, 0.45),
-    0 0 18px rgba(185, 215, 165, 0.35);
+/* Vertical list of nav items */
+.sidebar-navigation {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* link styling */
-a {
-  color: var(--color-text-inverse);
+/* Links + button-styled links (Edit Profile, Logout, Delete Account)
+   share the same look */
+.sidebar-navigation a,
+.sidebar-navigation .link-button {
+  color: var(--surface-white);
+  font-size: 1.15rem;
+  font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
 }
 
-a:hover {
-  color: var(--surface-yellow);
-  text-shadow:
-    0 0 6px rgba(255, 180, 200, 0.55),
-    0 0 12px rgba(210, 235, 190, 0.45),
-    0 0 18px rgba(185, 215, 165, 0.35);
+.sidebar-navigation a:hover,
+.sidebar-navigation .link-button:hover {
+  color: var(--sage-lighter);
+  text-decoration: underline;
 }
 
+.active-link {
+  color: var(--surface-white);
+  text-decoration: underline;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--surface-white);
+  cursor: pointer;
+}
+
+/* Delete-account confirmation block, rendered inline in place of the
+   "Delete Account" link -- previously unstyled (SideBarNav.jsx references
+   these classes, but nothing defined them). */
+.sidebar-delete-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.delete-confirm-cancel {
+  background: none;
+  border: none;
+  color: #ff8a8a;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sidebar-delete-error {
+  color: #ffb3b3;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Hamburger toggle -- unused by the current vertical SideBarNav.jsx, kept
+   in case a collapsible mobile version is added later */
 .hamburger {
   display: none;
   background: none;
@@ -38,60 +91,13 @@ a:hover {
   font-size: 2rem;
   cursor: pointer;
   padding: 0;
-  justify-self: start;
 }
 
-/* tablet layout: hamburger + dropdown nav */
-@media (max-width: 1199px) {
-  .hamburger {
-    display: block;
-    margin-left: 0.75rem;
-  }
-
+/* Mobile: stack instead of sticky sidebar */
+@media (max-width: 700px) {
   .sidebar-nav {
-    display: none;
-    position: absolute;
-    top: 100px;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: var(--brand-maroon-light);
-    padding: 1rem 1.25rem;
-    border-radius: 0 0 10px 10px;
-    text-align: left;
-    z-index: 400;
+    position: static;
+    width: 100%;
+    margin-bottom: 1rem;
   }
-
-  .sidebar-nav.open {
-    display: flex;
-  }
-
-}
-
-/* mobile layout */
-@media (max-width: 600px) {
-  .header {
-    height: auto;
-    padding-top: 0.25rem;
-    grid-template-columns: auto 1fr auto;
-  }
-
-  .hamburger {
-    font-size: 2.25rem;
-  }
-}
-
-.link-button {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  color: var(--link-color);
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.link-button:hover {
-  color: var(--link-hover-color);
 }
