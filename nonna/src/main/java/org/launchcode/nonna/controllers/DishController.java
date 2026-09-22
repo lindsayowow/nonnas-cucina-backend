@@ -15,15 +15,14 @@ public class DishController {
         this.dishService = dishService;
     }
 
-    // toggle a dish's favorite flag. Used by the Favorites/PastOrders
-    // pages via useFavoriteToggle.js.
+    // toggle a dish's favorite flag.
     @PutMapping("/{id}/favorite")
     public DishDTO updateFavorite(@PathVariable Integer id,
                                   @RequestBody UpdateFavoriteDTO dto) {
         return dishService.updateFavorite(id, dto.getIsFavorite());
     }
 
-    // DELETE -- remove a dish by id.
+    // DELETE -- remove a dish by id. - currently unused, future feature for admin
     @DeleteMapping("/{id}")
     public void deleteDish(@PathVariable Integer id) {
         dishService.deleteDish(id);

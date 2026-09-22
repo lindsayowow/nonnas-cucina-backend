@@ -45,14 +45,14 @@ public class UserController {
         return new UserDTO(updated);
     }
 
-    // UPDATE PROFILE
+    // Update only profile-related fields (first name, last name, etc.)
     @PutMapping("/profile/{id}")
     public ProfileDTO updateProfileDTO(@PathVariable Integer id, @RequestBody ProfileDTO profileDTO) {
         return userService.updateProfileDTO(id, profileDTO);
     }
 
-    // DELETE USER (account deletion) -- real hard delete. Only succeeds for
-    // users with no past orders; throws (caught globally as 409) otherwise.
+    // DELETE USER (account deletion) -- real hard delete.
+    // Only works for users with no past orders;
     // Frontend tries this first, then falls back to /anonymize below on 409.
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Integer id) {

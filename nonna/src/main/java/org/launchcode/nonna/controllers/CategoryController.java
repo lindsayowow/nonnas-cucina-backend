@@ -19,28 +19,28 @@ public class CategoryController {
 
     @GetMapping
     public List<CategoryDTO> getAllCategories() {
-        return categoryService.getAllCategoryDTOs();
+        return categoryService.getAllCategoryDTOs(); // Convert entities → DTOs for safe output
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")                  // GET /categories/{id} — fetch category by ID
     public CategoryDTO getByCategoryId(@PathVariable int id) {
-        return categoryService.getByCategoryDTOId(id);
+        return categoryService.getByCategoryDTOId(id); // Service handles lookup + DTO conversion
     }
 
-    @PostMapping
+    @PostMapping             // POST /categories — create a new category (future admin function)
     public CategoryDTO createCategory(@RequestBody Category category) {
         Category saved = categoryService.saveCategory(category);
-        return new CategoryDTO(saved);
+        return new CategoryDTO(saved);                           // Return DTO of saved entity
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")    // PUT /categories/{id} — update an existing category (future admin function)
     public CategoryDTO updateCategory(@PathVariable Integer id, @RequestBody Category category) {
         Category updated = categoryService.updateCategory(id, category);
-        return new CategoryDTO(updated);
+        return new CategoryDTO(updated);                                 // Return updated DTO
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")  // DELETE /categories/{id} — remove category (future admin function)
     public void deleteCategory(@PathVariable int id) {
-        categoryService.deleteCategory(id);
+        categoryService.deleteCategory(id); // Service handles deletion
     }
 }

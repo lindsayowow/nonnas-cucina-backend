@@ -19,8 +19,7 @@ public class PastOrderController {
         this.pastOrderService = pastOrderService;
     }
 
-    // CREATE ORDER -- the service now returns an already-built PastOrderDTO
-    // (with ingredients safely resolved), so the controller just forwards it.
+    // Build a new PastOrder from the incoming DTO and return the fully populated DTO
     @PostMapping
     public ResponseEntity<PastOrderDTO> createOrder(@RequestBody CreateOrderDTO dto) {
         PastOrderDTO order = pastOrderService.createOrder(dto);
@@ -45,14 +44,14 @@ public class PastOrderController {
         return pastOrderService.getOrdersByUserId(userId);
     }
 
-    // UPDATE ORDER -- same as createOrder, service already returns the DTO
+    // UPDATE ORDER - same as createOrder, service returns the DTO
     @PutMapping("/{id}")
     public ResponseEntity<PastOrderDTO> updatePastOrder(@PathVariable Integer id, @RequestBody PastOrder pastOrder) {
         PastOrderDTO updated = pastOrderService.updatePastOrder(id, pastOrder);
         return ResponseEntity.ok(updated);
     }
 
-    // DELETE ORDER
+    // DELETE ORDER - admin only -future use
     @DeleteMapping("/{id}")
     public void deletePastOrder(@PathVariable int id) {
         pastOrderService.deletePastOrder(id);

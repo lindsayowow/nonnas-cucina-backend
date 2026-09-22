@@ -6,14 +6,7 @@ import org.launchcode.nonna.services.NonnaAiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * REST controller exposing the Gemini Nonna message endpoint.
- * Frontend calls POST /gemini with state + ingredient data.
- *
- * CORS for this endpoint is handled globally by SecurityConfig's
- * CorsConfigurationSource (covers /**, including /gemini) -- no
- * per-controller @CrossOrigin needed here.
- */
+/* CORS handled globally by SecurityConfig's CorsConfigurationSource  */
 @RestController
 @RequestMapping("/gemini")
 public class NonnaAiController {
@@ -24,15 +17,14 @@ public class NonnaAiController {
         this.nonnaAiService = nonnaAiService;
     }
 
-    /**
-     * POST /gemini
-     * Accepts a NonnaMessageRequestDTO and returns a Gemini-generated message.
-     */
+    // Accepts a NonnaMessageRequestDTO and returns a Gemini-generated message.
     @PostMapping
     public ResponseEntity<NonnaMessageResponseDTO> generateNonnaMessage(
             @RequestBody NonnaMessageRequestDTO request
     ) {
         String message = nonnaAiService.generateMessage(request);
+
+        // Wrap model output in a DTO and return HTTP 200
         return ResponseEntity.ok(new NonnaMessageResponseDTO(message));
     }
 }
