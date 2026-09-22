@@ -1,23 +1,20 @@
 import { useState, useEffect } from "react";
 import AuthButton from "./buttons/AuthButton";
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
+import formatPhoneNumber from "../utils/formatPhoneNumber";
 import "../styles/profile.css";
 
 export default function Profile({ token, editing, setEditing, onSessionExpired }) {
   const [user, setUser] = useState(null);
-
-  // state = the profile fields
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: ""
   });
-
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-
-  // Load failure state 
+  // Load failure state, 
   const [loadError, setLoadError] = useState(null);
 
   const { getUserIdFromToken } = useDishBuilderContext();
@@ -45,7 +42,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
             phoneNumber: data.phoneNumber ?? ""
           });
         } else if (response.status === 401 || response.status === 403) {
-          // Token rejected — force logout
+          // If token was rejected by the server, clear it automatically
           onSessionExpired?.();
         } else {
           setLoadError("Failed to load your profile.");
@@ -55,20 +52,19 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
       }
     }
 
-    // Only get if token successful
     if (userId) {
       fetchUser();
     }
   }, [userId, token, onSessionExpired]);
 
   function handleChange(e) {
-    const { name, value } = e.target;
-    // Update form 
+    let { name, value } = e.target;
+    // Force phone number into 555-555-5555 format 
+    if (name === "phoneNumber") value = formatPhoneNumber(value);
     setForm(prev => ({ ...prev, [name]: value }));
   }
 
   function handleCancel() {
-    // Restore values if user exists
     if (user) {
       setForm({
         firstName: user.firstName ?? "",
@@ -99,20 +95,17 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
         }
       );
 
-      // Token expired 
       if (response.status === 401 || response.status === 403) {
         onSessionExpired?.();
         return;
       }
 
-      // Backend validation or update failure
       if (!response.ok) {
         setError("Failed to update profile.");
         setSaving(false);
         return;
       }
 
-      // Update local state with new profile data
       const updated = await response.json();
       setUser(updated);
       setEditing(false);
@@ -123,13 +116,12 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
     }
   }
 
-  // Loading or failure state before profile is available
   if (!user) {
     return (
       <div>
         <p>{loadError ?? "Loading profile..."}</p>
 
-        {/* Manual fallback */}
+        {/* Manual fallback in case token misses 401/403 auto-clear */}
         {loadError && (
           <button className="switch-link" onClick={() => onSessionExpired?.()}>
             Log in again
@@ -143,7 +135,6 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
     <div className="profile-card">
       <h2 className="profile-title">My Profile</h2>
 
-      {/* Read-only profile view */}
       {!editing && (
         <div className="profile-content">
           <p>
@@ -161,11 +152,10 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
         </div>
       )}
 
-      {/* Editable profile form */}
       {editing && (
         <form className="profile-content" onSubmit={handleSubmit}>
           <label>
-            First Name  
+            First Name
             <input
               type="text"
               name="firstName"
@@ -176,7 +166,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
           </label>
 
           <label>
-            Last Name  
+            Last Name
             <input
               type="text"
               name="lastName"
@@ -187,7 +177,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
           </label>
 
           <label>
-            Email  
+            Email
             <input
               type="email"
               name="email"
@@ -198,7 +188,7 @@ export default function Profile({ token, editing, setEditing, onSessionExpired }
           </label>
 
           <label>
-            Phone Number  
+            Phone Number
             <input
               type="tel"
               name="phoneNumber"

@@ -1,27 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-
 import Home from "./pages/Home";
 import BuildADish from "./pages/BuildADish";
 import Order from "./pages/Order";
 import About from "./pages/About";
 import Favorites from "./pages/Favorites";
-import PastOrders from "./pages/PastOrders";   
+import PastOrders from "./pages/PastOrders";
 import Auth from "./pages/Auth";
-
 import Header from "./components/template/Header";
 import Footer from "./components/template/Footer";
 import ScrollToTop from "./components/template/ScrollToTop";
-
 import { DishBuilderProvider } from "./context/DishBuilderContext";
-
 import "./App.css";
 
 export default function App() {
 
   const [token, setToken] = useState(null);
 
-  // ⭐ FIX: Load token from localStorage on startup
+  // Load token from localStorage on startup
   useEffect(() => {
     const stored = localStorage.getItem("token");
     if (stored) {
@@ -35,6 +31,7 @@ export default function App() {
         <Header />
         <ScrollToTop />
 
+        {/* Modern React Structure */}
         <main className="App">
           <Routes>
             <Route path="/" element={<Home />} />

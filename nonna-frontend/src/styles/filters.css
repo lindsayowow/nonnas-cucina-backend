@@ -19,6 +19,10 @@
   padding: 0;
 }
 
+.FilterButton {
+  font-size: 1rem;     
+}
+
 /* active filter button */
 .FilterButton.active {
   background-color: black;
@@ -34,12 +38,17 @@
   margin-top: 1rem;
 }
 
-/* clear button */
+/* clear filters button */
 .clearButton {
-  background-color: var(--color-button-hover);
-  border: var(--color-button-hover);
-  padding: 10px;
-  text-align: center;
+  background-color: var(--olive-mid);
+  color: white;
+  border: 1px solid var(--olive-mid);
+}
+
+/* clear filters button hover */
+.clearButton:hover:not(:disabled) {
+  background-color: var(--olive-mid);
+  color: white;
 }
 
 /* clear button disabled */
@@ -49,3 +58,6 @@
   color: white;
   cursor: not-allowed;
 }
+
+
+

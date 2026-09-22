@@ -1,9 +1,10 @@
 import { useState } from "react";
 import AuthButton from "../../components/buttons/AuthButton";
+import formatPhoneNumber from "../../utils/formatPhoneNumber";
 import "../../styles/form.css";
 
-// setToken: logs the user straight in after a successful registration
-// switchToLogin: if the auto-login fails
+// setToken: logs the user in after registration
+// switchToLogin: fallback if the post-registration auto-login fails
 export default function RegisterForm({ setToken, switchToLogin }) {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -14,16 +15,9 @@ export default function RegisterForm({ setToken, switchToLogin }) {
     confirmPassword: ""
   });
 
-  // user feedback
+  //  UI feedback state
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
-
-  function formatPhoneNumber(value) {
-    const digits = value.replace(/\D/g, "").slice(0, 10);
-    if (digits.length <= 3) return digits;
-    if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
-  }
 
   function handleChange(e) {
     let { name, value } = e.target;
@@ -31,7 +25,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
     setFormData({ ...formData, [name]: value });
   }
 
-  // Field validation 
+  // validation flags
   const validEmail = /\S+@\S+\.\S+/.test(formData.email.trim());
   const emailHasError = formData.email.trim().length > 0 && !validEmail;
 
@@ -51,7 +45,6 @@ export default function RegisterForm({ setToken, switchToLogin }) {
   const firstNameValid = formData.firstName.trim().length >= 2;
   const lastNameValid = formData.lastName.trim().length >= 2;
 
-  // Disable submit if validation fails
   const isIncomplete =
     !firstNameValid ||
     !lastNameValid ||
@@ -68,7 +61,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
     setFormError("");
     setFormSuccess("");
 
-      if (!firstNameValid) {
+    if (!firstNameValid) {
       setFormError("First name must be at least 2 characters.");
       return;
     }
@@ -93,7 +86,6 @@ export default function RegisterForm({ setToken, switchToLogin }) {
       return;
     }
 
-    // Build registration payload
     const payload = {
       email: formData.email,
       firstName: formData.firstName,
@@ -102,7 +94,6 @@ export default function RegisterForm({ setToken, switchToLogin }) {
       password: formData.password
     };
 
-    // Attempt registration
     const response = await fetch("http://localhost:8080/users/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -116,7 +107,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
 
     setFormSuccess("Account created! Logging you in...");
 
-    // Auto-login using same credentials
+    // Auto-login if registration succeeded 
     try {
       const loginResponse = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -129,17 +120,16 @@ export default function RegisterForm({ setToken, switchToLogin }) {
 
       const loginData = await loginResponse.json();
 
-      // Successful auto-login: store token and exit
       if (loginResponse.ok && loginData.token) {
         setToken(loginData.token);
         return;
       }
     } catch {
-      // manual-login 
+      // Fall through to the manual-login fallback below
     }
 
-    // Auto-login failed — send user to login screen
-    setFormError("Account created, but automatic login failed. Please log in.");
+    // sends the user to the login screen if autologin fails
+    setFormError("Account created, please log in.");
     setTimeout(() => switchToLogin(), 1200);
   }
 
@@ -228,7 +218,7 @@ export default function RegisterForm({ setToken, switchToLogin }) {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder=" min 8 char, upper and lower case, symbol and number."
+            placeholder=" Min 8 char, upper and lower case, symbol and number."
             required
           />
         </div>
@@ -251,7 +241,6 @@ export default function RegisterForm({ setToken, switchToLogin }) {
             type="password"
             name="confirmPassword"
             value={formData.confirmPassword}
-            placeholder="Passwords must match."
             onChange={handleChange}
             required
           />
@@ -260,14 +249,14 @@ export default function RegisterForm({ setToken, switchToLogin }) {
           <p className="inputError">Passwords do not match.</p>
         )}
 
-        {/*  feedback for auto-login failures */}
+        {/* UI feedback for auto-login failure */}
         {formError && (
           <p className="inputError" role="alert">
             {formError}
           </p>
         )}
 
-        {/* feedback while action is in progress */}
+        {/* UI feedback while account creation & auto-login is in progress */}
         {formSuccess && (
           <p className="successMessage" role="status" aria-live="polite">
             {formSuccess}

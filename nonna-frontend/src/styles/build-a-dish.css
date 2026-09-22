@@ -75,7 +75,6 @@
   margin-bottom: 0.75rem;
 }
 
-
 .nonna-container {
   padding: 0.75rem; 
 }
@@ -89,8 +88,15 @@
   display: none;
 }
 
-/*   MOBILE LAYOUT (≤ 600px)
-  */
+/*   ACTIVE FILTER BUTTON */
+.FilterButton.active {
+  background-color: black;
+  color: var(--color-text-inverse);
+  font-weight: bolder;
+  outline: 2px solid rgba(220, 120, 120, 0.70);
+}
+
+/*   MOBILE LAYOUT (≤ 600px) */
 @media (max-width: 600px) {
 
   /* Switch to vertical flow */
