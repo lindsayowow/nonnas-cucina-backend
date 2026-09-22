@@ -124,7 +124,7 @@ export default function Ingredients({
         </div>
       ))}
 
-      {/* Add ti order and clear */}
+      {/* Add to order and clear */}
       <div className="ingredient-actions">
         <DishButton
           className="build-action-button"
