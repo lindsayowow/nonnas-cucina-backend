@@ -42,6 +42,7 @@ Nonna's Cucina was inspired by families like mine with complex dietary needs —
 ### Nonna, the Guide Character
 - Nonna greets users on arrival and sets a warm, welcoming tone for the experience.
 - Nonna reacts in real time as ingredients are added or removed, giving feedback and personality throughout the dish-building process.
+- Nonna's responses are generated via the Gemini API, so a valid Gemini API key is required for this feature to function fully (see Installation Instructions).
 
 ### Live Dish Panel & Cart Flow
 - As ingredients are selected, the dish panel updates instantly to reflect the current build.
@@ -116,7 +117,10 @@ spring.datasource.username=<your_mysql_username>
 spring.datasource.password=<your_mysql_password>
 
 jwt.secret=<your_jwt_secret_key>
+gemini.api.key=<your_gemini_api_key>
 ```
+
+> A Gemini API key is required for Nonna's reactive, AI-generated responses to work. You can generate one at [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 Install dependencies and run the backend:
 
@@ -157,13 +161,21 @@ Initial wireframes used to plan the dish-builder flow, order flow, and account p
 
 🔗 [View Wireframes on Figma](https://www.figma.com/design/2B6voqe6rgF7hboei1bnCk/Untitled?node-id=0-1&t=hOswWw2X7NFZRTrp-1)
 
+![Nonna's Cucina Homepage](docs/wireframes/Homepage.png)
+![Build A Dish with Nonna](docs/wireframes/BuildADishPage.png)
+![Nonna's Personal Messages and Advice](docs/wireframes/NonnaReacts.png)
+![Personalization of Experience](docs/wireframes/Personalization.png)
+![Mobile View](docs/wireframes/MobileView.png)
+
 ---
 
 ## 🗄️ ER Diagram
 
 The relational data model showing Users, Dishes, Ingredients, and Past Orders:
 
-![Nonna's Cucina ER Diagram](docs/erd/erd.png)
+🔗 [View ERD on Figma](https://www.figma.com/design/3tcowkqGhvBoqyzeQVNOkN/ERD-Nonna-s-Cucina?node-id=1-2&t=IuJvYZgu09DooLts-1)
+
+![Nonna's Cucina ER Diagram](docs/erd/NonnaERD.png)
 
 ---
 
