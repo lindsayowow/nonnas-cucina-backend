@@ -167,11 +167,11 @@ Nonna's Cucina Homepage
 
 Build A Dish with Nonna
 
-<p align="center"> <img src = "docs/wireframes/BuildADishPage.png)" alt="Build A Dish Page View"></p>
+<p align="center"> <img src = "docs/wireframes/BuildADishPage.png" alt="Build A Dish Page View"></p>
 
 Nonna's Personal Messages and Advice
 
-<p align="center"> <img src = "docs/wireframes/NonnaReacts.png)" alt = "A warning example and a personalized message example from Nonna"></p>
+<p align="center"> <img src = "docs/wireframes/NonnaReacts.png" alt = "A warning example and a personalized message example from Nonna"></p>
 
 Personalization of Experience
 
