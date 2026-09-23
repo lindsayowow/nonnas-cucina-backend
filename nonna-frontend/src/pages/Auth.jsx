@@ -75,7 +75,7 @@ export default function Auth({ setToken }) {
 
         <SideBarNav
           token={localToken}
-          onLogout={clearSession}
+          onLogout={clearSession} //Event Handler example
           onEditProfile={() => setEditing(true)}
         />
 

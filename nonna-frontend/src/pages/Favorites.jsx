@@ -8,11 +8,13 @@ import SideNavBar from "../components/template/SideBarNav.jsx";
 
 export default function Favorites({ token }) {
   const [allDishes, setAllDishes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(false);
 
   const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
-  // show dishes displayed so that toggleFavorite works
+  // Show dishes in a wrapper so toggleFavorite can work with the existing hook
   const wrappedOrders = [
     {
       id: 0,
@@ -20,39 +22,58 @@ export default function Favorites({ token }) {
     }
   ];
 
-   const { toggleFavorite } = useFavoriteToggle(
+  // Toggle favorite status and update the local dishes list
+  const { toggleFavorite } = useFavoriteToggle(
     wrappedOrders,
-    newOrders => {
+    (newOrders) => {
       // Extract updated dishes from wrapper
       setAllDishes(newOrders[0].dishes);
     },
     token
   );
 
+  // Fetch the user's past orders so favorite dishes can be identified
   useEffect(() => {
-    if (!userId) return;
+    // No user ID means there is no authenticated user to fetch favorites for
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
 
     async function fetchFavorites() {
       try {
         const response = await fetch(
           `http://localhost:8080/pastorders/user/${userId}`,
           {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
         );
 
-        // If unauthorized or failed, fallback to empty list
+        // Token invalid or expired
+        if (response.status === 401 || response.status === 403) {
+          setAuthError(true);
+          setAllDishes([]);
+          return;
+        }
+
+        // Any other failed request treat as an empty list
         if (!response.ok) {
           setAllDishes([]);
           return;
         }
 
+        // Successfully retrieve the user's past orders
         const orders = await response.json();
 
-        const dishes = orders.flatMap(order =>
-          (order.dishes ?? []).map(dish => ({
+        //  put all dishes into one list
+        const dishes = orders.flatMap((order) =>
+          (order.dishes ?? []).map((dish) => ({
             ...dish,
             orderId: order.id,
+
+            // Support ingredient property names
             ingredients:
               dish.ingredients ??
               dish.ingredientList ??
@@ -63,75 +84,139 @@ export default function Favorites({ token }) {
 
         setAllDishes(dishes);
       } catch {
-        // Network error → empty list
+        // Network error treat as an empty list
         setAllDishes([]);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchFavorites();
   }, [userId, token]);
 
-  // User not logged in
-  if (!token) {
-    return (      
-      <section className="favorites-container">
-        <h1>My Favorite Dishes</h1>
-        <p> Please <Link to="/auth" className="login-link">log in</Link> to see your favorites.</p>
-      </section>
-    );
-  }
-
-  // Filter only dishes marked as favorite
-  const favorites = allDishes.filter(dish => dish.isFavorite === true);
+  // Filter only dishes marked as favorites
+  const favorites = allDishes.filter(
+    (dish) => dish.isFavorite === true
+  );
 
   return (
     <main className="favorites-layout" aria-label="Favorites page">
 
-      {/* Always render sidebar - mobile + desktop */}
-      <div className="section-0" role="region" aria-label="Side navigation bar">
+      {/* Left column: Side navigation bar */}
+      <div
+        className="section-0"
+        role="region"
+        aria-label="Side navigation bar"
+      >
         <div className="navbar-container">
           <SideNavBar />
         </div>
       </div>
 
+      {/* Right column: Favorites content */}
       <section className="favorites-container">
-        <h1>My Favorite Dishes</h1>
 
-        {/* Empty favorites state */}
-        {favorites.length === 0 && <p>You have no favorites yet.</p>}
+        {/* User not logged in */}
+        {!token && (
+          <>
+            <h1>My Favorite Dishes</h1>
 
-        <ul className="favorites-list">
-          {favorites.map((dish, index) => {
-            const ingredientNames =
-              dish.ingredients.length > 0
-                ? dish.ingredients.map(ing => ing.ingredientName).join(", ")
-                : "No ingredients listed";
+            <p>
+              Please{" "}
+              <Link to="/auth" className="login-link">
+                log in
+              </Link>{" "}
+              to see your favorites.
+            </p>
+          </>
+        )}
 
-            return (
-              <li key={dish.id} className="favorite-item">
-                <div className="favorite-row">
-                  <span className="dish-label">Dish {index + 1}:</span>
-                  <span className="dish-ingredients">{ingredientNames}</span>
+        {/* Loading state */}
+        {token && loading && (
+          <>
+            <h1>My Favorite Dishes</h1>
+            <p>Loading...</p>
+          </>
+        )}
 
-                  {/* Dish cost */}
-                  <span className="dish-cost">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD"
-                    }).format(dish.dishCost)}
-                  </span>
+        {/* Unauthorized */}
+        {token && !loading && authError && (
+          <>
+            <h1>My Favorite Dishes</h1>
+            <p>
+              You are not authorized to view your favorite dishes.
+            </p>
+          </>
+        )}
 
-                  {/* Favorite toggle button */}
-                  <FavoriteButton
-                    orderId={0}          
-                    dish={dish}
-                    toggleFavorite={toggleFavorite}
-                  />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        {/* No favorite dishes */}
+        {token &&
+          !loading &&
+          !authError &&
+          favorites.length === 0 && (
+            <>
+              <h1>My Favorite Dishes</h1>
+              <p>You have no favorites yet.</p>
+            </>
+          )}
+
+        {/* Favorite dishes */}
+        {token &&
+          !loading &&
+          !authError &&
+          favorites.length > 0 && (
+            <>
+              <h1>My Favorite Dishes</h1>
+
+              <ul className="favorites-list">
+                {favorites.map((dish, index) => {
+                  // put ingredients into list
+                  const ingredientNames =
+                    dish.ingredients.length > 0
+                      ? dish.ingredients
+                          .map((ing) => ing.ingredientName)
+                          .join(", ")
+                      : "No ingredients listed";
+
+                  return (
+                    <li
+                      key={dish.id}
+                      className="favorite-item"
+                    >
+                      <div className="favorite-row">
+
+                        {/* Dish number */}
+                        <span className="dish-label">
+                          Dish {index + 1}:
+                        </span>
+
+                        {/* Dish ingredients */}
+                        <span className="dish-ingredients">
+                          {ingredientNames}
+                        </span>
+
+                        {/* Dish cost */}
+                        <span className="dish-cost">
+                          {new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "USD"
+                          }).format(dish.dishCost || 0)}
+                        </span>
+
+                        {/* Favorite toggle button */}
+                        <FavoriteButton
+                          orderId={0}
+                          dish={dish}
+                          toggleFavorite={toggleFavorite}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
+
       </section>
     </main>
   );

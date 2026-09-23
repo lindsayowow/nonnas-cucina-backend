@@ -6,6 +6,7 @@ import useFavoriteToggle from "../hooks/useFavoriteToggle";
 import useDishBuilderContext from "../hooks/useDishBuilderContext";
 import FavoriteButton from "../components/buttons/FavoriteButton";
 
+// Formats numbers as US currency
 const currency = (value) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -21,6 +22,7 @@ export default function PastOrders({ token }) {
   const { getUserIdFromToken } = useDishBuilderContext();
   const userId = getUserIdFromToken(token);
 
+  // Fetch the user's past orders when a valid user ID and token are available
   useEffect(() => {
     if (!userId) {
       setLoading(false);
@@ -48,11 +50,11 @@ export default function PastOrders({ token }) {
           const data = await response.json();
           setOrders(data ?? []);
         } else {
-          // Non-auth failure → treat as empty list
+          // No auth  treat as empty list
           setOrders([]);
         }
       } catch {
-        // Network failure → treat as empty list
+        // Network failure treat as empty list
         setOrders([]);
       } finally {
         setLoading(false);
@@ -62,113 +64,140 @@ export default function PastOrders({ token }) {
     fetchOrders();
   }, [userId, token]);
 
-  // User not logged in
-  if (!token) {
-    return (
-      <section className="pastorders-container">
-        <h1>Past Orders</h1>
-        <p>Please <Link to="/auth" className="login-link">Log In</Link> to see your past orders.</p>
-      </section>
-    );
-  }
-
-  // Loading state
-  if (loading) {
-    return (
-      <section className="pastorders-container">
-        <h1>Past Orders</h1>
-        <p>Loading...</p>
-      </section>
-    );
-  }
-
-  // Unauthorized
-  if (authError) {
-    return (
-      <section className="pastorders-container">
-        <h1>Past Orders</h1>
-        <p>You are not authorized to view these orders.</p>
-      </section>
-    );
-  }
-
-  // No orders
-  if (!orders || orders.length === 0) {
-    return (
-      <section className="pastorders-container">
-        <h1>Past Orders</h1>
-        <p>You have not created any orders yet.</p>
-      </section>
-    );
-  }
-
   return (
     <main className="pastorders-layout" aria-label="Past Orders page">
 
+      {/* Left column: Side navigation bar */}
       <div className="section-0" role="region" aria-label="Side navigation bar">
         <div className="navbar-container">
           <SideNavBar />
         </div>
       </div>
 
+      {/* Right column: Past orders content */}
       <section className="pastorders-container">
-        <h1>Past Orders</h1>
 
-        {orders.map(order => (
-          <div key={order.id} className="order-card">
+        {/* User not logged in */}
+        {!token && (
+          <>
+            <h1>Past Orders</h1>
 
-            <span className="order-number">
-              Order #{order.id}
-            </span>
+            <p>
+              Please{" "}
+              <Link to="/auth" className="login-link">
+                Log In
+              </Link>{" "}
+              to see your past orders.
+            </p>
+          </>
+        )}
 
-            <div className="order-header unified-header">
-              <span className="left">
-                {new Date(order.orderTimeStamp).toLocaleString()}
-              </span>
+        {/* Loading state */}
+        {token && loading && (
+          <>
+            <h1>Past Orders</h1>
+            <p>Loading...</p>
+          </>
+        )}
 
-              <span className="right">
-                Total: {currency(order.orderTotal)}
-              </span>
-            </div>
+        {/* Unauthorized */}
+        {token && !loading && authError && (
+          <>
+            <h1>Past Orders</h1>
+            <p>You are not authorized to view these orders.</p>
+          </>
+        )}
 
-            <ul className="order-dishes">
-              {(order.dishes ?? []).map((dish, index) => {
-                const ingredients =
-                  dish.ingredients ??
-                  dish.ingredientList ??
-                  dish.ingredientsForDish ??
-                  [];
+        {/* No orders */}
+        {token && !loading && !authError && (!orders || orders.length === 0) && (
+          <>
+            <h1>Past Orders</h1>
+            <p>You have not created any orders yet.</p>
+          </>
+        )}
 
-                // Convert ingredient objects into list
-                const ingredientNames = ingredients.length > 0
-                  ? ingredients.map(ing => ing.ingredientName).join(", ")
-                  : "No ingredients listed";
+        {/* Past orders */}
+        {token && !loading && !authError && orders && orders.length > 0 && (
+          <>
+            <h1>Past Orders</h1>
 
-                return (
-                  <li key={dish.id} className="dish-item dish-row">
+            {orders.map((order) => (
+              <div key={order.id} className="order-card">
 
-                    <div className="dish-info">
-                      <span className="dish-label">Dish {index + 1}:  </span>
-                      <span className="dish-ingredients">{ingredientNames}</span>
-                    </div>
+                {/* Order number */}
+                <span className="order-number">
+                  Order #{order.id}
+                </span>
 
-                    <div className="dish-actions">
-                      <span className="dish-cost">{currency(dish.dishCost)}</span>
+                {/* Order date and total */}
+                <div className="order-header unified-header">
+                  <span className="left">
+                    {new Date(order.orderTimeStamp).toLocaleString()}
+                  </span>
 
-                      {/* Favorite toggle button */}
-                      <FavoriteButton
-                        orderId={order.id}
-                        dish={dish}
-                        toggleFavorite={toggleFavorite}
-                      />
-                    </div>
+                  <span className="right">
+                    Total: {currency(order.orderTotal)}
+                  </span>
+                </div>
 
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+                {/* List of dishes included in this order */}
+                <ul className="order-dishes">
+                  {(order.dishes ?? []).map((dish, index) => {
+                    const ingredients =
+                      dish.ingredients ??
+                      dish.ingredientList ??
+                      dish.ingredientsForDish ??
+                      [];
+
+                    // Convert ingredient objects into a comma-separated list
+                    const ingredientNames =
+                      ingredients.length > 0
+                        ? ingredients
+                            .map((ing) => ing.ingredientName)
+                            .join(", ")
+                        : "No ingredients listed";
+
+                    return (
+                      <li
+                        key={dish.id}
+                        className="dish-item dish-row"
+                      >
+
+                        {/* Dish name and ingredients */}
+                        <div className="dish-info">
+                          <span className="dish-label">
+                            Dish {index + 1}:{" "}
+                          </span>
+
+                          <span className="dish-ingredients">
+                            {ingredientNames}
+                          </span>
+                        </div>
+
+                        {/* Dish price and favorite button */}
+                        <div className="dish-actions">
+                          <span className="dish-cost">
+                            {currency(dish.dishCost)}
+                          </span>
+
+                          {/* Favorite toggle button */}
+                          <FavoriteButton
+                            orderId={order.id}
+                            dish={dish}
+                            toggleFavorite={toggleFavorite}
+                          />
+                        </div>
+
+                      </li>
+                    );
+                  })}
+                </ul>
+
+              </div>
+            ))}
+          </>
+        )}
+
       </section>
     </main>
   );
