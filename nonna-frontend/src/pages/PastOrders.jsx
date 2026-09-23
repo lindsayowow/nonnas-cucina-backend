@@ -50,11 +50,11 @@ export default function PastOrders({ token }) {
           const data = await response.json();
           setOrders(data ?? []);
         } else {
-          // Non-auth failure → treat as empty list
+          // No auth  treat as empty list
           setOrders([]);
         }
       } catch {
-        // Network failure → treat as empty list
+        // Network failure treat as empty list
         setOrders([]);
       } finally {
         setLoading(false);
