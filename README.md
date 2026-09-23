@@ -161,23 +161,23 @@ Initial wireframes used to plan the dish-builder flow, order flow, and account p
 
 🔗 [View Complete Wireframes on Figma](https://www.figma.com/design/2B6voqe6rgF7hboei1bnCk/Untitled?node-id=0-1&t=hOswWw2X7NFZRTrp-1)
 
-### Nonna's Cucina Homepage
+#Nonna's Cucina Homepage
 
 <p align="center"> <img src = "docs/wireframes/Homepage.png" alt="Nonna's Cucina Homepage"></p>
 
-### Build A Dish with Nonna
+#Build A Dish with Nonna
 
 <p align="center"> <img src = "docs/wireframes/BuildADishPage.png" alt="Build A Dish Page View"></p>
 
-### Nonna's Personal Messages and Advice
+#Nonna's Personal Messages and Advice
 
 <p align="center"> <img src = "docs/wireframes/NonnaReacts.png" alt = "A warning example and a personalized message example from Nonna"></p>
 
-### Personalization of Experience
+#Personalization of Experience
 
 <p align="center"> <img src = "docs/wireframes/Personalization.png" alt = "Profile, Favorites and Past Orders Components"></p>
 
-### Mobile View
+#Mobile View
 
 <p align="center"> <img src = "docs/wireframes/MobileView.png" alt = "Mobile View of Order Page"></p>
 
@@ -200,6 +200,8 @@ The relational data model showing Users, Dishes, Ingredients, and Past Orders:
 - Add checklist of common preparation instructions (e.g., "on the side," "medium-well").
 - Add tax calculation and discount codes for a more realistic restaurant checkout experience.
 - Add a **"Special Instructions" notepad** on each dish so users can note freeform prep requests alongside their filtered ingredients.
+- Add special **"secret recipe" reactions** from Nonna — unique responses triggered when a user builds specific known ingredient combinations (e.g., spaghetti + marinara + meatballs).
+- Add editable **dish name** and **diner name** fields attached to the Dish record in the database, so users can label dishes (e.g., "Grandma's Special") and assign them to a specific diner.
 
 ### User Roles & Staff Views
 - Introduce distinct **user roles**: Admin, Staff (kitchen/waiter), and Customer.
