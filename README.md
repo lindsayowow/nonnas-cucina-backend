@@ -159,25 +159,25 @@ Both the backend and frontend must be running to use the full application locall
 
 Initial wireframes used to plan the dish-builder flow, order flow, and account pages (Profile / Past Orders / Favorites):
 
-🔗 [View Wireframes on Figma](https://www.figma.com/design/2B6voqe6rgF7hboei1bnCk/Untitled?node-id=0-1&t=hOswWw2X7NFZRTrp-1)
+🔗 [View Complete Wireframes on Figma](https://www.figma.com/design/2B6voqe6rgF7hboei1bnCk/Untitled?node-id=0-1&t=hOswWw2X7NFZRTrp-1)
 
-Nonna's Cucina Homepage
+### Nonna's Cucina Homepage
 
 <p align="center"> <img src = "docs/wireframes/Homepage.png" alt="Nonna's Cucina Homepage"></p>
 
-Build A Dish with Nonna
+### Build A Dish with Nonna
 
 <p align="center"> <img src = "docs/wireframes/BuildADishPage.png" alt="Build A Dish Page View"></p>
 
-Nonna's Personal Messages and Advice
+### Nonna's Personal Messages and Advice
 
 <p align="center"> <img src = "docs/wireframes/NonnaReacts.png" alt = "A warning example and a personalized message example from Nonna"></p>
 
-Personalization of Experience
+### Personalization of Experience
 
 <p align="center"> <img src = "docs/wireframes/Personalization.png" alt = "Profile, Favorites and Past Orders Components"></p>
 
-Mobile View
+### Mobile View
 
 <p align="center"> <img src = "docs/wireframes/MobileView.png" alt = "Mobile View of Order Page"></p>
 
@@ -197,14 +197,14 @@ The relational data model showing Users, Dishes, Ingredients, and Past Orders:
 
 ### Menu & Ordering Expansion
 - Expand the menu to include appetizers, beverages, and desserts.
-- Add preparation instructions (e.g., "on the side," "medium-well").
+- Add checklist of common preparation instructions (e.g., "on the side," "medium-well").
 - Add tax calculation and discount codes for a more realistic restaurant checkout experience.
 - Add a **"Special Instructions" notepad** on each dish so users can note freeform prep requests alongside their filtered ingredients.
 
 ### User Roles & Staff Views
 - Introduce distinct **user roles**: Admin, Staff (kitchen/waiter), and Customer.
 - **Backend:** add a `role` field to the User entity (or a related `Role` entity for many-to-many support), enforce role-based endpoint access via Spring Security (`@PreAuthorize` / role-based filters), and scope JWT claims to include role for frontend routing.
-- **Kitchen staff screen:** a queue view of incoming orders showing each dish's built ingredients and special instructions, with an action to mark dishes/orders as in-progress or complete.
+- **Kitchen staff screen:** a queue view of incoming orders showing each dish's built ingredients, images, and special instructions, with an action to mark dishes/orders as in-progress or complete.
 - **Waiter screen:** a table/order-assignment view to associate orders with tables or customers and track order status through to delivery.
 - Frontend route guarding so each role only sees the screens relevant to them.
 
@@ -212,6 +212,10 @@ The relational data model showing Users, Dishes, Ingredients, and Past Orders:
 - Add a **loyalty card** feature that rewards repeat customers.
 - **Backend:** new `LoyaltyAccount` entity linked one-to-one with User (points balance, tier), a `LoyaltyTransaction` entity to log point earns/redemptions per order, and a service to calculate points earned per completed order (and apply redemptions at checkout).
 - **Frontend:** a loyalty balance/tier display on the Profile page, and a redemption option at checkout.
+
+### Security & Access Control Notes
+- **`POST /gemini` is fully public** (`permitAll()`, no auth required). This is reasonable today since Build-a-Dish doesn't require login, but it also means anyone can hit the Gemini endpoint directly with no rate limiting — a direct path to burning through API quota, as seen during testing. Not a rubric blocker, but worth revisiting (auth and/or rate limiting) before this goes anywhere public.
+- **No admin/role distinction on data-management routes** — any authenticated user, not just an "admin," can currently POST/PUT/DELETE ingredients, filters, and categories. These routes were originally built for DB setup and testing; acceptable for this project's current scope, but should be locked down behind the planned Admin role (see User Roles & Staff Views) before going further.
 
 ### Account Features
 - No `.env` / base-URL configuration on the frontend yet — the API base URL is currently hardcoded to `http://localhost:8080`.
