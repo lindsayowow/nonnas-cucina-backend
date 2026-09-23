@@ -161,11 +161,25 @@ Initial wireframes used to plan the dish-builder flow, order flow, and account p
 
 🔗 [View Wireframes on Figma](https://www.figma.com/design/2B6voqe6rgF7hboei1bnCk/Untitled?node-id=0-1&t=hOswWw2X7NFZRTrp-1)
 
-![Nonna's Cucina Homepage](docs/wireframes/Homepage.png)
-![Build A Dish with Nonna](docs/wireframes/BuildADishPage.png)
-![Nonna's Personal Messages and Advice](docs/wireframes/NonnaReacts.png)
-![Personalization of Experience](docs/wireframes/Personalization.png)
-![Mobile View](docs/wireframes/MobileView.png)
+Nonna's Cucina Homepage
+
+<p align="center"> <img src = "docs/wireframes/Homepage.png" alt="Nonna's Cucina Homepage"></p>
+
+Build A Dish with Nonna
+
+<p align="center"> <img src = "docs/wireframes/BuildADishPage.png)" alt="Build A Dish Page View"></p>
+
+Nonna's Personal Messages and Advice
+
+<p align="center"> <img src = "docs/wireframes/NonnaReacts.png)" alt = "A warning example and a personalized message example from Nonna"></p>
+
+Personalization of Experience
+
+<p align="center"> <img src = "docs/wireframes/Personalization.png" alt = "Profile, Favorites and Past Orders Components"></p>
+
+Mobile View
+
+<p align="center"> <img src = "docs/wireframes/MobileView.png" alt = "Mobile View of Order Page"></p>
 
 ---
 
@@ -175,7 +189,7 @@ The relational data model showing Users, Dishes, Ingredients, and Past Orders:
 
 🔗 [View ERD on Figma](https://www.figma.com/design/3tcowkqGhvBoqyzeQVNOkN/ERD-Nonna-s-Cucina?node-id=1-2&t=IuJvYZgu09DooLts-1)
 
-![Nonna's Cucina ER Diagram](docs/erd/NonnaERD.png)
+<p align="center"> <img src = "docs/erd/NonnaERD.png" alt = "Nonna's Cucina ER Diagram"></p>
 
 ---
 
